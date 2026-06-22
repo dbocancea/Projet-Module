@@ -28,11 +28,10 @@ const map<string ,FnModulTypes > ModulTypes = {
     {"PrimitiveModule" , [](){ return new PrimitiveModule(); }  },
     {"ScalarModule" , [](){ return new ScalarModule(); }  },
     {"TextLogModule" , [](){ return new TextLogModule(); }  },
-    {"TextModule" , [](){ return new TextModule(); }  }
+    {"TextModule" , [](){ return new TextModule(); }  },
     {"TransformModule" , [](){ return new TransformModule(); }  },
     {"TriggerModule" , [](){ return new TriggerModule(); }  },
-    {"Vector3Module" , [](){ return new Vector3Module(); }  },
-
+    {"Vector3Module" , [](){ return new Vector3Module(); }  }
 };
 
 
