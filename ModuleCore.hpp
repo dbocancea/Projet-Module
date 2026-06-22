@@ -23,7 +23,7 @@ protected:
 
 public:
 function<void (pair<string, vector<float> >) > outputFn;
-    string type = "ModulCore";
+    string type;
     ModuleCore() ;
     ModuleCore(uint128_t UUID) ;
     void SetOnCommand(string command, function<void(vector<float>)> callback) ;

@@ -4,11 +4,16 @@ ModuleRegistry::ModuleRegistry(){}
 
 ModuleRegistry::ModuleRegistry(  function<void (pair<string, vector<float> >) > outputFn ) : ModuleCore(0)
 {   
-    this->type = "ModulRegestry";
-    this->outputFn = outputFn;
-    this->SetOnCommand("ADD_MODULE", [&](vector<float> data) {this->OnAddModule(data);} );
+    string cmd1 = "ADD_MODULE";
 
-    this->SetOnCommand("REMOVE_MODULE", [&](vector<float> data) {this->outputFn({"REMOVE_MODULE" , data});} );
+    string cmd2 = "REMOVE_MODULE";
+
+    this->command.push_back(cmd1);
+    this->command.push_back(cmd2);
+    this->outputFn = outputFn;
+    this->SetOnCommand(cmd1, [&](vector<float> data) {this->OnAddModule(data);} );
+
+    this->SetOnCommand(cmd2, [&](vector<float> data) {this->outputFn({"REMOVE_MODULE" , data});} );
 }
 
 void ModuleRegistry::OnAddModule( vector<float> data )

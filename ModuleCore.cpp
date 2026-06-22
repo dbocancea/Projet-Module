@@ -2,10 +2,12 @@
 ModuleCore::ModuleCore() {}
 ModuleCore::ModuleCore(uint128_t UUID)
 {   
+    string cmd = "SET_STATE";
+    this->command.push_back(cmd);
     this->type = "ModulCore";
     this->UUID = UUID;
     this->callback = ([&]( vector<float>) {});
-    this->SetOnCommand("SET_STATE", this->callback );
+    this->SetOnCommand(cmd, this->callback );
 }
 
 void ModuleCore::SetOnCommand(string command, function<void(vector<float>)> callback)
