@@ -1,20 +1,26 @@
-TARGET = ModuleCore
+TARGET = build/ModuleCore
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17
+CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Isrc/Core
 
-SRCS = ModuleCore.cpp ModuleRegistry.cpp
-OBJS = $(SRCS:.cpp=.o)
+SRCS = $(wildcard src/*.cpp) $(wildcard src/Core/*.cpp)
 
-all: $(TARGET)
+OBJS = $(patsubst %.cpp, build/%.o, $(notdir $(SRCS)))
+
+vpath %.cpp src src/Core
+
+all: build_dir $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
-%.o: %.cpp
+build/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-clean:
-	rm -f $(OBJS) $(TARGET)
+build_dir:
+	@mkdir -p build
 
-.PHONY: all clean
+clean:
+	rm -rf build
+
+.PHONY: all clean build_dir
