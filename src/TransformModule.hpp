@@ -3,5 +3,6 @@
 
 class TransformModule : public ModuleCore
 {
-    TransformModule();
+    public:
+        TransformModule();
 };

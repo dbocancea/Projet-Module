@@ -2,5 +2,5 @@
 
 LineModule::LineModule()
 {
-    
+    this->type = "LineModule";
 }

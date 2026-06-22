@@ -2,5 +2,5 @@
 
 Vector3Module::Vector3Module()
 {
-    
+    this->type = "Vector3Module";
 }

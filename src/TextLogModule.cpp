@@ -2,5 +2,5 @@
 
 TextLogModule::TextLogModule()
 {
-    
+    this->type = "TextLogModule";
 }

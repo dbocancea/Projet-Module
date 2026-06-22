@@ -2,5 +2,5 @@
 
 TransformModule::TransformModule()
 {
-    
+    this->type = "TransformModule";
 }

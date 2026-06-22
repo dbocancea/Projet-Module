@@ -3,5 +3,6 @@
 
 class TextLogModule : public ModuleCore
 {
-    TextLogModule();
+    public:
+        TextLogModule();
 };

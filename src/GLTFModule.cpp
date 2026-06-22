@@ -2,5 +2,5 @@
 
 GLTFModule::GLTFModule()
 {
-
+    this->type = "GLTFModule";
 };

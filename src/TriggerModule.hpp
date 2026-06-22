@@ -3,5 +3,6 @@
 
 class TriggerModule : public ModuleCore
 {
-    TriggerModule();
+    public:
+        TriggerModule();
 };

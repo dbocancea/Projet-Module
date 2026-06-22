@@ -3,5 +3,6 @@
 
 class CameraModule : public ModuleCore
 {
-    CameraModule();
+    public:
+        CameraModule();
 };

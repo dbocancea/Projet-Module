@@ -3,5 +3,5 @@
 
 CameraModule::CameraModule()
 {
-
+    this->type = "CameraModule";
 }

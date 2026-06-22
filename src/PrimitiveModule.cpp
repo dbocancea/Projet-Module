@@ -2,5 +2,5 @@
 
 PrimitiveModule::PrimitiveModule()
 {
-    
+    this->type = "PrimitiveModule";
 }

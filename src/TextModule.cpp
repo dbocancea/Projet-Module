@@ -2,5 +2,5 @@
 
 TextModule::TextModule()
 {
-    
+   this->type = "TextModule"; 
 }

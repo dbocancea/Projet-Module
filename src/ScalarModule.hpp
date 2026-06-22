@@ -3,5 +3,6 @@
 
 class ScalarModule : public ModuleCore
 {
-    ScalarModule();
+    public:
+        ScalarModule();
 };

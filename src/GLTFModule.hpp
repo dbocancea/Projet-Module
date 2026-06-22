@@ -3,5 +3,6 @@
 
 class GLTFModule : public  ModuleCore
 {
-    GLTFModule();
+    public:
+        GLTFModule();
 };

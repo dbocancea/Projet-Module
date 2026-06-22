@@ -3,5 +3,6 @@
 
 class PointsModule : public ModuleCore
 {
-    PointsModule();
+    public:
+        PointsModule();
 };
