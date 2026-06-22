@@ -28,6 +28,24 @@ void ModuleCore::OnCommand(string command, vector<float> data)
         cout << this->UUID << " has no member " << endl;
 }
 
+void ModuleCore::SetOnChange(string command, function<void(vector<float>)> callback)
+{
+    auto it = this->changeCallBack.find(command);
+    if (it == this->changeCallBack.end())
+        this->changeCallBack.insert( {command, vector < function < void (vector<float> ) > >{} } );
+    changeCallBack[command].push_back(callback);
+}
+
+void ModuleCore::OnChange(string command, vector<float> data)
+{
+    auto it = this->changeCallBack.find(command);
+    if (it != this->changeCallBack.end())
+        for (auto callback_temp : it->second)
+            callback_temp(data);
+    else
+        cout << this->UUID << " has no member " << endl;
+}
+
 void ModuleCore::SetOutputFn( function<void (pair<string, vector<float> >) > outputFn )
 {
     this->outputFn = outputFn;

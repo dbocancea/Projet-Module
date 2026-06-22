@@ -20,7 +20,7 @@ protected:
     uint128_t UUID;
     function<void(vector<float>)> callback;
     map<string, vector<function<void(vector<float>)>>> commandCallBack;
-
+    map<string, vector<function<void(vector<float>)>>> changeCallBack;
 public:
 function<void (pair<string, vector<float> >) > outputFn;
     string type;
@@ -28,6 +28,8 @@ function<void (pair<string, vector<float> >) > outputFn;
     ModuleCore(uint128_t UUID) ;
     void SetOnCommand(string command, function<void(vector<float>)> callback) ;
     void OnCommand(string command, vector<float> data) ;
+    void SetOnChange(string command, function<void(vector<float>)> callback) ;
+    void OnChange(string command, vector<float> data) ;
     void SetOutputFn( function<void (pair<string, vector<float> >) > outputFn );
     void SetState();
     void GetState();
