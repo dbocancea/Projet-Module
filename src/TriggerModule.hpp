@@ -1,8 +1,11 @@
-#include <iostream>
-#include "ModuleCore.hpp"
+#ifndef TRANSFORMMODULE_HHP
+#define TRANSFORMMODULE_HHP
+#include "Core/ModuleCore.hpp"
 
-class TriggerModule : public ModuleCore
+class TransformModule : public ModuleCore
 {
     public:
-        TriggerModule();
+        TransformModule();
 };
+  
+#endif

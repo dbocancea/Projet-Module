@@ -6,3 +6,8 @@ class TransformModule : public ModuleCore
     public:
         TransformModule();
 };
+<<<<<<< HEAD
+=======
+  
+#endif
+>>>>>>> origin/Types
