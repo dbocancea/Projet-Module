@@ -2,5 +2,5 @@
 
 TriggerModule::TriggerModule()
 {
-
+    this->type = "TriggerModule";
 }

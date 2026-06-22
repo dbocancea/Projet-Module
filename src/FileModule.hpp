@@ -3,5 +3,6 @@
 
 class FileModule : public ModuleCore
 {
-    FileModule();
+    public:
+        FileModule();
 };

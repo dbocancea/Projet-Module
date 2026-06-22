@@ -3,5 +3,6 @@
 
 class LineModule : public ModuleCore
 {
-    LineModule();
+    public:
+        LineModule();
 };

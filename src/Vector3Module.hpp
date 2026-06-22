@@ -3,5 +3,6 @@
 
 class Vector3Module : public ModuleCore
 {
-    Vector3Module();
+    public:
+        Vector3Module();
 };

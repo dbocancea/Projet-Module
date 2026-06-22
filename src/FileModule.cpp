@@ -2,5 +2,5 @@
 
 FileModule::FileModule()
 {
-
+    this->type = "FileModule";
 };

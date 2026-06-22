@@ -2,5 +2,5 @@
 
 ScalarModule::ScalarModule()
 {
-
+    this->type = "ScalarModule";
 }

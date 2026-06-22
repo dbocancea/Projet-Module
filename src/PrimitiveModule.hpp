@@ -3,5 +3,6 @@
 
 class PrimitiveModule : public ModuleCore
 {
-    PrimitiveModule();
+    public:
+        PrimitiveModule();
 };

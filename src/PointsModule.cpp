@@ -2,5 +2,5 @@
 
 PointsModule::PointsModule()
 {
-    
+    this->type = "PointsModule";
 }
