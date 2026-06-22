@@ -1,11 +1,11 @@
-#ifndef TRANSFORMMODULE_HHP
-#define TRANSFORMMODULE_HHP
+#ifndef TRIGGERMODULE_HPP
+#define TRIGGERMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class TransformModule : public ModuleCore
+class TriggerModule : public ModuleCore
 {
     public:
-        TransformModule();
+        TriggerModule();
 };
   
 #endif
