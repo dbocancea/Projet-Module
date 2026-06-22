@@ -7,5 +7,5 @@ class CameraModule : public ModuleCore
     public:
         CameraModule();
 };
-
+  
 #endif

@@ -6,5 +6,5 @@ class Vector3Module : public ModuleCore
 {
     public:
         Vector3Module();
-};
+};  
 #endif

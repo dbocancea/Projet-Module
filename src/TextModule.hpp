@@ -7,5 +7,5 @@ class TextModule : public ModuleCore
     public:
         TextModule();
 };
-
+  
 #endif

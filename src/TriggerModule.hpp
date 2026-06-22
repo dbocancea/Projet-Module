@@ -7,5 +7,5 @@ class TriggerModule : public ModuleCore
     public:
         TriggerModule();
 };
-
+  
 #endif

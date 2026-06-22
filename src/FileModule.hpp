@@ -6,6 +6,6 @@ class FileModule : public ModuleCore
 {
     public:
         FileModule();
-};
+};  
 
 #endif

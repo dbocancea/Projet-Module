@@ -7,5 +7,5 @@ class PrimitiveModule : public ModuleCore
     public:
         PrimitiveModule();
 };
-
+  
 #endif

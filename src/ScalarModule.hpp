@@ -7,5 +7,5 @@ class ScalarModule : public ModuleCore
     public:
         ScalarModule();
 };
-
+  
 #endif

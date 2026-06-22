@@ -7,5 +7,5 @@ class TransformModule : public ModuleCore
     public:
         TransformModule();
 };
-
+  
 #endif

@@ -7,5 +7,5 @@ class TextLogModule : public ModuleCore
     public:
         TextLogModule();
 };
-
+  
 #endif

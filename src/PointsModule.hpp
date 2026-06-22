@@ -7,5 +7,5 @@ class PointsModule : public ModuleCore
     public:
         PointsModule();
 };
-
+  
 #endif

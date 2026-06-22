@@ -7,5 +7,5 @@ class GLTFModule : public  ModuleCore
     public:
         GLTFModule();
 };
-
+  
 #endif
