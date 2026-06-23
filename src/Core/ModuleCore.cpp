@@ -4,7 +4,7 @@ ModuleCore::ModuleCore(uint128_t UUID)
 {   
     string cmd = "SET_STATE";
     this->command.push_back(cmd);
-    this->type = "ModulCore";
+    this->type = "ModuleCore";
     this->UUID = UUID;
     this->callback = ([&]( vector<float>) {});
     this->SetOnCommand(cmd, this->callback );

@@ -1,5 +1,5 @@
-#ifndef MODULTYPES_HPP
-#define MODULTYPES_HPP
+#ifndef MODULETYPES_HPP
+#define MODULETYPES_HPP
 #include "ModuleCore.hpp"
 #include "ModuleRegistry.hpp"
 #include "../CameraModule.hpp"
@@ -15,9 +15,9 @@
 #include "../TriggerModule.hpp"
 #include "../Vector3Module.hpp"
 
-using FnModulTypes = function<ModuleCore*()>;
+using FnModuleTypes = function<ModuleCore*()>;
 
-const map<string ,FnModulTypes > ModulTypes = {
+const map<string ,FnModuleTypes > ModulTypes = {
     {"ModuleCore" , [](){ return new ModuleCore(); }  },
     {"ModuleRegestry" , [](){ return new ModuleRegistry(); }  },
     {"CameraModule" , [](){ return new CameraModule(); }  },

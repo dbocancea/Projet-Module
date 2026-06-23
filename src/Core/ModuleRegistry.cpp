@@ -49,7 +49,7 @@ void ModuleRegistry::RemoveModule(uint128_t UUID )
     auto it = this->modules.find(UUID);
     if( it == this->modules.end() )
     {
-        cout << UUID <<" module don't existe " << endl;
+        cout << UUID <<" module doesn't exist " << endl;
         return;
     }
     
