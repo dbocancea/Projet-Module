@@ -10,6 +10,7 @@ class FileModule : public ModuleCore
         FileModule();
         FileModule(uint128_t UUID);
         void UpdateFile(vector<float> file , bool sync);
+        vector<float> getFile();
 };  
 
 #endif

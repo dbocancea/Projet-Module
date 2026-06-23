@@ -21,3 +21,8 @@ void FileModule::UpdateFile(vector<float> file , bool sync)
     if( sync )
         this->outputFn(pair<string, vector<float> >{"UPDATE_FILE" , file});
 }
+
+vector<float> FileModule::getFile()
+{
+    return this->file;
+}
