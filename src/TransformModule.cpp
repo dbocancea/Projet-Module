@@ -34,7 +34,7 @@ void TransformModule::updateTransform(vector<float> transform, bool sync)
 }
 
 
-std::tuple<std::array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> TransformModule::getTransform()
+tuple<array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> TransformModule::getTransform()
 {
     return {translation, rotation, scale};
 }

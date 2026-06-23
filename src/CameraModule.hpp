@@ -1,16 +1,23 @@
 #ifndef CAMERAMODULE_HPP
 #define CAMERAMODULE_HPP
 #include "Core/ModuleCore.hpp"
+#include "TransformModule.hpp"
+#include <tuple>
 
-class CameraModule : public ModuleCore
+class CameraModule : public TransformModule
 {
     protected:
-        float far{};
         float fov{};
-        float near{};
         float aspect{};
+        float myNear{};
+        float myFar{};
     public:
         CameraModule();
+        CameraModule(uint128_t UUID);
+        void updateCamera(vector<float> camera, bool sync);
+        tuple<float, float, float, float> getCamera();
+        void setState(map<string, vector<float>> state);
+        map<string, vector<float>> getState();
 };
   
 #endif
