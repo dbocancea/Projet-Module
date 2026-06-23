@@ -17,7 +17,7 @@
 
 using FnModuleTypes = function<ModuleCore*()>;
 
-const map<string ,FnModuleTypes > ModulTypes = {
+const map<string ,FnModuleTypes > ModuleTypes = {
     {"ModuleCore" , [](){ return new ModuleCore(); }  },
     {"ModuleRegestry" , [](){ return new ModuleRegistry(); }  },
     {"CameraModule" , [](){ return new CameraModule(); }  },
