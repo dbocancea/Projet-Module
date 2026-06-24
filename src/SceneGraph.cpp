@@ -1,6 +1,7 @@
 #include"SceneGraph.hpp"
 
 SceneGraph::SceneGraph(){}
+
 void SceneGraph::AddNode(Nodes node)
 {
     this->nodes.insert(node.UUID);
@@ -29,4 +30,14 @@ void SceneGraph::UpdateNode(Nodes node)
     for( int i = 0; i < this->transform[node.UUID].scale.size() ; i++)
         this->transform[node.UUID].scale[i] = node.tran.scale[i];
     
+}
+
+vector<Nodes> SceneGraph::NodesData(vector<uint128_t> nodeUUIDs)
+{   
+    vector<Nodes> nodes_data;
+    for ( auto UUID : nodeUUIDs ) 
+    {
+        nodes_data.push_back({UUID , this->parent[UUID] , this->childrens[UUID] , this->transform[UUID]});
+    }
+    return nodes_data;
 }

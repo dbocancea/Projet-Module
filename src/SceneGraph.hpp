@@ -1,5 +1,5 @@
-#ifndef TREE_HPP
-#define TREE_HPP
+#ifndef SCENEGRAPH_HPP
+#define SCENEGRAPH_HPP
 #include "Core/ModuleCore.hpp"
 #include<set>
 using namespace boost::multiprecision;
@@ -35,6 +35,7 @@ class SceneGraph
         SceneGraph();
         void AddNode(Nodes node);
         void UpdateNode(Nodes node);
+        vector<Nodes> NodesData(vector<uint128_t> nodeUUIDs);
 };
 
 
