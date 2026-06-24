@@ -2,7 +2,7 @@
 #define FILEMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class FileModule : public ModuleCore
+class FileModule : public ModuleCore<vector<float>>
 {   
     protected:
         vector<float> file;
