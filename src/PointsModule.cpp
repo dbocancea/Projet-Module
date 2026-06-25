@@ -9,22 +9,22 @@ PointsModule::PointsModule(uint128_t UUID) : ModuleCore(UUID)
 {
     this->type = "PointsModule";
 
-    this->SetOnCommand("ADD_POINTS", [this](const vector<float>& points)
+    this->SetOnCommand("ADD_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
     {
         this->addPoints(points, false);
     });
 
-    this->SetOnCommand("REMOVE_POINTS", [this](const vector<float>& points)
+    this->SetOnCommand("REMOVE_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
     {
         this->removePoints(points, false);
     });
 
-    this->SetOnCommand("UPDATE_POINTS", [this](const vector<float>& points)
+    this->SetOnCommand("UPDATE_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
     {
         this->updatePoints(points, false);
     });
 
-    this->SetOnCommand("CLEAR", [this](const vector<float>& points)
+    this->SetOnCommand("CLEAR", [this]()
     {
         this->clear(false);
     });
