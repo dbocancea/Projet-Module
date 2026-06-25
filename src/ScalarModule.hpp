@@ -10,6 +10,8 @@ class ScalarModule : public ModuleCore<int>
         ScalarModule();
         ScalarModule(uint128_t UUID) ;
         void UpdateValue(int value);
+        void SetState(int value);
+        int GetState();
 };
   
 #endif

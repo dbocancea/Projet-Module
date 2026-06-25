@@ -20,3 +20,13 @@ void ScalarModule::UpdateValue(int value)
     this->value = value;
     this->OnChange(this->command[this->command.size()-1] , value);
 }
+
+void ScalarModule::SetState(int value)
+{
+    this->UpdateValue(value);
+}
+
+int ScalarModule::GetState()
+{
+    return this->value;
+}
