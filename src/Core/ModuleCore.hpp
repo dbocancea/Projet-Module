@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 using namespace boost::multiprecision;
 using namespace std;
