@@ -23,7 +23,7 @@ protected:
     map<string, vector<function<void(T)>>> commandCallBack;
     map<string, vector<function<void(T)>>> changeCallBack;
 public:
-function<void (pair<string, vector<float> >) > outputFn;
+    function<void (pair<string, T >) > outputFn;
     string type;
     ModuleCore() ;
     ModuleCore(uint128_t UUID) ;
@@ -33,8 +33,8 @@ function<void (pair<string, vector<float> >) > outputFn;
     
     void OnChange(string command, T data) ;
     void SetOutputFn( function<void (pair<string, T >) > outputFn );
-    void SetState();
-    void GetState();
+    void SetState(T state);
+    T GetState();
     uint128_t GetUUID();
 };
 
