@@ -20,8 +20,8 @@ class GLTFModule : public  FileModule<vector<Nodes>>
     public:
         GLTFModule();
         GLTFModule(uint128_t UUID);
-        void SetNodes(vector<Nodes> nodes );
-        void UpdateNodes(vector<Nodes> nodes );
+        void SetNodes(vector<Nodes> nodes , bool sync);
+        void UpdateNodes(vector<Nodes> nodes , bool sync);
         GLTF_state GetState();
         void SetState(GLTF_state state);
 };  

@@ -11,19 +11,22 @@ ScalarModule::ScalarModule(uint128_t UUID) : ModuleCore(UUID)
     this->type = "ScalarModule";
     this->command.push_back("UPDATE_VALUE");
     
-    this->SetOnCommand(this->command[this->command.size()-1] , [&](int value ) {this->UpdateValue(value);} );
+    this->SetOnCommand(this->command[this->command.size()-1] , [&](int value ) {this->UpdateValue(value , 0);} );
 }
 
-void ScalarModule::UpdateValue(int value)
+void ScalarModule::UpdateValue(int value , bool sync)
 {
     cout << "ScalarModule - UpdateValue" << endl;
     this->value = value;
     this->OnChange(this->command[this->command.size()-1] , value);
+
+    if(sync)
+        this->outputFn({"UPDATE_VALUE", value});
 }
 
 void ScalarModule::SetState(int value)
 {
-    this->UpdateValue(value);
+    this->UpdateValue(value , 0);
 }
 
 int ScalarModule::GetState()
