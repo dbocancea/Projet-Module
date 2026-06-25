@@ -45,3 +45,20 @@ void GLTFModule::UpdateNodes(vector<Nodes> nodes)
 
 
 }
+
+GLTF_state GLTFModule::GetState()
+{
+    GLTF_state state;
+    state.file = this->file;
+    state.nodes = this->sceneGraph.nodes;
+    return state;
+}
+
+void GLTFModule::SetState(GLTF_state state)
+{
+    this->UpdateFile(state.file , 0 );
+    vector<uint128_t> nodeUUIDs(state.nodes.begin(), state.nodes.end());
+    vector<Nodes> nodesData = sceneGraph.NodesData(nodeUUIDs);
+
+    this->SetNodes(nodesData);
+}

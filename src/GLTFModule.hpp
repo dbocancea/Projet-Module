@@ -3,9 +3,15 @@
 #include "FileModule.hpp"
 #include "SceneGraph.hpp"
 
+struct strGLTF_state
+{
+    File file;
+    set<uint128_t> nodes;
+};
 
+using GLTF_state = strGLTF_state;
 
-class GLTFModule : public  ModuleCore<vector<Nodes>>
+class GLTFModule : public  FileModule<vector<Nodes>>
 {   
     protected:
         FileModule fileHandler;
@@ -16,6 +22,8 @@ class GLTFModule : public  ModuleCore<vector<Nodes>>
         GLTFModule(uint128_t UUID);
         void SetNodes(vector<Nodes> nodes );
         void UpdateNodes(vector<Nodes> nodes );
-};
+        GLTF_state GetState();
+        void SetState(GLTF_state state);
+};  
   
 #endif
