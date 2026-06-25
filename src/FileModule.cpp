@@ -1,28 +1,34 @@
 #include "FileModule.hpp"
-
-FileModule::FileModule()
+template <typename T>
+FileModule<T>::FileModule() : ModuleCore<T>()
 {
     this->type = "FileModule";
 }
-
-FileModule::FileModule( uint128_t UUID ) : ModuleCore(UUID)
+template <typename T>
+FileModule<T>::FileModule( uint128_t UUID ) : ModuleCore(UUID)
 {
     this->type = "FileModule";
     string cmd = "UPDATE_FILE";
     this->command.push_back(cmd);
-    this->SetOnCommand(cmd , [&](vector<float> file) {this->UpdateFile(file, false);}  );
+    this->SetOnCommand(cmd , [&](File file) {this->UpdateFile(file, false);}  );
 }
-
-void FileModule::UpdateFile(vector<float> file , bool sync)
+template <typename T>
+void FileModule<T>::UpdateFile(File file , bool sync = 0)
 {
     this->file = file;
     this->OnChange("UPDATE_FILE" , this->file );
 
     if( sync )
-        this->outputFn(pair<string, vector<float> >{"UPDATE_FILE" , file});
+        this->outputFn(pair<string, File >{"UPDATE_FILE" , file});
 }
-
-vector<float> FileModule::getFile()
+template <typename T>
+File FileModule<T>::getFile()
 {
     return this->file;
 }
+template <typename T>
+void FileModule<T>::setState( T newState) {
+        this->UpdateFile(newState , 0);
+    }
+
+template class FileModule<File>;

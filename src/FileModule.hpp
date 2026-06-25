@@ -2,15 +2,27 @@
 #define FILEMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class FileModule : public ModuleCore<vector<float>>
+struct str_File
+{
+    string name;
+    string type;
+    vector<float> data;
+};
+
+using File = struct str_File;
+
+template <typename T>
+class FileModule : public ModuleCore<T>
 {   
     protected:
-        vector<float> file;
+        File file;
     public:
         FileModule();
         FileModule(uint128_t UUID);
-        void UpdateFile(vector<float> file , bool sync);
-        vector<float> getFile();
+        void UpdateFile(File file , bool sync);
+        File getFile();
+        void setState(T state);
+        File getState();
 };  
 
 #endif
