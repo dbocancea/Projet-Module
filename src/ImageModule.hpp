@@ -2,7 +2,7 @@
 #define IMAGE_MODULE_HPP
 #include "TransformModule.hpp"
 
-class ImageModule : public TransformModule
+class ImageModule : public TransformModule<string>
 {
     protected:
         string image;
