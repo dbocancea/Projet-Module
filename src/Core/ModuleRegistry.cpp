@@ -61,7 +61,7 @@ void ModuleRegistry::RemoveModule(uint128_t UUID )
     
 }
 
-ModuleCore* ModuleRegistry::GetModule(uint128_t UUID)
+ModuleCore<vector<float>>* ModuleRegistry::GetModule(uint128_t UUID)
 {
     auto it = modules.find(UUID);
     if ( it != modules.end() )
@@ -69,19 +69,3 @@ ModuleCore* ModuleRegistry::GetModule(uint128_t UUID)
     cerr << "UUID doesn't exists " << endl;
     return nullptr;
 }
-/*
-int main()
-{   
-    ModuleRegistry modMan( [&] (pair< string, vector<float> >  outputFn ) 
-    {std::cout << "OutputFn called with command: " << outputFn.first << std::endl;} );
-    modMan.AddModule(123 , 0);
-    modMan.GetModule(1111);
-    modMan.AddModule(321 , 0);
-    ModuleCore* newmod = modMan.GetModule(321);
-    cout << "UUID " << newmod->GetUUID() << endl;
-    modMan.RemoveModule(123);
-    modMan.RemoveModule(321);
-    modMan.GetModule(321);
-    return 0;
-}
-    */
