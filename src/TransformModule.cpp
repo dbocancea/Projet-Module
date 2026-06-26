@@ -1,6 +1,7 @@
 #include "TransformModule.hpp"
 
-TransformModule::TransformModule(uint128_t UUID) : ModuleCore(UUID)
+template<typename T> 
+TransformModule<T>::TransformModule(uint128_t UUID) : ModuleCore(UUID)
 {
     this->type = "TransformModule";
 
@@ -9,8 +10,8 @@ TransformModule::TransformModule(uint128_t UUID) : ModuleCore(UUID)
         this->updateTransform(transform, false);
     });
 }
-
-void TransformModule::updateTransform(vector<float> transform, bool sync)
+template<typename T> 
+void TransformModule<T>::updateTransform(vector<float> transform, bool sync)
 {
         if(transform.size() >= 10)
         {
@@ -33,20 +34,22 @@ void TransformModule::updateTransform(vector<float> transform, bool sync)
                 this->outputFn(pair<string, vector<float>>("UPDATE_TRANSFORM", transform));
 }
 
-
-tuple<array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> TransformModule::getTransform()
+template<typename T> 
+tuple<array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> TransformModule<T>::getTransform()
 {
     return {translation, rotation, scale};
 }
 
-void TransformModule::setState(map<string, vector<float>> state)
+template<typename T> 
+void TransformModule<T>::setState(map<string, vector<float>> state)
 {
     auto it = state.find("transform");
     if(it != state.end())
         this->updateTransform(it->second, false);
 }
 
-map<string, vector<float>> TransformModule::getState()
+template<typename T> 
+map<string, vector<float>> TransformModule<T>::getState()
 {
     return{
         {"transform", {translation[0], translation[1], translation[2], rotation[0], rotation[1], rotation[2], rotation[3], scale[0], scale[1], scale[2]}}

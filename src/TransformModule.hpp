@@ -8,7 +8,7 @@
 #include "Core/ModuleCore.hpp"
 #include <array>
 #include <tuple>
-
+template<typename T>
 class TransformModule : public ModuleCore<vector<float>>
 {
     protected:
