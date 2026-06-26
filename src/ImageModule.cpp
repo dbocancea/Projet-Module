@@ -22,7 +22,7 @@ string ImageModule::getImage()
 void ImageModule::setImage(string newIm, bool sync)
 {
     this->image = newIm;
-    this->OnCommand("SET_IMAGE", this->image);
+    this->OnChange("SET_IMAGE", this->image);
 
     if(sync)
     {
