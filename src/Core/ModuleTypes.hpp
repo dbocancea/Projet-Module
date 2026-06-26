@@ -15,6 +15,10 @@
 #include "../TriggerModule.hpp"
 #include "../Vector3Module.hpp"
 
+#include "../ImageModule.hpp"
+#include "../MeshModule.hpp"
+#include "../SceneGraph.hpp"
+
 using FnModuleTypes = function<ModuleCore*()>;
 
 const map<string ,FnModuleTypes > ModulTypes = {
@@ -31,7 +35,10 @@ const map<string ,FnModuleTypes > ModulTypes = {
     {"TextModule" , [](){ return new TextModule(); }  },
     {"TransformModule" , [](){ return new TransformModule(); }  },
     {"TriggerModule" , [](){ return new TriggerModule(); }  },
-    {"Vector3Module" , [](){ return new Vector3Module(); }  }
+    {"Vector3Module" , [](){ return new Vector3Module(); }  },
+    {"ImageModule" , []() { return new ImageModule(); }  },
+    {"MeshModule" , []() { return new MeshModule(); }  },
+    {"SceneGraph" , []() { return new SceneGraph(); }  }
 };
 
 
