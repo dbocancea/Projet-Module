@@ -71,7 +71,7 @@ void PointsModule::addPoints(const vector<pair<uint128_t, vector<float>>>& point
 
         this->points[uuid] = position_copy;
     }
-    this->OnCommand("ADD_POINTS ", points);
+    this->OnChange("ADD_POINTS ", points);
 
     if(sync)
         cout << "ADD_POINTS" << points.size() << endl;
@@ -84,7 +84,7 @@ void PointsModule::removePoints(vector<pair<uint128_t, vector<float>>>& points, 
         this->points[uuid].erase();
     }
 
-    this->OnCommand("REMOVE_COMMANDS", points);
+    this->OnChange("REMOVE_COMMANDS", points);
 
     if(sync)
         cout << "REMOVE_POINTS " << points.size() << endl;
@@ -118,7 +118,7 @@ void clear(bool sync)
 {
     this->points.clear();
 
-    this->OnCommand("CLEAR", points);
+    this->OnChange("CLEAR", points);
 
     if(sync)
         cout << "CLEAR " << points << endl;
