@@ -10,15 +10,15 @@ class PointsModule : public ModuleCore
     public:
         PointsModule();
         PointsModule(uint128_t UUID);
-        uint128_t getPointsUUID();
+        vector<uint128_t> getPointsUUID();
         vector<float> getPoint(uint128_t UUID);
         vector<vector<float>> getPoints(uint128_t UUID);
-        void addPoints(const vector<float>& points, bool sync);
-        void removePoints(vector<float>& points, bool sync);
-        void updatePoints(vector<float>& points, bool sync);
+        void addPoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync);
+        void removePoints(vector<pair<uint128_t, vector<float>>>& points, bool sync);
+        void updatePoints(vector<pair<uint128_t, vector<float>>>& points, bool sync);
         void clear(bool sync);
-        map<string, vector<float>> getState();
-        void setState(map<string, vector<float>> state);
+        vector<pair<uint128_t, vector<float>>> getState();
+        void setState(vector<pair<uint128_t, vector<float>>> state);
 };
   
 #endif
