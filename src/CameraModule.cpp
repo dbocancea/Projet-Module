@@ -28,7 +28,7 @@ void CameraModule::updateCamera(vector<float> camera, bool sync)
 
     if(sync)
         if(this->outputFn)
-            this->outputFn(pair<string, vector<float>>("UPDATE_CAMERA", camera));
+            cout << "UPDATE_CAMERA " << camera[0] << " " << camera[1] << " " << camera[2] << " " << camera[3] << endl;
 }
 
 tuple<float, float, float, float> CameraModule::getCamera()
