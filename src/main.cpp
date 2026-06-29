@@ -1,10 +1,14 @@
-#include "Core/ModuleCore.hpp"
+#include "Core/ModuleTypes.hpp"
 
 int main()
 {
-	ModuleCore mod = ModulTypes["ModuleCore"];
+	uint128_t UUID = 123;
+	void* rawPtr = ModulTypes.at("ModuleCore")(&UUID);
 
-	cout << mod->type << endl;
+    auto* mod = static_cast<ModuleCore<vector<float>>*>(rawPtr);
 
-	return 0;
+    cout << mod->type << endl;
+
+    delete mod;
+    return 0;
 }

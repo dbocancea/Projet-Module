@@ -1,6 +1,12 @@
 #include "TransformModule.hpp"
 
 template<typename T> 
+TransformModule<T>::TransformModule() 
+{
+    this->type = "TransformModule";
+}
+
+template<typename T> 
 TransformModule<T>::TransformModule(uint128_t UUID) : ModuleCore(UUID)
 {
     this->type = "TransformModule";
