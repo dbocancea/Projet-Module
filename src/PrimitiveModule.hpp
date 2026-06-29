@@ -2,7 +2,7 @@
 #define PRIMITIVEMODULE_HPP
 #include "TransformModule.hpp"
 
-class PrimitiveModule : public ModuleCore<stringS>
+class PrimitiveModule : public TransformModule<string>
 {
     protected:
         string sphere = "sphere";
@@ -16,7 +16,7 @@ class PrimitiveModule : public ModuleCore<stringS>
         PrimitiveModule(uint128_t UUID);
         string getPrimitive();
         vector<string> getPrimitiveTypes();
-        void updatePrimitive(string primitive, bool sync);
+        void updatePrimitive(string primitive, bool sync = false);
         map<map<string, vector<float>>, string> getState();
         void setState(map<map<string, vector<float>>, string> state);
 };

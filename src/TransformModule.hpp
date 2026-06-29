@@ -8,18 +8,19 @@
 #include "Core/ModuleCore.hpp"
 #include <array>
 #include <tuple>
-
-class TransformModule : public ModuleCore
+template<typename T>
+class TransformModule : public ModuleCore<vector<float>>
 {
     protected:
-        std::map<std::string, std::vector <float>> commands;
-        std::array<float, TRANSLATION_SIZE> translation {};
-        std::array<float, ROTATION_SIZE> rotation {};
-        std::array<float, SCALE_SIZE> scale {};
+        map<string, vector <float>> commands;
+        array<float, TRANSLATION_SIZE> translation {};
+        array<float, ROTATION_SIZE> rotation {};
+        array<float, SCALE_SIZE> scale {};
     public:
+        TransformModule();
         TransformModule(uint128_t UUID);
-        void updateTransform(vector<float> transform, bool sync);
-        std::tuple<std::array<float, TRANSLATION_SIZE>, std::array<float, ROTATION_SIZE>, std::array<float, SCALE_SIZE>> getTransform();
+        void updateTransform(vector<float> transform, bool sync = false);
+        tuple<array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> getTransform();
         map<string, vector<float>> getState();
         void setState(map<string, vector<float>> state);
 };
