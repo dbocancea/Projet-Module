@@ -4,15 +4,17 @@
 
 class TextModule : public ModuleCore<string>
 {
-    protected:
+    private:
         string text;
     public:
         TextModule();
         TextModule(uint128_t UUID);
-        void UpdateText(string text; bool sync);
-        string GetText();
-        string GetState();
-        void SetState(string state);
+
+        void updateText(string text, bool sync = false);
+        string getText();
+        string getState();
+        void setState(string state);
+
 };
   
 #endif
