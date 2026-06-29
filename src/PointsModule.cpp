@@ -11,26 +11,26 @@ PointsModule::PointsModule(uint128_t UUID) : ModuleCore(UUID)
 
     this->SetOnCommand("ADD_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
     {
-        this->addPoints(points, false);
+        this->PointsModule::addPoints(points);
     });
 
     this->SetOnCommand("REMOVE_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
     {
-        this->removePoints(points, false);
+        this->PointsModule::removePoints(points);
     });
 
     this->SetOnCommand("UPDATE_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
     {
-        this->updatePoints(points, false);
+        this->PointsModule::updatePoints(points);
     });
 
-    this->SetOnCommand("CLEAR", [this]()
+    this->SetOnCommand("CLEAR", [this](const vector<pair<uint128_t, vector<float>>>& fake)
     {
-        this->clear(false);
+        this->PointsModule::clear();
     });
 }
 
-vector<uint128_t> PointsModule::getPointsUUID();
+vector<uint128_t> PointsModule::getPointsUUID()
 {
     vector<uint128_t> keys;
     keys.reserve(points.size());
@@ -46,13 +46,13 @@ vector<float> PointsModule::getPoint(uint128_t UUID)
     if(it != points.end())
         return it->second;
 
-        return {};
+    return {};
 }
 
-vector<vector<float>> getPoints(uint128_t UUID)
+vector<vector<float>> PointsModule::getPoints(uint128_t UUID)
 {
     vector<vector<float>> tous_points;
-    tous_points.reserve(points.size());
+    tous_points.reserve(this->points.size());
     for(auto &[uuid, pos] : points)
         tous_points.push_back(pos);
 
@@ -77,11 +77,11 @@ void PointsModule::addPoints(const vector<pair<uint128_t, vector<float>>>& point
         cout << "ADD_POINTS" << points.size() << endl;
 }
 
-void PointsModule::removePoints(vector<pair<uint128_t, vector<float>>>& points, bool sync)
+void PointsModule::removePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync)
 {
     for(auto &[uuid, position] : points)
     {
-        this->points[uuid].erase();
+        this->points.erase(uuid);
     }
 
     this->OnCommand("REMOVE_COMMANDS", points);
@@ -90,7 +90,7 @@ void PointsModule::removePoints(vector<pair<uint128_t, vector<float>>>& points, 
         cout << "REMOVE_POINTS " << points.size() << endl;
 }
 
-void updatePoints(vector<pair<uint128_t, vector<float>>>& points, bool sync)
+void PointsModule::updatePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync)
 {
     for(auto &[uuid, position] : points)
     {
@@ -101,35 +101,34 @@ void updatePoints(vector<pair<uint128_t, vector<float>>>& points, bool sync)
 
             for(size_t i = 0; i < position.size() && i < 3; ++i)
             {
-                positionCopy[i] = position;
+                positionCopy[i] = position[i];
             }
+            it->second = positionCopy;
         }
-
-        it->second = positionCopy;
     }
 
     if(sync)
     {
-        cout << "UPDATE_POINTS " << points << endl;
+        cout << "UPDATE_POINTS " << endl;
     }
 }
 
-void clear(bool sync)
+void PointsModule::clear(bool sync)
 {
     this->points.clear();
 
-    this->OnCommand("CLEAR", points);
+    this->OnCommand("CLEAR", vector<pair<uint128_t, vector<float>>>());
 
     if(sync)
-        cout << "CLEAR " << points << endl;
+        cout << "CLEAR " << endl;
 }
 
-vector<pair<uint128_t, vector<float>>> PointsModule::getState()
+map<uint128_t, vector<float>> PointsModule::getState()
 {
     return this->points;
 }
 
-void setState(vector<pair<uint128_t, vector<float>>> state)
+void PointsModule::setState(vector<pair<uint128_t, vector<float>>> state)
 {
-    addPoints(points, false);
+    this->addPoints(state);
 }
