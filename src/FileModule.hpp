@@ -19,7 +19,7 @@ class FileModule : public ModuleCore<T>
     public:
         FileModule();
         FileModule(uint128_t UUID);
-        void UpdateFile(File file , bool sync);
+        void UpdateFile(File file , bool sync );
         File getFile();
         void setState(T state);
         File getState();
