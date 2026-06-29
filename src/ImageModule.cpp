@@ -22,7 +22,7 @@ string ImageModule::getImage()
 void ImageModule::setImage(string newIm, bool sync)
 {
     this->image = newIm;
-    this->OnCommand("SET_IMAGE", newIm);
+    this->OnChange("SET_IMAGE", newIm);
 
     if(sync)
     {
@@ -43,6 +43,23 @@ void ImageModule::setState(map<string, map<string, vector<float>>> state)
 
     this->setImage(it->first);
     this->TransformModule::setState(it->second);
+}
+
+
+void ImageModule::OnChange(string cmd, string data)
+{
+    auto it = this->stringChangeCallBack.find(cmd);
+    if(it != this->stringChangeCallBack.end())
+    {
+        for(auto& tmp : it->second)
+        {
+            tmp(data);
+        }
+    }
+    else
+    {
+        cout << this->UUID << " no member " << endl;
+    }
 }
 
 void ImageModule::SetOnCommand(string cmd, function<void(string)> callBack)
