@@ -2,7 +2,7 @@
 
 
 LineModule::LineModule() {};
-LineModule::LineModule(uint128_t UUID)
+LineModule::LineModule(uint128_t UUID) : ModuleCore(UUID)
 {
     this->type = "LineModule";
 
