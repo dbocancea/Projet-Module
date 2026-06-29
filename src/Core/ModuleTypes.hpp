@@ -19,26 +19,26 @@
 #include "../MeshModule.hpp"
 #include "../SceneGraph.hpp"
 
-using FnModuleTypes = function<ModuleCore*()>;
+using FnModuleTypes = void*(*)(void*);
 
 const map<string ,FnModuleTypes > ModulTypes = {
-    {"ModuleCore" , [](){ return new ModuleCore(); }  },
-    {"ModuleRegestry" , [](){ return new ModuleRegistry(); }  },
-    {"CameraModule" , [](){ return new CameraModule(); }  },
-    {"FileModule" , [](){ return new FileModule(); }  },
-    {"GLTFModule" , [](){ return new GLTFModule(); }  },
-    {"LineModule" , [](){ return new LineModule(); }  },
-    {"PointsModule" , [](){ return new PointsModule(); }  },
-    {"PrimitiveModule" , [](){ return new PrimitiveModule(); }  },
-    {"ScalarModule" , [](){ return new ScalarModule(); }  },
-    {"TextLogModule" , [](){ return new TextLogModule(); }  },
-    {"TextModule" , [](){ return new TextModule(); }  },
-    {"TransformModule" , [](){ return new TransformModule(); }  },
-    {"TriggerModule" , [](){ return new TriggerModule(); }  },
-    {"Vector3Module" , [](){ return new Vector3Module(); }  },
-    {"ImageModule" , []() { return new ImageModule(); }  },
-    {"MeshModule" , []() { return new MeshModule(); }  },
-    {"SceneGraph" , []() { return new SceneGraph(); }  }
+    {"ModuleCore" ,     [](void* arg) -> void* { return new ModuleCore<vector<float>>(*static_cast<uint128_t*>(arg)); }  },
+    {"ModuleRegestry" , [](void* arg) -> void* { return new ModuleRegistry(*static_cast<function<void(pair<string, vector<float>>)>*>(arg)); }  },
+    {"CameraModule" ,   [](void* arg) -> void* { return new CameraModule(*static_cast<uint128_t*>(arg)); }  },
+    {"FileModule" ,     [](void* arg) -> void* { return new FileModule<File>(*static_cast<uint128_t*>(arg)); }  },
+    {"GLTFModule" ,     [](void* arg) -> void* { return new GLTFModule(*static_cast<uint128_t*>(arg)); }  },
+    {"LineModule" ,     [](void* arg) -> void* { return new LineModule(); }  },
+    {"PointsModule" ,   [](void* arg) -> void* { return new PointsModule(*static_cast<uint128_t*>(arg)); }  },
+    {"PrimitiveModule" ,[](void* arg) -> void* { return new PrimitiveModule(*static_cast<uint128_t*>(arg)); }  },
+    {"ScalarModule" ,   [](void* arg) -> void* { return new ScalarModule(*static_cast<uint128_t*>(arg)); }  },
+    {"TextLogModule" ,  [](void* arg) -> void* { return new TextLogModule(); }  },
+    {"TextModule" ,     [](void* arg) -> void* { return new TextModule(*static_cast<uint128_t*>(arg)); }  },
+    {"TransformModule" ,[](void* arg) -> void* { return new TransformModule<vector<float>>(*static_cast<uint128_t*>(arg)); }  },
+    {"TriggerModule" ,  [](void* arg) -> void* { return new TriggerModule(); }  },
+    {"Vector3Module" ,  [](void* arg) -> void* { return new Vector3Module(*static_cast<uint128_t*>(arg)); }  },
+    {"ImageModule" ,    [](void* arg) -> void* { return new ImageModule(*static_cast<uint128_t*>(arg)); }  },
+    {"MeshModule" ,     [](void* arg) -> void* { return new MeshModule(*static_cast<uint128_t*>(arg)); }  },
+    {"SceneGraph" ,     [](void* arg) -> void* { return new SceneGraph(); }  }
 };
 
 

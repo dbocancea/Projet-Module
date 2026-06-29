@@ -1,6 +1,9 @@
 #include "ModuleCore.hpp"
 template <typename T>
-ModuleCore<T>::ModuleCore() {}
+ModuleCore<T>::ModuleCore() 
+{
+    this->type = "ModuleCore";
+}
 template <typename T>
 ModuleCore<T>::ModuleCore(uint128_t UUID)
 {   
