@@ -8,6 +8,7 @@ class ImageModule : public TransformModule<string>
         string image;
         map<std::string, vector<function<void(string)>>> stringCommandCallBack;
         map<std::string, vector<function<void(string)>>> stringChangeCallBack;
+        function <void(pair<string, string>)> outPutStringFn;
     public:
         ImageModule();
         ImageModule(uint128_t UUID);
@@ -21,6 +22,8 @@ class ImageModule : public TransformModule<string>
 
         void SetOnCommand(string cmd, function<void(string)> callBack);
         void OnCommand(string cmd, string data);
+
+        void SetOutPutStringFn(function<void(pair<string, string>)> fn);
 };
 
 #endif

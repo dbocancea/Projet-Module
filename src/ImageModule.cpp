@@ -26,7 +26,8 @@ void ImageModule::setImage(string newIm, bool sync)
 
     if(sync)
     {
-        cout << "SET_IMAGE " << this->image << endl;
+        if(this->outPutStringFn)
+            this->outPutStringFn(pair<string, string>("SET_IMAGE", newIm));
     }
 }
 
@@ -82,4 +83,9 @@ void ImageModule::OnCommand(string cmd, string data)
     {
         cout << this->UUID << " no member " << endl;
     }
+}
+
+void ImageModule::SetOutPutStringFn(function<void(pair<string, string>)> fn)
+{
+    this->outPutStringFn = fn;
 }
