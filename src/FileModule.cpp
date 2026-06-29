@@ -5,7 +5,7 @@ FileModule<T>::FileModule() : ModuleCore<T>()
     this->type = "FileModule";
 }
 template <typename T>
-FileModule<T>::FileModule( uint128_t UUID ) : ModuleCore(UUID)
+FileModule<T>::FileModule( uint128_t UUID ) : ModuleCore<T>(UUID)
 {
     this->type = "FileModule";
     string cmd = "UPDATE_FILE";
@@ -13,7 +13,7 @@ FileModule<T>::FileModule( uint128_t UUID ) : ModuleCore(UUID)
     this->SetOnCommand(cmd , [&](File file) {this->UpdateFile(file, false);}  );
 }
 template <typename T>
-void FileModule<T>::UpdateFile(File file , bool sync = 0)
+void FileModule<T>::UpdateFile(File file , bool sync )
 {
     this->file = file;
     this->OnChange("UPDATE_FILE" , this->file );
