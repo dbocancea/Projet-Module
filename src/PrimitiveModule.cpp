@@ -8,9 +8,9 @@ PrimitiveModule::PrimitiveModule()
 PrimitiveModule::PrimitiveModule(uint128_t UUID) : TransformModule(UUID)
 {
     this->type = "PrimitiveModule";
-    this->SetOnCommand("UPDATE_PRIMITIVE", [this](this->primitive, false)
+    this->SetOnCommand("UPDATE_PRIMITIVE", [this](this->primitive)
     {
-        this->updatePrimitive(this->primitive, false);
+        this->updatePrimitive(this->primitive);
     });
 
     string PrimitiveModule::getPrimitive()
@@ -23,7 +23,7 @@ PrimitiveModule::PrimitiveModule(uint128_t UUID) : TransformModule(UUID)
         return this->primitiveTypes;
     }
 
-    void PrimitiveModule::updatePrimitive(string primitive, bool sync)
+    void PrimitiveModule::updatePrimitive(string primitive, bool sync = false)
     {
         this->primitive = primitive;
 

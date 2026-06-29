@@ -18,7 +18,7 @@ class TransformModule : public ModuleCore<vector<float>>
         array<float, SCALE_SIZE> scale {};
     public:
         TransformModule(uint128_t UUID);
-        void updateTransform(vector<float> transform, bool sync);
+        void updateTransform(vector<float> transform, bool sync = false);
         tuple<array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> getTransform();
         map<string, vector<float>> getState();
         void setState(map<string, vector<float>> state);

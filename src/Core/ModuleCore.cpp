@@ -8,7 +8,7 @@ ModuleCore<T>::ModuleCore(uint128_t UUID)
     this->command.push_back(cmd);
     this->type = "ModuleCore";
     this->UUID = UUID;
-    this->callback = ([&]( vector<float>) {});
+    this->callback = ([&]( T) {});
     this->SetOnCommand(cmd, this->callback );
 }
 template <typename T>

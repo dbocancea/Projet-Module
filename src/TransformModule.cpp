@@ -7,11 +7,11 @@ TransformModule<T>::TransformModule(uint128_t UUID) : ModuleCore(UUID)
 
     this->SetOnCommand("UPDATE_TRANSFORM", [this](vector<float> transform)
     {
-        this->updateTransform(transform, false);
+        this->updateTransform(transform);
     });
 }
 template<typename T> 
-void TransformModule<T>::updateTransform(vector<float> transform, bool sync)
+void TransformModule<T>::updateTransform(vector<float> transform, bool sync = false)
 {
         if(transform.size() >= 10)
         {
@@ -45,7 +45,7 @@ void TransformModule<T>::setState(map<string, vector<float>> state)
 {
     auto it = state.find("transform");
     if(it != state.end())
-        this->updateTransform(it->second, false);
+        this->updateTransform(it->second);
 }
 
 template<typename T> 

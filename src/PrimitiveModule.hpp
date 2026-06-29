@@ -16,7 +16,7 @@ class PrimitiveModule : public ModuleCore<string>
         PrimitiveModule(uint128_t UUID);
         string getPrimitive();
         vector<string> getPrimitiveTypes();
-        void updatePrimitive(string primitive, bool sync);
+        void updatePrimitive(string primitive, bool sync = false);
         map<map<string, vector<float>>, string> getState();
         void setState(map<map<string, vector<float>>, string> state);
 };

@@ -12,11 +12,11 @@ CameraModule::CameraModule(uint128_t UUID) : TransformModule(UUID)
 
     this->SetOnCommand("UPDATE_CAMERA", [this](vector<float> camera)
     {
-        this->updateCamera(camera, false);
+        this->updateCamera(camera);
     });
 }
 
-void CameraModule::updateCamera(vector<float> camera, bool sync)
+void CameraModule::updateCamera(vector<float> camera, bool sync = false)
 {
     if(camera.size() == 4)
     {
@@ -40,7 +40,7 @@ void CameraModule::setState(map<string, vector<float>> state)
 {
     auto it = state.find("camera");
     if(it != state.end())
-        this->updateCamera(it->second, false);
+        this->updateCamera(it->second);
 }
 
 map<string, vector<float>> CameraModule::getState()

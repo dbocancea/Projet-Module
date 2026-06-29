@@ -59,7 +59,7 @@ vector<vector<float>> getPoints(uint128_t UUID)
     return tous_points;
 }
 
-void PointsModule::addPoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync)
+void PointsModule::addPoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false)
 {
     for(auto& [uuid, position] : points)
     {
