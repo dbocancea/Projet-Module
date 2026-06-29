@@ -39,7 +39,7 @@ textLog TextLogModule::getTextLog(uint128_t textUUID){
     return this->textLogs[textUUID];
 }
 
-void TextLogModule::addText(string text, bool sync = false){
+void TextLogModule::addText(string text, bool sync){
     textLog log;
     log.text = text;
     log.id = this->id;
@@ -57,8 +57,8 @@ vector<textLog> TextLogModule::getTextLogs(){
 
 
 
-void TextLogModule::removeText(textLog log, bool sync = false){
-    if(this->textLogs.find(log.UUID) != this->textLogs.end()){
+void TextLogModule::removeText(textLog log, bool sync){
+    if(this->textLogs.find(log.UUID) == this->textLogs.end()){
         return;
     }
 
@@ -71,25 +71,44 @@ void TextLogModule::removeText(textLog log, bool sync = false){
         this->outputFn(pair<string, textLog >{"REMOVE_TEXT" , log});
 }
 
-void TextLogModule::updateText(textLog log, bool sync = false){
-    if(this->textLogs.find(log.UUID) != this->textLogs.end()){
+void TextLogModule::updateText(textLog log, bool sync){
+    if(this->textLogs.find(log.UUID) == this->textLogs.end()){
         return;
     }
-
-    //
-    //
-
+    this->textLogs[log.UUID].text = log.text;
     this->OnChange("UPDATE_TEXT", getTextLog(log.UUID));
      if( sync )
         this->outputFn(pair<string, textLog >{"UPDATE_TEXT" , log});
 }
 
-void TextLogModule::addTextInternal(textLog log, bool sync = false){
+void TextLogModule::addTextInternal(textLog log, bool sync){
     this->textList.push_back(log.UUID);
     this->textLogs[log.UUID] = log;
     this->OnChange("ADD_TEXT", getTextLog(log.UUID));
 
     if( sync )
         this->outputFn(pair<string, textLog >{"ADD_TEXT" , log});
+}
+
+void TextLogModule::clear(bool sync){
+    this->textLogs.clear();
+    this->textList.clear();
+
+    this->OnChange("CLEAR", {});
+    textLog clear = {};
+
+    if(sync){
+        this->outputFn(pair<string, textLog >{"CLEAR" , {}});
+    }
+}
+
+vector<textLog> TextLogModule::getState(){
+    return this->getTextLogs();
+}
+
+void TextLogModule::setState(vector<textLog> state){
+    for(auto log : state){
+        this->addTextInternal(log, false);
+    }
 }
 

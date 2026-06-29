@@ -27,8 +27,8 @@ class TextLogModule : public ModuleCore<textLog>
 
         vector<textLog> getTextLogs();
         textLog getTextLog(uint128_t textUUID);
-        textLog getState();
-        void setState(textLog state);
+        vector<textLog> getState();
+        void setState(vector<textLog> state);
 };
   
 #endif
