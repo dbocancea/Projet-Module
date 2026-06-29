@@ -14,10 +14,10 @@ class PointsModule : public ModuleCore<const vector<pair<uint128_t, vector<float
         vector<float> getPoint(uint128_t UUID);
         vector<vector<float>> getPoints(uint128_t UUID);
         void addPoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
-        void removePoints(vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
-        void updatePoints(vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
+        void removePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
+        void updatePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
         void clear(bool sync = false);
-        vector<pair<uint128_t, vector<float>>> getState();
+        map<uint128_t, vector<float>> getState();
         void setState(vector<pair<uint128_t, vector<float>>> state);
 };
   
