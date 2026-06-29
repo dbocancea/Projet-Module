@@ -3,39 +3,38 @@
 TextModule::TextModule()
 {
    this->type = "TextModule"; 
+   this->text = "";
 }
 
-TextModule::TextModule(uint128_t UUID) : ModuleCore(UUID)
-{
-	cout << "TextModule - constructor" << endl;
-	this->type = "TextModule";
-	this->command.push_back("UPDATE_TEXT");
+TextModule::TextModule(uint128_t UUID){
+   cout << "TextModule - constructor" << endl;
+   this->type = "TextModule";
+   this->text = "";
+   this->command.push_back("UPDATE_TEXT");
 
-	this->SetOnCommand("UPDATE_TEXT", [&](string text) {this->UpdateText(text, 0); })
+   this->SetOnCommand("UPDATE_TEXT", [this] (string text) {this->updateText(text, false);});
+
 }
 
-void TextModule::UpdateText(string text; bool sync)
-{
-	cout << "TextModule - updateText" << endl;
-	cout << text << endl;
-	this->text = text;
-	this->OnChange("UPDATE_TEXT", this->text);
+void TextModule::updateText(string text, bool sync){
+   cout << "TextModule - updateText" << endl;
+   cout << text << endl;
+   this->text = text;
 
-	if( sync )
-		this->outputFn(pair<string, string >{"UPDATE_FILE", this->text});
+   this->OnChange("UPDATE_TEXT", this->text);
+
+   if( sync )
+      this->outputFn(pair<string,string>{"UPDATE_TEXT" , this->text});
 }
 
-string TextModule::GetText()
-{
-	return this->text;
+string TextModule::getText(){
+   return this->text;
 }
 
-string TextModule::GetState()
-{
-	return this->text;
+string TextModule::getState(){
+   return this->getText();
 }
 
-void TextModule::SetState(string state)
-{
-	this->UpdateText(state, 0);
+void TextModule::setState(string state){
+   this->updateText(state, false);
 }
