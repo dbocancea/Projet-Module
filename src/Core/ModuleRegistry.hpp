@@ -1,21 +1,24 @@
 #ifndef MODULEREGESTRY_HPP
 #define MODULEREGESTRY_HPP
 #include"ModuleCore.hpp"
+#include"ModuleTypes.hpp"
 #include <cstdlib>
 
-class ModuleRegistry : public ModuleCore<vector<float>>
+class ModuleRegistry : public ModuleCore, public std::enable_shared_from_this<ModuleRegistry>
 {
     private:
-        map< uint128_t , ModuleCore<vector<float>>* > modules;
+        map< uint128_t , shared_ptr<ModuleCore> > modules;
     public:
-        const string type = "ModuleRegistry";
         ModuleRegistry();
-        ModuleRegistry(  function<void (pair<string, vector<float> >) > outputFn)  ;
-        void AddModule(uint128_t UUID , bool sync);
-        void OnAddModule( vector<float> data );
-        void RemoveModule(uint128_t UUID );
-        void OnRemoveModule( function<void(vector<float>)> data );
-        ModuleCore<vector<float>>* GetModule(uint128_t UUID);
+        ModuleRegistry( function<void(json::value)> outputFn)  ;
+        void AddModule( string type ,uint128_t UUID , bool sync = false);
+        void OnAddModule( json::value data );
+        void RemoveModule(uint128_t UUID , bool sync = false);
+        void OnRemoveModule( json::value data );
+        shared_ptr<ModuleCore> GetModule(uint128_t UUID);
+        void OnChange(const string& command, shared_ptr<ModuleCore> module);
+        void SetState(json::value state);
+        json::value GetState();
 };
 
 #endif

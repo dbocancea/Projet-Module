@@ -8,35 +8,41 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-
+#include <boost/json.hpp>
+#include <memory>
 using namespace boost::multiprecision;
 using namespace std;
+namespace json = boost::json;
 
 
-template <typename T >
 class ModuleCore
 {
 protected:
     
     vector<string> command;
     uint128_t UUID;
-    function<void(T)> callback;
-    map<string, vector<function<void(T)>>> commandCallBack;
-    map<string, vector<function<void(T)>>> changeCallBack;
+    function<void(json::value)> callback;
+    map<string, vector<function<void(json::value)>>> commandCallBack;
+    map<string, vector<function<void(json::value)>>> changeCallBack;
+   
 public:
-    function<void (pair<string, T >) > outputFn;
+    
+     function<void(json::value)> outputFn;
     string type;
     ModuleCore() ;
     ModuleCore(uint128_t UUID) ;
-    void SetOnCommand(string command, function<void(T)> callback) ;
-    void OnCommand(string command, T data) ;
-    void SetOnChange(string command, function<void(T)> callback) ;
-    
-    void OnChange(string command, T data) ;
-    void SetOutputFn( function<void (pair<string, T >) > outputFn );
-    void SetState(T state);
-    T GetState();
+
+    void SetOnCommand(const string& command, function<void(json::value)> callback) ;
+    void OnCommand(const string& command, json::value data) ;
+
+    void SetOnChange(const string& command, function<void(json::value)> callback) ;
+    virtual void OnChange(const string& command, json::value data) ;
+    virtual json::value Encode(const string& command, json::value data);
+    void SetOutputFn( function<void(json::value)> outputFn );
+    virtual void SetState(json::value state);
+    virtual json::value GetState();
     uint128_t GetUUID();
+    void Output(const string& command, json::value data);
 };
 
 
