@@ -85,3 +85,6 @@ void mul(T tab)
         mul *= it;
     cout << "Mul = " << mul << endl;
 }
+
+
+template class ModuleCore<vector<float>>;
