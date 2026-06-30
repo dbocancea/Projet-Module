@@ -36,7 +36,7 @@ public:
     void OnCommand(const string& command, json::value data) ;
 
     void SetOnChange(const string& command, function<void(json::value)> callback) ;
-    virtual void OnChange(const string& command, json::value data) ;
+    void OnChange(const string& command, json::value data) ;
     virtual json::value Encode(const string& command, json::value data);
     void SetOutputFn( function<void(json::value)> outputFn );
     virtual void SetState(json::value state);

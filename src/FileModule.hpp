@@ -2,27 +2,17 @@
 #define FILEMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-struct str_File
-{
-    string name;
-    string type;
-    vector<float> data;
-};
-
-using File = struct str_File;
-
-template <typename T>
-class FileModule : public ModuleCore<T>
+class FileModule : public ModuleCore
 {   
     protected:
-        File file;
+        json::object file;
     public:
         FileModule();
         FileModule(uint128_t UUID);
-        void UpdateFile(File file , bool sync );
-        File getFile();
-        void setState(T state);
-        File getState();
+        void UpdateFile(json::value file , bool sync = false );
+        json::value GetFile();
+        void SetState(json::value state) override;
+        json::value  GetState() override;
 };  
 
 #endif

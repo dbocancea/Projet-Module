@@ -5,13 +5,11 @@
 
 struct strGLTF_state
 {
-    File file;
+    json::object file;
     set<uint128_t> nodes;
 };
 
-using GLTF_state = strGLTF_state;
-
-class GLTFModule : public  FileModule<vector<Nodes>>
+class GLTFModule : public  FileModule
 {   
     protected:
         FileModule fileHandler;
