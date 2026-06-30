@@ -1,98 +1,87 @@
-    #include "ModuleCore.hpp"
+#include "ModuleCore.hpp"
+template <typename T>
+ModuleCore<T>::ModuleCore() 
+{
+    this->type = "ModuleCore";
+}
+template <typename T>
+ModuleCore<T>::ModuleCore(uint128_t UUID)
+{   
+    string cmd = "SET_STATE";
+    this->command.push_back(cmd);
+    this->type = "ModuleCore";
+    this->UUID = UUID;
+    this->callback = ([&]( T) {});
+    this->SetOnCommand(cmd, this->callback );
+}
+template <typename T>
+void ModuleCore<T>::SetOnCommand(string command, function<void(T)> callback)
+{
+    auto it = this->commandCallBack.find(command);
+    if (it == this->commandCallBack.end())
+        this->commandCallBack.insert( {command, vector < function < void (T ) > >{} } );
+    commandCallBack[command].push_back(callback);
+}
+template <typename T>
+void ModuleCore<T>::OnCommand(string command, T data)
+{
+    auto it = this->commandCallBack.find(command);
+    if (it != this->commandCallBack.end())
+        for (auto callback_temp : it->second)
+            callback_temp(data);
+    else
+        cout << this->UUID << " has no member " << endl;
+}
+template <typename T>
+void ModuleCore<T>::SetOnChange(string command, function<void(T)> callback)
+{
+    auto it = this->changeCallBack.find(command);
+    if (it == this->changeCallBack.end())
+        this->changeCallBack.insert( {command, vector < function < void (T ) > >{} } );
+    changeCallBack[command].push_back(callback);
+}
 
-    ModuleCore::ModuleCore() {}
-    ModuleCore::ModuleCore(uint128_t UUID)
-    {   
-        string cmd = "SET_STATE";
-        this->command.push_back(cmd);
-        this->type = "ModulCore";
-        this->UUID = UUID;
-        this->callback = ([&]( vector<float>) {});
-        this->SetOnCommand(cmd, this->callback );
-    }
-
-    void ModuleCore::SetOnCommand(string command, function<void(vector<float>)> callback)
-    {
-        auto it = this->commandCallBack.find(command);
-        if (it == this->commandCallBack.end())
-            this->commandCallBack.insert( {command, vector < function < void (vector<float> ) > >{} } );
-        commandCallBack[command].push_back(callback);
-    }
-
-    void ModuleCore::OnCommand(string command, vector<float> data)
-    {
-        auto it = this->commandCallBack.find(command);
-        if (it != this->commandCallBack.end())
-            for (auto callback_temp : it->second)
-                callback_temp(data);
-        else
-            cout << this->UUID << " has no member " << endl;
-    }
-
-    void ModuleCore::SetOutputFn( function<void (pair<string, vector<float> >) > outputFn )
-    {
-        this->outputFn = outputFn;
-    }
-
-    uint128_t ModuleCore::GetUUID()
-    {
-        return this->UUID;
-    }
-
-    void add(vector<float> tab)
-    {
-        float sum = 0;
-        for (auto it : tab)
-            sum += it;
-        cout << "Sum = " << sum << endl;
-    }
-
-    void sub(vector<float> tab)
-    {
-        float sub = 0;
-        for (auto it : tab)
-            sub -= it;
-        cout << "Sub = " << sub << endl;
-    }
-
-    void mul(vector<float> tab)
-    {
-        float mul = 1;
-        for (auto it : tab)
-            mul *= it;
-        cout << "Mul = " << mul << endl;
-    }
-
-    int main()
-    { 
-
-        ModuleCore mod = ModuleCore( 1234 );
-        ModuleCore mod1 = ModuleCore( 1234 );
-        mod.SetOnCommand("TEST", [&]( vector<float> v) {
-            cout << v.size() << endl;
-        });
-            mod.SetOnCommand("TEST", [&]( ::vector<float> v) {
-            cout << "test2 " << v.size() << endl;
-        });
-                mod.SetOnCommand("COMMAND", [&]( ::vector<float> v) {
-            cout << "command " << v.size() << endl;
-        });
-        mod.OnCommand( "TEST", vector<float> { 1.0, 2.0, 3.0 });
-        mod.OnCommand( "COMMAND", vector<float> { 1.0, 2.0, 3.0 });
-
-        mod.SetOutputFn( [&](pair<string, vector<float>> message){ 
-            mod1.OnCommand( message.first, message.second );
-        } );
-
-        mod1.SetOutputFn( [&](pair<string, vector<float>> message){ 
-            mod.OnCommand( message.first, message.second );
-        } );
-        vector <float> tab{1.,2.,3.};
-
-        
-        mod1.outputFn(pair<string , vector<float>> ("TEST" , tab) );
-        
-        return 0;
-    }
-        
-        
+template <typename T>
+void ModuleCore<T>::OnChange(string command, T data)
+{
+    auto it = this->changeCallBack.find(command);
+    if (it != this->changeCallBack.end())
+        for (auto callback_temp : it->second)
+            callback_temp(data);
+    else
+        cout << this->UUID << " has no member " << endl;
+}
+template <typename T>
+void ModuleCore<T>::SetOutputFn( function<void (pair<string, T >) > outputFn )
+{
+    this->outputFn = outputFn;
+}
+template <typename T>
+uint128_t ModuleCore<T>::GetUUID()
+{
+    return this->UUID;
+}
+template <typename T>
+void add(T tab)
+{
+    float sum = 0;
+    for (auto it : tab)
+        sum += it;
+    cout << "Sum = " << sum << endl;
+}
+template <typename T>
+void sub(T tab)
+{
+    float sub = 0;
+    for (auto it : tab)
+        sub -= it;
+    cout << "Sub = " << sub << endl;
+}
+template <typename T>
+void mul(T tab)
+{
+    float mul = 1;
+    for (auto it : tab)
+        mul *= it;
+    cout << "Mul = " << mul << endl;
+}

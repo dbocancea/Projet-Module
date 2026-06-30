@@ -7,30 +7,35 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 using namespace boost::multiprecision;
 using namespace std;
 
 
+template <typename T >
 class ModuleCore
 {
 protected:
     
     vector<string> command;
     uint128_t UUID;
-    function<void(vector<float>)> callback;
-    map<string, vector<function<void(vector<float>)>>> commandCallBack;
-
+    function<void(T)> callback;
+    map<string, vector<function<void(T)>>> commandCallBack;
+    map<string, vector<function<void(T)>>> changeCallBack;
 public:
-function<void (pair<string, vector<float> >) > outputFn;
+    function<void (pair<string, T >) > outputFn;
     string type;
     ModuleCore() ;
     ModuleCore(uint128_t UUID) ;
-    void SetOnCommand(string command, function<void(vector<float>)> callback) ;
-    void OnCommand(string command, vector<float> data) ;
-    void SetOutputFn( function<void (pair<string, vector<float> >) > outputFn );
-    void SetState();
-    void GetState();
+    void SetOnCommand(string command, function<void(T)> callback) ;
+    void OnCommand(string command, T data) ;
+    void SetOnChange(string command, function<void(T)> callback) ;
+    
+    void OnChange(string command, T data) ;
+    void SetOutputFn( function<void (pair<string, T >) > outputFn );
+    void SetState(T state);
+    T GetState();
     uint128_t GetUUID();
 };
 

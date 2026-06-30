@@ -4,7 +4,7 @@
 #include "TransformModule.hpp"
 #include <tuple>
 
-class CameraModule : public TransformModule
+class CameraModule : public TransformModule<vector<float>>
 {
     protected:
         float fov{};
@@ -14,10 +14,10 @@ class CameraModule : public TransformModule
     public:
         CameraModule();
         CameraModule(uint128_t UUID);
-        void updateCamera(vector<float> camera, bool sync);
+        void updateCamera(vector<float> camera, bool sync = false);
         tuple<float, float, float, float> getCamera();
         void setState(map<string, vector<float>> state);
         map<string, vector<float>> getState();
 };
-  
+
 #endif
