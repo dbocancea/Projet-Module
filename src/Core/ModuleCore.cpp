@@ -1,29 +1,28 @@
 #include "ModuleCore.hpp"
-template <typename T>
-ModuleCore<T>::ModuleCore() 
+
+ModuleCore::ModuleCore() 
 {
     this->type = "ModuleCore";
 }
-template <typename T>
-ModuleCore<T>::ModuleCore(uint128_t UUID)
+
+ModuleCore::ModuleCore(uint128_t UUID)
 {   
     string cmd = "SET_STATE";
     this->command.push_back(cmd);
     this->type = "ModuleCore";
     this->UUID = UUID;
-    this->callback = ([&]( T) {});
-    this->SetOnCommand(cmd, this->callback );
+    this->SetOnCommand(cmd, [this]( json::value obj ) {this->SetState(obj);} );
 }
-template <typename T>
-void ModuleCore<T>::SetOnCommand(string command, function<void(T)> callback)
+
+void ModuleCore::SetOnCommand(const string& command, function<void(json::value)> callback)
 {
     auto it = this->commandCallBack.find(command);
     if (it == this->commandCallBack.end())
-        this->commandCallBack.insert( {command, vector < function < void (T ) > >{} } );
+        this->commandCallBack.insert( {command, vector < function<void(json::value)> >{} } );
     commandCallBack[command].push_back(callback);
 }
-template <typename T>
-void ModuleCore<T>::OnCommand(string command, T data)
+
+void ModuleCore::OnCommand(const string& command, json::value data)
 {
     auto it = this->commandCallBack.find(command);
     if (it != this->commandCallBack.end())
@@ -32,17 +31,17 @@ void ModuleCore<T>::OnCommand(string command, T data)
     else
         cout << this->UUID << " has no member " << endl;
 }
-template <typename T>
-void ModuleCore<T>::SetOnChange(string command, function<void(T)> callback)
+
+void ModuleCore::SetOnChange(const string& command, function<void(json::value)> callback)
 {
     auto it = this->changeCallBack.find(command);
     if (it == this->changeCallBack.end())
-        this->changeCallBack.insert( {command, vector < function < void (T ) > >{} } );
+        this->changeCallBack.insert( {command, vector < function < void (json::value ) > >{} } );
     changeCallBack[command].push_back(callback);
 }
 
-template <typename T>
-void ModuleCore<T>::OnChange(string command, T data)
+
+void ModuleCore::OnChange(const string& command, json::value data)
 {
     auto it = this->changeCallBack.find(command);
     if (it != this->changeCallBack.end())
@@ -51,37 +50,38 @@ void ModuleCore<T>::OnChange(string command, T data)
     else
         cout << this->UUID << " has no member " << endl;
 }
-template <typename T>
-void ModuleCore<T>::SetOutputFn( function<void (pair<string, T >) > outputFn )
+
+json::value ModuleCore::GetState ( )
 {
-    this->outputFn = outputFn;
+	return json::object();
 }
-template <typename T>
-uint128_t ModuleCore<T>::GetUUID()
+void ModuleCore::SetState (json::value state )
+{
+	return;
+}
+
+uint128_t ModuleCore::GetUUID()
 {
     return this->UUID;
 }
-template <typename T>
-void add(T tab)
+
+void ModuleCore::SetOutputFn( function<void(json::value)> outputFn )
 {
-    float sum = 0;
-    for (auto it : tab)
-        sum += it;
-    cout << "Sum = " << sum << endl;
+    this->outputFn = outputFn;
 }
-template <typename T>
-void sub(T tab)
+
+json::value ModuleCore::Encode(const string& command, json::value data)
 {
-    float sub = 0;
-    for (auto it : tab)
-        sub -= it;
-    cout << "Sub = " << sub << endl;
+    json::object payload;
+    payload["moduleUUID"] = this->UUID.str();
+    payload["command"] = command;
+    payload["data"] = data;
+    return payload;
 }
-template <typename T>
-void mul(T tab)
+
+void ModuleCore::Output(const string& command, json::value data)
 {
-    float mul = 1;
-    for (auto it : tab)
-        mul *= it;
-    cout << "Mul = " << mul << endl;
+    json::value payload = this->Encode(command, data);
+    if (this->outputFn)
+        this->outputFn(payload);
 }
