@@ -12,17 +12,6 @@ struct str_Transform {
 };
 
 using Transform = struct str_Transform;
-struct str_Nodes
-{
-    uint128_t UUID;
-    uint128_t parent;
-    set <uint128_t > children;
-    Transform tran;
-};
-
-
-using Nodes = struct str_Nodes;
-
 
 class SceneGraph
 {   
@@ -34,9 +23,9 @@ class SceneGraph
         map <uint128_t , Transform> transform;
         const  uint128_t ROOT_UUID = 0;
         SceneGraph();
-        void AddNode(Nodes node);
-        void UpdateNode(Nodes node);
-        vector<Nodes> NodesData(vector<uint128_t> nodeUUIDs);
+        void AddNode(json::value node);
+        void UpdateNode(json::value node);
+        json::value NodesData(vector<uint128_t> nodeUUIDs);
 };
 
 
