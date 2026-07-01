@@ -2,14 +2,32 @@
 
 SceneGraph::SceneGraph(){}
 
-void SceneGraph::AddNode(Nodes node)
+void SceneGraph::AddNode(json::value node)
 {
-    this->nodes.insert(node.UUID);
-    this->parent[node.UUID] = node.parent;
+    json::object obj = node.as_object();
+
+    string uuid_str = obj.at("UUID").as_string().c_str();
+    uint128_t uuid_n(uuid_str);
+    this->nodes.insert(uuid_n);
+//
+    uuid_str = obj.at("parent").as_string().c_str();
+    uint128_t uuid_p(uuid_str);
+
+    this->parent[uuid_n] = uuid_p;
+//
+
+   // this->nodes.insert(node.UUID);
+  //  this->parent[node.UUID] = node.parent;
     
-    if (this->parent.at(node.UUID) == ROOT_UUID)
-        this->roots.insert(node.UUID);
-    this->childrens[node.UUID] = node.children;
+    if (this->parent.at(uuid_n) == ROOT_UUID)
+        this->roots.insert(uuid_n);
+
+    map<uint128_t , set<uint128_t>> uuid_c = json::value_to<map<uint128_t , set<uint128_t>>>(obj.at("children"));
+
+    this->childrens[uuid_n] = uuid_c;
+
+    uuid_str = obj.at("parent").as_string().c_str();
+    uint128_t uuid_p(uuid_str);
 
     this->transform[node.UUID] = node.tran;
 }
