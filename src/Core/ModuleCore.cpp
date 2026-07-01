@@ -1,98 +1,87 @@
-    #include "ModuleCore.hpp"
+#include "ModuleCore.hpp"
 
-    ModuleCore::ModuleCore() {}
-    ModuleCore::ModuleCore(uint128_t UUID)
-    {   
-        string cmd = "SET_STATE";
-        this->command.push_back(cmd);
-        this->type = "ModulCore";
-        this->UUID = UUID;
-        this->callback = ([&]( vector<float>) {});
-        this->SetOnCommand(cmd, this->callback );
-    }
+ModuleCore::ModuleCore() 
+{
+    this->type = "ModuleCore";
+}
 
-    void ModuleCore::SetOnCommand(string command, function<void(vector<float>)> callback)
-    {
-        auto it = this->commandCallBack.find(command);
-        if (it == this->commandCallBack.end())
-            this->commandCallBack.insert( {command, vector < function < void (vector<float> ) > >{} } );
-        commandCallBack[command].push_back(callback);
-    }
+ModuleCore::ModuleCore(uint128_t UUID)
+{   
+    string cmd = "SET_STATE";
+    this->command.push_back(cmd);
+    this->type = "ModuleCore";
+    this->UUID = UUID;
+    this->SetOnCommand(cmd, [this]( json::value obj ) {this->SetState(obj);} );
+}
 
-    void ModuleCore::OnCommand(string command, vector<float> data)
-    {
-        auto it = this->commandCallBack.find(command);
-        if (it != this->commandCallBack.end())
-            for (auto callback_temp : it->second)
-                callback_temp(data);
-        else
-            cout << this->UUID << " has no member " << endl;
-    }
+void ModuleCore::SetOnCommand(const string& command, function<void(json::value)> callback)
+{
+    auto it = this->commandCallBack.find(command);
+    if (it == this->commandCallBack.end())
+        this->commandCallBack.insert( {command, vector < function<void(json::value)> >{} } );
+    commandCallBack[command].push_back(callback);
+}
 
-    void ModuleCore::SetOutputFn( function<void (pair<string, vector<float> >) > outputFn )
-    {
-        this->outputFn = outputFn;
-    }
+void ModuleCore::OnCommand(const string& command, json::value data)
+{
+    auto it = this->commandCallBack.find(command);
+    if (it != this->commandCallBack.end())
+        for (auto callback_temp : it->second)
+            callback_temp(data);
+    else
+        cout << this->UUID << " has no member " << endl;
+}
 
-    uint128_t ModuleCore::GetUUID()
-    {
-        return this->UUID;
-    }
+void ModuleCore::SetOnChange(const string& command, function<void(json::value)> callback)
+{
+    auto it = this->changeCallBack.find(command);
+    if (it == this->changeCallBack.end())
+        this->changeCallBack.insert( {command, vector < function < void (json::value ) > >{} } );
+    changeCallBack[command].push_back(callback);
+}
 
-    void add(vector<float> tab)
-    {
-        float sum = 0;
-        for (auto it : tab)
-            sum += it;
-        cout << "Sum = " << sum << endl;
-    }
 
-    void sub(vector<float> tab)
-    {
-        float sub = 0;
-        for (auto it : tab)
-            sub -= it;
-        cout << "Sub = " << sub << endl;
-    }
+void ModuleCore::OnChange(const string& command, json::value data)
+{
+    auto it = this->changeCallBack.find(command);
+    if (it != this->changeCallBack.end())
+        for (auto callback_temp : it->second)
+            callback_temp(data);
+    else
+        cout << this->UUID << " has no member " << endl;
+}
 
-    void mul(vector<float> tab)
-    {
-        float mul = 1;
-        for (auto it : tab)
-            mul *= it;
-        cout << "Mul = " << mul << endl;
-    }
+json::value ModuleCore::GetState ( )
+{
+	return json::object();
+}
+void ModuleCore::SetState (json::value state )
+{
+	return;
+}
 
-    int main()
-    { 
+uint128_t ModuleCore::GetUUID()
+{
+    return this->UUID;
+}
 
-        ModuleCore mod = ModuleCore( 1234 );
-        ModuleCore mod1 = ModuleCore( 1234 );
-        mod.SetOnCommand("TEST", [&]( vector<float> v) {
-            cout << v.size() << endl;
-        });
-            mod.SetOnCommand("TEST", [&]( ::vector<float> v) {
-            cout << "test2 " << v.size() << endl;
-        });
-                mod.SetOnCommand("COMMAND", [&]( ::vector<float> v) {
-            cout << "command " << v.size() << endl;
-        });
-        mod.OnCommand( "TEST", vector<float> { 1.0, 2.0, 3.0 });
-        mod.OnCommand( "COMMAND", vector<float> { 1.0, 2.0, 3.0 });
+void ModuleCore::SetOutputFn( function<void(json::value)> outputFn )
+{
+    this->outputFn = outputFn;
+}
 
-        mod.SetOutputFn( [&](pair<string, vector<float>> message){ 
-            mod1.OnCommand( message.first, message.second );
-        } );
+json::value ModuleCore::Encode(const string& command, json::value data)
+{
+    json::object payload;
+    payload["moduleUUID"] = this->UUID.str();
+    payload["command"] = command;
+    payload["data"] = data;
+    return payload;
+}
 
-        mod1.SetOutputFn( [&](pair<string, vector<float>> message){ 
-            mod.OnCommand( message.first, message.second );
-        } );
-        vector <float> tab{1.,2.,3.};
-
-        
-        mod1.outputFn(pair<string , vector<float>> ("TEST" , tab) );
-        
-        return 0;
-    }
-        
-        
+void ModuleCore::Output(const string& command, json::value data)
+{
+    json::value payload = this->Encode(command, data);
+    if (this->outputFn)
+        this->outputFn(payload);
+}
