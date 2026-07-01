@@ -1,5 +1,7 @@
 #include "TextLogModule.hpp"
 
+namespace json = boost::json;
+
 TextLogModule::TextLogModule() : ModuleCore(0)
 {
     this->type = "TextLogModule";
@@ -13,20 +15,20 @@ TextLogModule::TextLogModule(uint128_t UUID) : ModuleCore(UUID){
     this->command.push_back("REMOVE_TEXT");
     this->command.push_back("UPDATE_TEXT");
     this->command.push_back("CLEAR");
-    this->SetOnCommand("ADD_TEXT", [this](textLog textlog)
+    this->SetOnCommand("ADD_TEXT", [this](json::value textlog)
     {
-        this->addTextInternal(textlog);
+        this->addTextInternal(textlog.get_object().at("textLog").get_object());
     });
-    this->SetOnCommand("REMOVE_TEXT", [this](textLog textlog)
+    this->SetOnCommand("REMOVE_TEXT", [this](json::value textlog)
     {
-        this->removeText(textlog);
+        this->removeText(textlog.get_object().at("textLog"));
     });
-    this->SetOnCommand("UPDATE_TEXT", [this](textLog textlog)
+    this->SetOnCommand("UPDATE_TEXT", [this](json::value textlog)
     {
-        this->updateText(textlog);
+        this->updateText(textlog.get_object().at("textLog"));
     });
 
-    this->SetOnCommand("CLEAR", [this](textLog textlog)
+    this->SetOnCommand("CLEAR", [this](json::value textlog)
     {
         this->clear();
     });
@@ -35,20 +37,20 @@ TextLogModule::TextLogModule(uint128_t UUID) : ModuleCore(UUID){
 }
 
 
-textLog TextLogModule::getTextLog(uint128_t textUUID){
+json::object TextLogModule::getTextLog(uint128_t textUUID){
     return this->textLogs[textUUID];
 }
 
 void TextLogModule::addText(string text, bool sync){
-    textLog log;
-    log.text = text;
-    log.id = this->id;
-    log.UUID = 9999;
+    json::object log;
+    log["UUID"] = 9999;
+    log["text"] = text;
+    log["id"] = this->id.str();
     this->addTextInternal(log, sync);
 }
 
-vector<textLog> TextLogModule::getTextLogs(){
-    vector<textLog> list;
+json::array TextLogModule::getTextLogs(){
+    json::array list;
     for(auto uuid : this->textList){
         list.push_back(this->textLogs[uuid]);
     }
@@ -57,58 +59,86 @@ vector<textLog> TextLogModule::getTextLogs(){
 
 
 
-void TextLogModule::removeText(textLog log, bool sync){
-    if(this->textLogs.find(log.UUID) == this->textLogs.end()){
-        return;
+void TextLogModule::removeText(json::value log, bool sync){
+    string uuidStr = json::value_to<string>(log.get_object().at("UUID"));
+    uint128_t uuid = uint128_t(uuidStr);
+
+    if(this->textLogs.find(uuid) == this->textLogs.end()){
+    return;
     }
+    this->textList.erase(remove(this->textList.begin(), this->textList.end(), uuid), this->textList.end());
+    this->textLogs.erase(uuid);
 
-    this->textList.erase(remove(this->textList.begin(), this->textList.end(), log.UUID), this->textList.end());
-    this->textLogs.erase(log.UUID);
+    json::object rmData;
+    rmData["UUID"] = uuid.str();
+    this->OnChange("REMOVE_TEXT", rmData);
 
-    this->OnChange("REMOVE_TEXT", log);
-
-     if( sync )
-        this->outputFn(pair<string, textLog >{"REMOVE_TEXT" , log});
+     if( sync ){
+        json::object data;
+        data["textLog"] = rmData;
+        this->Output("REMOVE_TEXT", data);
+     }
 }
 
-void TextLogModule::updateText(textLog log, bool sync){
-    if(this->textLogs.find(log.UUID) == this->textLogs.end()){
+
+
+void TextLogModule::updateText(json::value log, bool sync){
+    string uuidStr = json::value_to<string>(log.get_object().at("UUID"));
+    uint128_t uuid = uint128_t(uuidStr);
+    if(this->textLogs.find(uuid) == this->textLogs.end()){
         return;
     }
-    this->textLogs[log.UUID].text = log.text;
-    this->OnChange("UPDATE_TEXT", getTextLog(log.UUID));
-     if( sync )
-        this->outputFn(pair<string, textLog >{"UPDATE_TEXT" , log});
+    this->textLogs[uuid]["text"] = log.at("text");
+    json::value updatedLog = this->getTextLog(uuid);
+    this->OnChange("UPDATE_TEXT", updatedLog);
+    if( sync ){
+    json::object outputData;
+    outputData["textLog"] = updatedLog;
+       this->Output("UPDATE_TEXT" , outputData);
+    }
 }
 
-void TextLogModule::addTextInternal(textLog log, bool sync){
-    this->textList.push_back(log.UUID);
-    this->textLogs[log.UUID] = log;
-    this->OnChange("ADD_TEXT", getTextLog(log.UUID));
+void TextLogModule::addTextInternal(json::object log, bool sync){
+    string uuidStr = json::value_to<string>(log.at("UUID"));
+    uint128_t uuid = uint128_t(uuidStr);    
+    this->textList.push_back(uuid);
+    this->textLogs[uuid] = log;
 
-    if( sync )
-        this->outputFn(pair<string, textLog >{"ADD_TEXT" , log});
+    json::value updatedLog = this->getTextLog(uuid);
+    this->OnChange("ADD_TEXT", updatedLog);
+
+    if(sync){
+        json::object outputData;
+        outputData["textLog"];
+        this->Output("ADD_TEXT" , outputData);
+    }
 }
 
 void TextLogModule::clear(bool sync){
     this->textLogs.clear();
     this->textList.clear();
 
-    this->OnChange("CLEAR", {});
-    textLog clear = {};
+    this->OnChange("CLEAR", json::object());
 
     if(sync){
-        this->outputFn(pair<string, textLog >{"CLEAR" , {}});
+        
+        this->Output("CLEAR" , json::object());
     }
 }
 
-vector<textLog> TextLogModule::getState(){
-    return this->getTextLogs();
+json::value TextLogModule::getState(){
+    json::object state;
+    state["textLogs"] = this->getTextLogs();
+    return state;
 }
 
-void TextLogModule::setState(vector<textLog> state){
-    for(auto log : state){
-        this->addTextInternal(log, false);
+void TextLogModule::setState(json::value state){
+    json::array logs = state.get_object().at("textLogs").get_array();
+    for(auto log : logs){
+        if(log.is_object()){
+            this->addTextInternal(log.get_object(), false);
+        }
+        
     }
 }
 
