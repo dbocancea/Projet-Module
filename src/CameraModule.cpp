@@ -1,6 +1,51 @@
+#include <iostream>
 #include "CameraModule.hpp"
 
-CameraModule::CameraModule()
+CameraModule::CameraModule() : TransformModule(0)
 {
     this->type = "CameraModule";
+}
+
+CameraModule::CameraModule(uint128_t UUID) : TransformModule(UUID)
+{
+    this->type = "CameraModule";
+
+    this->SetOnCommand("UPDATE_CAMERA", [this](vector<float> camera)
+    {
+        this->updateCamera(camera);
+    });
+}
+
+void CameraModule::updateCamera(vector<float> camera, bool sync = false)
+{
+    if(camera.size() == 4)
+    {
+        this->fov = camera[0];
+        this->aspect = camera[1];
+        this->myNear = camera[2];
+        this->myFar = camera[3];
+    }
+
+    if(sync)
+        if(this->outputFn)
+            cout << "UPDATE_CAMERA " << camera[0] << " " << camera[1] << " " << camera[2] << " " << camera[3] << endl;
+}
+
+tuple<float, float, float, float> CameraModule::getCamera()
+{
+    return{this->fov, this->aspect, this->myNear, this->myFar};
+}
+
+void CameraModule::setState(map<string, vector<float>> state)
+{
+    auto it = state.find("camera");
+    if(it != state.end())
+        this->updateCamera(it->second);
+}
+
+map<string, vector<float>> CameraModule::getState()
+{
+    return {
+        {"camera", {this->fov, this->aspect, this->myNear, this->myFar}}
+    };
 }
