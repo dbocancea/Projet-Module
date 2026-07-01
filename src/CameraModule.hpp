@@ -4,7 +4,7 @@
 #include "TransformModule.hpp"
 #include <tuple>
 
-class CameraModule : public TransformModule<vector<float>>
+class CameraModule : public TransformModule
 {
     protected:
         float fov{};
@@ -14,10 +14,10 @@ class CameraModule : public TransformModule<vector<float>>
     public:
         CameraModule();
         CameraModule(uint128_t UUID);
-        void updateCamera(vector<float> camera, bool sync = false);
+        void updateCamera(json::value camera, bool sync = false);
         tuple<float, float, float, float> getCamera();
-        void setState(map<string, vector<float>> state);
-        map<string, vector<float>> getState();
+        void setState(json::value state);
+        json::value getState();
 };
 
 #endif

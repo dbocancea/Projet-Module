@@ -36,6 +36,8 @@ void TransformModule::updateTransform( json::value transform, bool sync = false 
         this->scale[2] = liste[9].to_number<float>();
     }
 
+    this->OnChange( "UPDATE_TRANSFORM", transform );
+
     if( sync )
         this->Output( "UPDATE_TRANSFORM", transform );
 }

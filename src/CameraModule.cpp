@@ -1,51 +1,61 @@
-#include <iostream>
 #include "CameraModule.hpp"
 
-CameraModule::CameraModule() : TransformModule(0)
+CameraModule::CameraModule() : TransformModule( 0 )
 {
     this->type = "CameraModule";
 }
 
-CameraModule::CameraModule(uint128_t UUID) : TransformModule(UUID)
+CameraModule::CameraModule( uint128_t UUID ) : TransformModule( UUID )
 {
     this->type = "CameraModule";
 
-    this->SetOnCommand("UPDATE_CAMERA", [this](vector<float> camera)
+    this->SetOnCommand( "UPDATE_CAMERA", [this]( json::value camera )
     {
-        this->updateCamera(camera);
+        this->updateCamera( camera );
     });
 }
 
-void CameraModule::updateCamera(vector<float> camera, bool sync = false)
+void CameraModule::updateCamera( json::value camera, bool sync = false )
 {
-    if(camera.size() == 4)
+    if( !camera.is_object() ) return;
+    auto& liste = camera.as_array();
+    if( liste.size() == 4 )
     {
-        this->fov = camera[0];
-        this->aspect = camera[1];
-        this->myNear = camera[2];
-        this->myFar = camera[3];
+        this->fov = liste[0].to_number<float>();
+        this->aspect = liste[1].to_number<float>();
+        this->myNear = liste[2].to_number<float>();
+        this->myFar = liste[3].to_number<float>();
     }
 
+    this->OnChange( "UPDATE_CAMERA", camera );
+
     if(sync)
-        if(this->outputFn)
-            cout << "UPDATE_CAMERA " << camera[0] << " " << camera[1] << " " << camera[2] << " " << camera[3] << endl;
+        this->Output( "UPDATE_CAMERA", camera );
 }
 
 tuple<float, float, float, float> CameraModule::getCamera()
 {
-    return{this->fov, this->aspect, this->myNear, this->myFar};
+    return {this->fov, this->aspect, this->myNear, this->myFar};
 }
 
-void CameraModule::setState(map<string, vector<float>> state)
+void CameraModule::setState( json::value state )
 {
-    auto it = state.find("camera");
-    if(it != state.end())
-        this->updateCamera(it->second);
+    if( !state.is_object() ) return;
+
+    auto& obj = state.as_object();
+
+    auto it = obj.find( "camera" );
+    if( it != obj.end() )
+        this->updateCamera( it->value() );
 }
 
-map<string, vector<float>> CameraModule::getState()
+json::value CameraModule::getState()
 {
-    return {
-        {"camera", {this->fov, this->aspect, this->myNear, this->myFar}}
-    };
+    json::array liste = {this->fov, this->aspect, this->myNear, this->myFar};
+
+    json::object obj;
+
+    obj["camera"] = liste;
+
+    return obj;
 }
