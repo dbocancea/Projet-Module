@@ -1,34 +1,53 @@
 #include "FileModule.hpp"
-template <typename T>
-FileModule<T>::FileModule() : ModuleCore<T>()
+
+FileModule::FileModule() : ModuleCore()
 {
     this->type = "FileModule";
 }
-template <typename T>
-FileModule<T>::FileModule( uint128_t UUID ) : ModuleCore<T>(UUID)
+
+FileModule::FileModule( uint128_t UUID ) : ModuleCore(UUID)
 {
     this->type = "FileModule";
     string cmd = "UPDATE_FILE";
     this->command.push_back(cmd);
-    this->SetOnCommand(cmd , [&](File file) {this->UpdateFile(file, false);}  );
+    this->SetOnCommand(cmd , [this](json::value data) {
+        json::object obj = data.as_object();
+        this->UpdateFile(obj.at("file"));}  
+    );
 }
-template <typename T>
-void FileModule<T>::UpdateFile(File file , bool sync )
+
+void FileModule::UpdateFile(json::value file , bool sync )
 {
-    this->file = file;
+    this->file = file.as_object();
     this->OnChange("UPDATE_FILE" , this->file );
 
     if( sync )
-        this->outputFn(pair<string, File >{"UPDATE_FILE" , file});
+    {   
+        json::object data;
+        data["file"] = this->file;
+        this->Output("UPDATE_FILE" , data );
+    }
+       
 }
-template <typename T>
-File FileModule<T>::getFile()
-{
+
+json::value FileModule::GetFile()
+{   
     return this->file;
 }
-template <typename T>
-void FileModule<T>::setState( T newState) {
-        this->UpdateFile(newState , 0);
-    }
 
-template class FileModule<File>;
+json::value FileModule::GetState()
+{   
+    json::object file;
+    file["file"] = this->file;
+    return file;
+}
+
+void FileModule::SetState( json::value newState) 
+{
+    if( newState.is_object() )
+    {
+        auto obj = newState.as_object();
+        this->UpdateFile(obj["file"] );
+    }
+        
+}
