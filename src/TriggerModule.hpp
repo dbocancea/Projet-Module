@@ -1,8 +1,9 @@
 #ifndef TRIGGERMODULE_HPP
 #define TRIGGERMODULE_HPP
 #include "Core/ModuleCore.hpp"
+namespace json = boost::json;
 
-class TriggerModule : public ModuleCore<bool>
+class TriggerModule : public ModuleCore
 {
     public:
         TriggerModule();
