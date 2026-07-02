@@ -32,7 +32,7 @@ const map<string ,FnModuleTypes > ModuleTypes = {
     {"ScalarModule" ,   [](void* arg) -> void* { return new ScalarModule(*static_cast<uint128_t*>(arg)); }  },
     {"TextLogModule" ,  [](void* arg) -> void* { return new TextLogModule(); }  },
     {"TextModule" ,     [](void* arg) -> void* { return new TextModule(*static_cast<uint128_t*>(arg)); }  },
-    {"TransformModule" ,[](void* arg) -> void* { return new TransformModule<vector<float>>(*static_cast<uint128_t*>(arg)); }  },
+    {"TransformModule" ,[](void* arg) -> void* { return new TransformModule(*static_cast<uint128_t*>(arg)); }  },
     {"TriggerModule" ,  [](void* arg) -> void* { return new TriggerModule(); }  },
     {"Vector3Module" ,  [](void* arg) -> void* { return new Vector3Module(*static_cast<uint128_t*>(arg)); }  },
     {"ImageModule" ,    [](void* arg) -> void* { return new ImageModule(*static_cast<uint128_t*>(arg)); }  },

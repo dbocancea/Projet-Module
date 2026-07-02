@@ -4,7 +4,7 @@
 #include "TransformModule.hpp"
 #include <tuple>
 
-class CameraModule : public TransformModule<vector<float>>
+class CameraModule : public TransformModule
 {
     protected:
         float fov{};
