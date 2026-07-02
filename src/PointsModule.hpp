@@ -2,7 +2,7 @@
 #define POINTSMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class PointsModule : public ModuleCore<const vector<pair<uint128_t, vector<float>>>&>
+class PointsModule : public ModuleCore
 {
     protected:
         vector<float> position;

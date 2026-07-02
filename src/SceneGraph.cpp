@@ -112,8 +112,7 @@ void SceneGraph::UpdateNode(json::value node)
                     this->transform[uuid_n].scale[i] = static_cast<float>(a[i].as_double());
             } 
     }
-    
-}
+
 
 json::value SceneGraph::NodesData(vector<uint128_t> nodeUUIDs)
 {   
