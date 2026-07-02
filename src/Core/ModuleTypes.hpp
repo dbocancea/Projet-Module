@@ -1,7 +1,6 @@
 #ifndef MODULETYPES_HPP
 #define MODULETYPES_HPP
 #include "ModuleCore.hpp"
-#include "ModuleRegistry.hpp"
 #include "../CameraModule.hpp"
 #include "../FileModule.hpp"
 #include "../GLTFModule.hpp"
@@ -18,6 +17,7 @@
 #include "../ImageModule.hpp"
 #include "../MeshModule.hpp"
 #include "../SceneGraph.hpp"
+
 
 using FnModuleTypes = void*(*)(void*);
 
