@@ -18,6 +18,7 @@ class ModuleRegistry : public ModuleCore, public std::enable_shared_from_this<Mo
         shared_ptr<ModuleCore> GetModule(uint128_t UUID);
         void OnChange(const string& command, shared_ptr<ModuleCore> module) ;
         void SetState(json::value state) override;
+
         json::value GetState() override;
 };
 

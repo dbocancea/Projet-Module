@@ -113,7 +113,7 @@ void SceneGraph::UpdateNode(json::value node)
             } 
     }
 
-
+}
 json::value SceneGraph::NodesData(vector<uint128_t> nodeUUIDs)
 {   
    json::array nodes_data;

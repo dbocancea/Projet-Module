@@ -48,6 +48,7 @@ public:
     json::value outputState();
     void input(json::value payload);
     virtual ~ModuleCore() = default;
+
 };
 
 
