@@ -5,9 +5,7 @@
 class ImageModule : public TransformModule
 {
     protected:
-        string image;
-        map<std::string, vector<function<void(json::value)>>> stringCommandCallBack;
-        map<std::string, vector<function<void(json::value)>>> stringChangeCallBack;
+        json::value image;
     public:
         ImageModule();
         ImageModule(uint128_t UUID);
