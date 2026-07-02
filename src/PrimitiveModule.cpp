@@ -3,87 +3,62 @@
 PrimitiveModule::PrimitiveModule() : TransformModule(0)
 {
     this->type = "PrimitiveModule";
+    this->primitive = "sphere";
+    this->primitiveTypes = {this->primitive, "box"};
 }
 
-PrimitiveModule::PrimitiveModule(uint128_t UUID) : TransformModule(UUID)
+PrimitiveModule::PrimitiveModule( uint128_t UUID ) : TransformModule( UUID )
 {
     this->type = "PrimitiveModule";
-<<<<<<< HEAD
-    this->SetOnCommand("UPDATE_PRIMITIVE", [this](string primitive)
-    {
-        this->updatePrimitive(primitive);
-=======
-    this->SetOnCommand("UPDATE_PRIMITIVE", [this](this->primitive)
+
+    this->primitive = "sphere";
+    this->primitiveTypes = {this->primitive, "box"};
+
+    this->SetOnCommand("UPDATE_PRIMITIVE", [this](json::value primitive)
     {
         this->updatePrimitive(this->primitive);
->>>>>>> TransformModule
     });
 }
 
-string PrimitiveModule::getPrimitive()
+json::value PrimitiveModule::getPrimitive()
 {
     return this->primitive;
 }
 
-vector<string> PrimitiveModule::getPrimitiveTypes()
+json::value PrimitiveModule::getPrimitiveTypes()
 {
     return this->primitiveTypes;
 }
 
-void PrimitiveModule::updatePrimitive(string primitive, bool sync)
+void PrimitiveModule::updatePrimitive( json::value primitive, bool sync )
 {
+    if( !primitive.is_object() ) return;
     this->primitive = primitive;
 
-    this->OnChange("UPDATE_PRIMITIVE", this->primitive);
+    this->OnChange( "UPDATE_PRIMITIVE", this->primitive );
 
-    if(sync)
-        cout << "UPDATE_PRIMITIVE " << this->primitive << endl;
+    if( sync )
+        this->Output( "UPDATE_PRIMITIVE", this->primitive);
 }
 
-map<string, map<string, vector<float>>> PrimitiveModule::getState()
+json::value PrimitiveModule::getState()
 {
-    map<string, map<string, vector<float>>> res {};
-    auto transState = this->TransformModule::getState();
-    res[this->TransformModule::getState()] = this->primitive;
-    return res;
+    json::value transformState = this->TransformModule::getState();
+    json::object obj = transformState.as_object();
+
+    obj["primitive"] = this->primitive;
+
+    return obj;
 }
 
-void PrimitiveModule::setState(map<map<string, vector<float>>, string> state)
+void PrimitiveModule::setState( json::value state )
 {
-    if(!state.empty())
-    {
-<<<<<<< HEAD
-        auto it = state.begin();
-        this->TransformModule::setState(it->first);
-        this->updatePrimitive(it->second);
-=======
-        return this->primitive;
-    }
+    if( !state.is_object() ) return;
 
-    vector<string> PrimitiveModule::getPrimitiveTypes()
-    {
-        return this->primitiveTypes;
-    }
+    auto& obj = state.as_object();
+    auto it = obj.find( "primitive" );
+    if( it != obj.end() )
+        this->updatePrimitive( it->value() );
 
-    void PrimitiveModule::updatePrimitive(string primitive, bool sync = false)
-    {
-        this->primitive = primitive;
-
-        this->OnChange("UPDATE_PRIMITIVE", primitive);
-
-        if(sync)
-            cout << "UPDATE_PRIMITIVE " << this->primitive << endl;
-    }
-
-    map<map<string, vector<float>>, string> PrimitiveModule::getState()
-    {
-        return {this->getState(), this->primitive};
-    }
-
-    void PrimitiveModule::setState(map<map<string, vector<float>>, string> state)
-    {
-        this->setState(state);
-        this->updatePrimitive(state->second);
->>>>>>> TransformModule
-    }
+    this->TransformModule::setState(state);
 }
