@@ -43,7 +43,12 @@ public:
     virtual json::value GetState();
     uint128_t GetUUID();
     void Output(const string& command, json::value data);
+    string GetType();
+    vector<string> GetCommand();
+    json::value outputState();
+    void input(json::value payload);
     virtual ~ModuleCore() = default;
+
 };
 
 

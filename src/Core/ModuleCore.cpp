@@ -79,9 +79,31 @@ json::value ModuleCore::Encode(const string& command, json::value data)
     return payload;
 }
 
+string ModuleCore::GetType()
+{
+    return this->type;
+}
+
 void ModuleCore::Output(const string& command, json::value data)
 {
     json::value payload = this->Encode(command, data);
     if (this->outputFn)
         this->outputFn(payload);
+}
+
+vector<string> ModuleCore::GetCommand()
+{
+    return command;
+}
+
+json::value ModuleCore::outputState()
+{
+    json::value state = this->GetState(); 
+    return this->Encode("SET_STATE" , state);
+}
+
+void ModuleCore::input(json::value payload)
+{
+    json::object obj = payload.as_object();
+    this->OnCommand(obj["command"].as_string().c_str() , obj["data"] );
 }

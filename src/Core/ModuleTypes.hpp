@@ -13,7 +13,6 @@
 #include "../TransformModule.hpp"
 #include "../TriggerModule.hpp"
 #include "../Vector3Module.hpp"
-
 #include "../ImageModule.hpp"
 #include "../MeshModule.hpp"
 #include "../SceneGraph.hpp"
