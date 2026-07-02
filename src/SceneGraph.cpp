@@ -24,6 +24,7 @@ void SceneGraph::AddNode(json::value node)
 
     map<uint128_t , set<uint128_t>> uuid_c = json::value_to<map<uint128_t , set<uint128_t>>>(obj.at("children"));
 
+
     this->childrens[uuid_n] = uuid_c;
 
     uuid_str = obj.at("parent").as_string().c_str();

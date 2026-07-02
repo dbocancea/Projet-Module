@@ -2,7 +2,7 @@
 #define TEXTMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class TextModule : public ModuleCore<string>
+class TextModule : public ModuleCore
 {
     private:
         string text;
@@ -12,8 +12,8 @@ class TextModule : public ModuleCore<string>
 
         void updateText(string text, bool sync = false);
         string getText();
-        string getState();
-        void setState(string state);
+        boost::json::value getState();
+        void setState(boost::json::value state);
 
 };
   
