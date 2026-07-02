@@ -15,7 +15,7 @@ CameraModule::CameraModule( uint128_t UUID ) : TransformModule( UUID )
     });
 }
 
-void CameraModule::updateCamera( json::value camera, bool sync = false )
+void CameraModule::updateCamera( json::value camera, bool sync )
 {
     if( !camera.is_object() ) return;
     auto& liste = camera.as_array();

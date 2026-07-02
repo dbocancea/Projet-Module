@@ -12,7 +12,7 @@
 #include "../TextLogModule.hpp"
 #include "../TextModule.hpp"
 #include "../TransformModule.hpp"
-#include "../TriggerModule.hpp"
+//#include "../TriggerModule.hpp"
 #include "../Vector3Module.hpp"
 #include "../ImageModule.hpp"
 #include "../MeshModule.hpp"
@@ -32,7 +32,7 @@ const map<string ,FnModuleTypes > ModuleTypes = {
     {"TextLogModule" ,  [](void* arg) -> void* { return new TextLogModule(); }  },
     {"TextModule" ,     [](void* arg) -> void* { return new TextModule(*static_cast<uint128_t*>(arg)); }  },
     {"TransformModule" ,[](void* arg) -> void* { return new TransformModule(*static_cast<uint128_t*>(arg)); }  },
-    {"TriggerModule" ,  [](void* arg) -> void* { return new TriggerModule(); }  },
+//    {"TriggerModule" ,  [](void* arg) -> void* { return new TriggerModule(); }  },
     {"Vector3Module" ,  [](void* arg) -> void* { return new Vector3Module(*static_cast<uint128_t*>(arg)); }  },
     {"ImageModule" ,    [](void* arg) -> void* { return new ImageModule(*static_cast<uint128_t*>(arg)); }  },
     {"MeshModule" ,     [](void* arg) -> void* { return new MeshModule(*static_cast<uint128_t*>(arg)); }  },

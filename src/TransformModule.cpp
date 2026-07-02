@@ -16,7 +16,7 @@ TransformModule::TransformModule( uint128_t UUID ) : ModuleCore( UUID )
     });
 }
 
-void TransformModule::updateTransform( json::value transform, bool sync = false )
+void TransformModule::updateTransform( json::value transform, bool sync)
 {   
     if( !transform.is_array() ) return;
     auto& liste = transform.as_array();
