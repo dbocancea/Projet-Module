@@ -2,7 +2,11 @@
 #define PRIMITIVEMODULE_HPP
 #include "TransformModule.hpp"
 
+<<<<<<< HEAD
 class PrimitiveModule : public TransformModule<string>
+=======
+class PrimitiveModule : public ModuleCore<string>
+>>>>>>> TransformModule
 {
     protected:
         string sphere = "sphere";

@@ -11,6 +11,7 @@ struct str_Transform {
     array<float, 3> scale ;   
 };
 
+using Transform = struct str_Transform;
 struct str_Nodes
 {
     uint128_t UUID;
@@ -21,7 +22,7 @@ struct str_Nodes
 
 
 using Nodes = struct str_Nodes;
-using Transform = struct str_Transform;
+
 
 class SceneGraph
 {   
