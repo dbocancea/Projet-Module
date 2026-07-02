@@ -3,6 +3,7 @@
 
 int main()
 {
+
     TextModule module(123);
     if (module.getText() == "") {
         cout << "get text: nice" << endl; 
@@ -34,7 +35,6 @@ int main()
         cout << "updateText: passed, onchange & output" << endl;
     }
     else cout << "updateText: test failed" << endl;
-
 
 
     return 0;

@@ -23,7 +23,6 @@ using FnModuleTypes = void*(*)(void*);
 
 const map<string ,FnModuleTypes > ModuleTypes = {
     {"ModuleCore" ,     [](void* arg) -> void* { return new ModuleCore(*static_cast<uint128_t*>(arg)); }  },
-    {"ModuleRegestry" , [](void* arg) -> void* { return new ModuleRegistry(*static_cast<function<void(json::value)>*>(arg)); }  },
     {"CameraModule" ,   [](void* arg) -> void* { return new CameraModule(*static_cast<uint128_t*>(arg)); }  },
     {"FileModule" ,     [](void* arg) -> void* { return new FileModule(*static_cast<uint128_t*>(arg)); }  },
     {"GLTFModule" ,     [](void* arg) -> void* { return new GLTFModule(*static_cast<uint128_t*>(arg)); }  },

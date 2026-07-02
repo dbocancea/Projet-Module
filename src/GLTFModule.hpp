@@ -12,16 +12,18 @@ struct strGLTF_state
 class GLTFModule : public  FileModule
 {   
     protected:
-        FileModule fileHandler;
         const uint128_t root_UUID = 0;
         SceneGraph sceneGraph;
     public:
         GLTFModule();
         GLTFModule(uint128_t UUID);
-        void SetNodes(vector<Nodes> nodes , bool sync);
-        void UpdateNodes(vector<Nodes> nodes , bool sync);
-        GLTF_state GetState();
-        void SetState(GLTF_state state);
+        void SetNodes(json::value nodes , bool sync = false);
+        void UpdateNodes(json::value nodes , bool sync = false);
+        vector<uint128_t> GetNodesUUIDs();
+        json::value GetState() override;
+        void SetState(json::value state) override;
+        json::value nodeTransform(uint128_t UUID);
+        json::value nodes();
 };  
   
 #endif

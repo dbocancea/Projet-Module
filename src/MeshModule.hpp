@@ -3,13 +3,13 @@
 
 #include "FileModule.hpp"
 
-class MeshModule : public FileModule<File>
+class MeshModule : public FileModule
 {
     public:
         MeshModule();
         MeshModule(uint128_t UUID);
-        File getState();
-        void SetState( File f );
+        json::value getState();
+        void SetState( json::value state );
 };
 
 
