@@ -26,6 +26,12 @@ class SceneGraph
         void AddNode(json::value node);
         void UpdateNode(json::value node);
         json::value NodesData(vector<uint128_t> nodeUUIDs);
+        vector<uint128_t> GetNodeUUIDs();
+        json::value getTransform(uint128_t UUID );
+        uint128_t getParent(uint128_t UUID );
+        set<uint128_t> getChildrens(uint128_t UUID );
+        void clear();
+        json::value getNodes();
 };
 
 

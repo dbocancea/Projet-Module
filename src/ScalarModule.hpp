@@ -12,6 +12,7 @@ class ScalarModule : public ModuleCore
         void UpdateValue(json::value data , bool sync = false);
         void SetState(json::value value) override;
         json::value GetState() override;
+        int GetValue();
 };
   
 #endif

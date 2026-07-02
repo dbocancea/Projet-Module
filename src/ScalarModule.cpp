@@ -49,3 +49,7 @@ json::value ScalarModule::GetState()
 
     return status;
 }
+int ScalarModule::GetValue()
+{
+    return this->value;
+}

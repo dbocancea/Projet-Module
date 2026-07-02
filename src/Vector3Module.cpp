@@ -23,7 +23,7 @@ void Vector3Module::UpdateVector(json::value vector, bool sync)
     json::array array_json = vector.as_array();
     cout << "Vector3Module - updateVector" << endl;
 
-    for (int i = 0; i < this->vector.size(); i++)
+    for (int i = 0; i < static_cast<int>(this->vector.size()); i++)
         this->vector[i] = static_cast<int>(array_json[i].as_int64());
     
     json::object data;

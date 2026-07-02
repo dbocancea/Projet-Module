@@ -129,19 +129,53 @@ json::value SceneGraph::NodesData(vector<uint128_t> nodeUUIDs)
 
         node["childrens"] = child_arr;
 
-        json::object obj_tran;
-        
-        const auto& t = this->transform[UUID];
-        json::array translation = { t.translation[0] , t.translation[1] , t.translation[2]};
-        json::array rotation = { t.rotation[0] , t.rotation[1] , t.rotation[2] , t.rotation[3]};
-        json::array scale = { t.scale[0] , t.scale[1] , t.scale[2]};
-        obj_tran["translation"] = translation;
-        obj_tran["rotation"] = rotation;
-        obj_tran["scale"] = scale;
-
-        node["transform"] = obj_tran;
+        node["transform"] = this->getTransform(UUID);
         
         nodes_data.push_back(node);
     }
     return nodes_data;
+}
+
+vector<uint128_t> SceneGraph::GetNodeUUIDs()
+{
+    return vector<uint128_t>(this->nodes.begin(), this->nodes.end());
+}
+
+
+json::value SceneGraph::getTransform(uint128_t UUID )
+{
+    json::object obj_tran;
+    
+    const auto& t = this->transform[UUID];
+    json::array translation = { t.translation[0] , t.translation[1] , t.translation[2]};
+    json::array rotation = { t.rotation[0] , t.rotation[1] , t.rotation[2] , t.rotation[3]};
+    json::array scale = { t.scale[0] , t.scale[1] , t.scale[2]};
+    obj_tran["translation"] = translation;
+    obj_tran["rotation"] = rotation;
+    obj_tran["scale"] = scale;
+
+    return obj_tran;
+}
+
+uint128_t SceneGraph::getParent(uint128_t UUID )
+{
+    return this->parent[UUID];
+}
+
+set<uint128_t> SceneGraph::getChildrens(uint128_t UUID )
+{
+    return this->childrens[UUID];
+}
+
+void SceneGraph::clear()
+{
+    this->nodes.clear();
+    this->childrens.clear();
+    this->parent.clear();
+    this->roots.clear();
+}
+
+json::value SceneGraph::getNodes()
+{
+    return this->NodesData(vector<uint128_t>(this->nodes.begin(), this->nodes.end()));
 }
