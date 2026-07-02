@@ -1,6 +1,6 @@
 #include "Core/ModuleCore.hpp"
 #include "TextModule.hpp"
-
+#include "TextLogModule.hpp"
 int main()
 {
     TextModule module(123);
@@ -27,7 +27,7 @@ int main()
         cout << "updateText: passed, onchange, no output" << endl;
     }
     else cout << "updateText: test failed" << endl;
-
+#include "TextModule.hpp"
     onchange = false;
     module.updateText("trying sync", true);
     if(module.getText() == "trying sync" && onchange && output){
@@ -35,7 +35,26 @@ int main()
     }
     else cout << "updateText: test failed" << endl;
 
+    json::object stateTest;
+    stateTest["text"] = "State 1";
+    module.setState(stateTest);
+    json::value state = module.getState();
+    if(state.as_object().at("text").as_string() == "State 1") cout << "state get, set passed" << endl;
+    else cout << "state test failed";
 
 
+    json::object command;
+    command["text"] = "command 1";
+
+    module.OnCommand("UPDATE_TEXT", command);
+    if(module.getText() == "command 1") cout << "test on command passed" << endl;
+    else cout << "oncommand test failed";
+
+
+    cout << "--- TextLogModule test: ---" << endl;
+
+    TextLogModule tmodule(44);
+    
+    
     return 0;
 }
