@@ -1,4 +1,5 @@
 #include "TextModule.hpp"
+namespace json = boost::json;
 
 TextModule::TextModule()
 {
@@ -6,13 +7,17 @@ TextModule::TextModule()
    this->text = "";
 }
 
-TextModule::TextModule(uint128_t UUID){
+TextModule::TextModule(uint128_t UUID) : ModuleCore(UUID){
    cout << "TextModule - constructor" << endl;
    this->type = "TextModule";
    this->text = "";
    this->command.push_back("UPDATE_TEXT");
 
-   this->SetOnCommand("UPDATE_TEXT", [this] (string text) {this->updateText(text, false);});
+   this->SetOnCommand("UPDATE_TEXT", [this] (json::value textJson) 
+   {
+      string text = textJson.as_object().at("text").as_string().c_str();
+      this->updateText(text,false);
+   });
 
 }
 
@@ -21,20 +26,25 @@ void TextModule::updateText(string text, bool sync){
    cout << text << endl;
    this->text = text;
 
-   this->OnChange("UPDATE_TEXT", this->text);
+   this->OnChange("UPDATE_TEXT", json::value(this->text));
 
-   if( sync )
-      this->outputFn(pair<string,string>{"UPDATE_TEXT" , this->text});
+   if( sync ){
+      json::object data;
+      data["text"] = this->text;
+      this->Output("UPDATE_TEXT" , data);
+   }
 }
 
 string TextModule::getText(){
    return this->text;
 }
 
-string TextModule::getState(){
-   return this->getText();
+json::value TextModule::getState(){
+   json::object state;
+   state["text"] = this->text;
+   return state;
 }
 
-void TextModule::setState(string state){
-   this->updateText(state, false);
+void TextModule::setState(json::value state){
+   this->updateText(state.as_object().at("text").as_string().c_str(), false);
 }
