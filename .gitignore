@@ -2,3 +2,6 @@
 *.bin
 *.exe
 build/
+.vscode/
+.vs
+test_module

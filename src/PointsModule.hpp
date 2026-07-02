@@ -2,10 +2,23 @@
 #define POINTSMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class PointsModule : public ModuleCore
+class PointsModule : public ModuleCore<const vector<pair<uint128_t, vector<float>>>&>
 {
+    protected:
+        vector<float> position;
+        map<uint128_t, vector<float>> points;
     public:
         PointsModule();
+        PointsModule(uint128_t UUID);
+        vector<uint128_t> getPointsUUID();
+        vector<float> getPoint(uint128_t UUID);
+        vector<vector<float>> getPoints(uint128_t UUID);
+        void addPoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
+        void removePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
+        void updatePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false);
+        void clear(bool sync = false);
+        map<uint128_t, vector<float>> getState();
+        void setState(vector<pair<uint128_t, vector<float>>> state);
 };
   
 #endif
