@@ -19,7 +19,7 @@ class ModuleCore
 {
 protected:
     
-    vector<string> command;
+    map<string , string> command;
     uint128_t UUID;
     function<void(json::value)> callback;
     map<string, vector<function<void(json::value)>>> commandCallBack;
@@ -44,7 +44,7 @@ public:
     uint128_t GetUUID();
     void Output(const string& command, json::value data);
     string GetType();
-    vector<string> GetCommand();
+    map<string , string> GetCommand();
     json::value outputState();
     void input(json::value payload);
     virtual ~ModuleCore() = default;

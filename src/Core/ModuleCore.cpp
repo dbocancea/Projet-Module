@@ -7,11 +7,10 @@ ModuleCore::ModuleCore()
 
 ModuleCore::ModuleCore(uint128_t UUID)
 {   
-    string cmd = "SET_STATE";
-    this->command.push_back(cmd);
+    this->command["setState"] = "SET_STATE";
     this->type = "ModuleCore";
     this->UUID = UUID;
-    this->SetOnCommand(cmd, [this]( json::value obj ) {this->SetState(obj);} );
+    this->SetOnCommand(this->command["setState"], [this]( json::value obj ) {this->SetState(obj);} );
 }
 
 void ModuleCore::SetOnCommand(const string& command, function<void(json::value)> callback)
@@ -91,7 +90,7 @@ void ModuleCore::Output(const string& command, json::value data)
         this->outputFn(payload);
 }
 
-vector<string> ModuleCore::GetCommand()
+map<string , string> ModuleCore::GetCommand()
 {
     return command;
 }
@@ -99,7 +98,7 @@ vector<string> ModuleCore::GetCommand()
 json::value ModuleCore::outputState()
 {
     json::value state = this->GetState(); 
-    return this->Encode("SET_STATE" , state);
+    return this->Encode(this->command["setState"] , state);
 }
 
 void ModuleCore::input(json::value payload)
