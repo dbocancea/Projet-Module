@@ -11,31 +11,39 @@ CameraModule::CameraModule( uint128_t UUID ) : TransformModule( UUID )
 
     this->SetOnCommand( "UPDATE_CAMERA", [this]( json::value camera )
     {
-        this->updateCamera( camera );
+        this->onUpdateCamera( camera );
     });
 }
 
-void CameraModule::updateCamera( json::value camera, bool sync = false )
+void CameraModule::onUpdateCamera( json::value camera_json, bool sync )
 {
-    if( !camera.is_object() ) return;
-    auto& liste = camera.as_array();
+    if( !camera_json.is_array() ) return;
+    auto& liste = camera_json.as_array();
     if( liste.size() == 4 )
     {
-        this->fov = liste[0].to_number<float>();
-        this->aspect = liste[1].to_number<float>();
-        this->myNear = liste[2].to_number<float>();
-        this->myFar = liste[3].to_number<float>();
+        this->data.fov = liste[0].to_number<float>();
+        this->data.aspect = liste[1].to_number<float>();
+        this->data.myNear = liste[2].to_number<float>();
+        this->data.myFar = liste[3].to_number<float>();
     }
 
-    this->OnChange( "UPDATE_CAMERA", camera );
-
-    if(sync)
-        this->Output( "UPDATE_CAMERA", camera );
+    this->updateCamera( this->data, sync);
 }
 
-tuple<float, float, float, float> CameraModule::getCamera()
+void CameraModule::updateCamera( CameraData new_data, bool sync )
 {
-    return {this->fov, this->aspect, this->myNear, this->myFar};
+    this->data = new_data;
+    json::value camera_update = {this->data.fov, this->data.aspect, this->data.myNear, this->data.myFar};
+
+    this->OnChange( "UPDATE_CAMERA", camera_update );
+
+    if( sync )
+        this->Output( "UPDATE_CAMERA", camera_update );
+}
+
+CameraModule::CameraData CameraModule::getCamera()
+{
+    return this->data;
 }
 
 void CameraModule::setState( json::value state )
@@ -46,14 +54,18 @@ void CameraModule::setState( json::value state )
 
     auto it = obj.find( "camera" );
     if( it != obj.end() )
-        this->updateCamera( it->value() );
+        this->onUpdateCamera( it->value() );
+
+    this->TransformModule::setState( state );
 }
 
 json::value CameraModule::getState()
 {
-    json::array liste = {this->fov, this->aspect, this->myNear, this->myFar};
+    json::value transform_state = this->TransformModule::getState( );
 
-    json::object obj;
+    json::object obj = transform_state.as_object( );
+
+    json::array liste = {this->data.fov, this->data.aspect, this->data.myNear, this->data.myFar};
 
     obj["camera"] = liste;
 
