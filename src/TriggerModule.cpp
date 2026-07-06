@@ -6,20 +6,21 @@ TriggerModule::TriggerModule()
     this->type = "TriggerModule";
 }
 
-TriggerModule::TriggerModule(uint128_t UUID){
+TriggerModule::TriggerModule(uint128_t UUID) : ModuleCore(UUID)
+{
     this->type = "TriggerModule";
-    this->command.push_back("TRIGGER");
+    this->command["trigger"] = "TRIGGER";
     cout << "TriggerModule - constructor";
-    this->SetOnCommand("TRIGGER", [this](json::value v){
+    this->SetOnCommand(this->command["trigger"], [this](json::value v){
         (void)v;
         this->trigger();});
 
 }
 
 void TriggerModule::trigger(bool sync){
-    this->OnChange("TRIGGER", json::object());
+    this->OnChange(this->command["trigger"], json::object());
 
     if(sync){
-        this->Output("TRIGGER", json::object());
+        this->Output(this->command["trigger"], json::object());
     }
 }

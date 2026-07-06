@@ -2,17 +2,16 @@
 
 namespace json = boost::json;
 LineModule::LineModule() {};
-LineModule::LineModule(uint128_t UUID)
+LineModule::LineModule(uint128_t UUID) : ModuleCore(UUID)
 {
     this->type = "LineModule";
 
     this->origin = {0.,0.,0.};
     this->end = {0.,0.,0.};
 
-    string updLine = "UPDATE_LINE";
-    this->command.push_back(updLine);
+    this->command["updateLine"] = "UPDATE_LINE";
 
-    this->SetOnCommand(updLine, [&](json::value data) {this->updateLine(data);});
+    this->SetOnCommand(this->command["updateLine"], [&](json::value data) {this->updateLine(data);});
  
 }
 
@@ -36,12 +35,12 @@ void LineModule::updateLine(json::value line, bool sync)
     }
 
     json::value updatedLine = this->getLine();
-    this->OnChange("UPDATE_LINE", updatedLine);
+    this->OnChange(this->command["updateLine"], updatedLine);
 
     if(sync){
         json::object msgOutput;
         msgOutput["line"] = updatedLine;
-        this->Output("UPDATE_LINE", msgOutput);
+        this->Output(this->command["updateLine"], msgOutput);
     }
 }
 

@@ -6,9 +6,10 @@ MeshModule::MeshModule(uint128_t UUID) : FileModule(UUID)
 {
     this->type="MeshModule";
     cout << "MeshModule - constructor" << endl;
-    this->command.push_back("CLEAR");
-    this->command.push_back("UPDATE_TRANSFORM");
-    this->command.push_back("UPDATE_BOUNDINGBOX");
+
+    this->command["clear"] = "CLEAR";
+    this->command["updateTransform"] = "UPDATE_TRANSFORM";
+    this->command["updateBoundingBox"] = "UPDATE_BOUNDINGBOX";
 }
 
 json::value MeshModule::getState()
