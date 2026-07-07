@@ -8,13 +8,14 @@ class PrimitiveModule : public TransformModule
         json::value primitiveTypes;
         json::value primitive;
     public:
-        PrimitiveModule();
+        PrimitiveModule( );
         PrimitiveModule( uint128_t UUID );
-        json::value getPrimitive();
-        json::value getPrimitiveTypes();
-        void updatePrimitive(json::value primitive, bool sync = false);
-        json::value getState();
-        void setState(json::value state);
+        json::value getPrimitive( );
+        json::value getPrimitiveTypes( );
+        void onUpdatePrimitive( json::value primitive, bool sync = false );
+        void updatePrimitive( json::value primitive, bool sync = false );
+        json::value getState( );
+        void setState( json::value state );
 };
   
 #endif
