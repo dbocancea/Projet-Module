@@ -8,7 +8,7 @@ class PointsModule : public ModuleCore
         json::value position;
         json::value points;
     public:
-        PointsModule();
+        PointsModule( );
         PointsModule( uint128_t UUID );
         vector<uint128_t> getPointsUUID( );
         json::value getPoint( uint128_t UUID );
