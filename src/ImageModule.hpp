@@ -10,6 +10,7 @@ class ImageModule : public TransformModule
         ImageModule();
         ImageModule(uint128_t UUID);
         json::value getImage();
+        void onSetImage(json::value image, bool sync = false);
         void setImage(json::value image, bool sync = false);
         json::value getState();
         void setState(json::value state);
