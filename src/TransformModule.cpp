@@ -16,7 +16,7 @@ TransformModule::TransformModule( uint128_t UUID ) : ModuleCore( UUID )
     });
 }
 
-void TransformModule::updateTransform( json::value transform, bool sync = false )
+void TransformModule::onUpdateTransform( json::value transform, bool sync )
 {   
     if( !transform.is_array( ) ) return;
     auto& liste = transform.as_array( );
@@ -38,6 +38,28 @@ void TransformModule::updateTransform( json::value transform, bool sync = false 
 
         this->updateTransform( new_data, sync );
     }
+}
+
+void TransformModule::updateTransform( TransformData new_data, bool sync )
+{   
+    this->transform_data = new_data;
+    json::value transform_update = 
+    {
+        this->transform_data.translation[0], 
+        this->transform_data.translation[1],
+        this->transform_data.translation[2],
+
+        this->transform_data.rotation[0],
+        this->transform_data.rotation[1],
+        this->transform_data.rotation[2],
+        this->transform_data.rotation[3],
+
+        this->transform_data.scale[0],
+        this->transform_data.scale[1],
+        this->transform_data.scale[2],
+    };
+
+    this->OnChange( "UPDATE_TRANSFORM", transform_update );
 
     if( sync )
         this->Output( "UPDATE_TRANSFORM", transform_update );
