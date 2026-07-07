@@ -40,7 +40,7 @@ int main() {
         }}
     };
     std::string instJoinStr = boost::json::serialize(instJoin);
-    std::cout << instJoinStr << endl;
+    // std::cout << instJoinStr << endl;
 
     std:: string uuidStr = boost::json::serialize(testUUID);
     std::string stateStr = boost::json::serialize(modules.GetState());
@@ -51,10 +51,10 @@ int main() {
             std::cout << "Sent Identification..." << endl;
             webSocket.send(uuidStr);
 
-            cout << "trying to init..." << endl; 
+            // cout << "trying to init..." << endl; 
             webSocket.send(instJoinStr); 
 
-            cout << "trying to create camera module..." << endl; 
+            // cout << "trying to create camera module..." << endl; 
             webSocket.send(stateStr);
             
          //   webSocket.send(jsonStr);
