@@ -5,11 +5,8 @@
 #include "../src/Core/ModuleTypes.hpp"
 #include "../src/Core/ModuleRegistry.hpp"
 
-
-
 int main() {
     ix::initNetSystem();
-
 
     ix::WebSocket webSocket;
     string url = "ws://0.0.0.0:3000/"; // server address 
@@ -27,7 +24,7 @@ int main() {
 
     modules.AddModule("CameraModule", 123, 0);
 
-//    cout << boost::json::serialize(modules.GetState());
+    //cout << boost::json::serialize(modules.GetState());
     boost::json::value instJoin = {
         {"scope", "SYSTEM"},
         {"senderUUID", strTestUUID},
@@ -56,15 +53,7 @@ int main() {
 
             // cout << "trying to create camera module..." << endl; 
             webSocket.send(stateStr);
-            
-         //   webSocket.send(jsonStr);
-            //       webSocket.send("{\"command\":\"INSTANCE_JOIN\",\"data\":{\"instanceUUID\":\"00000000-0000-0000-0000-000000000000\",\"userUUID\":\"1acc3893-6a29-486b-96b7-eea902b7650b\"}}");
-           // webSocket.send(stateStr);
-        } 
-        // if (msg->str.find("INSTANCE_LIST") != std::string::npos) {
-        //         std::cout << "[SYSTEM] Server is ready! Sending JOIN and STATE commands..." << endl;
-                
-        // }
+        }
 
         else if (msg->type == ix::WebSocketMessageType::Message) {
             std::cout << "[RECEIVED FROM SERVER] " << msg->str << endl;
@@ -94,7 +83,7 @@ int main() {
         }
     }
 
-    std::cout << "Type messages below and press Enter to send (or 'exit' to quit):\n" << endl;
+    std::cout << "\nType 'exit' to quit\n" << endl;
     string userInput;
     while (true) {
         getline(cin, userInput);
@@ -102,11 +91,12 @@ int main() {
             break;
         }
 
-        if (webSocket.getReadyState() == ix::ReadyState::Open) {
-            webSocket.send(userInput);
-        } else {
-            std::cout << "[SYSTEM] Message not sent. ReadyState isn't open yet..." << endl;
-        }
+        //user input part
+        // if (webSocket.getReadyState() == ix::ReadyState::Open) {
+        //     webSocket.send(userInput);
+        // } else {
+        //     std::cout << "[SYSTEM] Message not sent. ReadyState isn't open yet..." << endl;
+        // }
     }
 
     std::cout << "Stopping WebSocket background loops..." << endl;
