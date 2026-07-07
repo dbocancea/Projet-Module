@@ -17,7 +17,6 @@ class ModuleRegistry : public ModuleCore
         void OnRemoveModule( json::value data );
         shared_ptr<ModuleCore> GetModule(uint128_t UUID);
         void SetState(json::value state) override;
-
         json::value GetState() override;
 };
 
