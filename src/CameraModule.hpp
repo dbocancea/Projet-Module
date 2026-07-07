@@ -14,7 +14,7 @@ class CameraModule : public TransformModule
             float myFar;
         };
     protected:
-        CameraData data{};
+        CameraData camera_data{};
     public:
         CameraModule( );
         CameraModule( uint128_t UUID );
