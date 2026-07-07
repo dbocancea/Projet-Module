@@ -11,7 +11,7 @@
 //     this->command.push_back("SET_NODES");
 //     this->command.push_back("UPDATE_NODES");
 //     this->command.push_back("CLEAR");
-// // 
+
 //     this->type = "GLTFModule";
 
 //     this->SetOnCommand("SET_NODES" , [this]( json::value data) { 

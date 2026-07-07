@@ -9,8 +9,8 @@ TransformModule::TransformModule( )
 TransformModule::TransformModule( uint128_t UUID ) : ModuleCore( UUID )
 {
     this->type = "TransformModule";
-
-    this->SetOnCommand( "UPDATE_TRANSFORM", [this]( json::value transform )
+    this->command["updateTransform"] = "UPDATE_TRANSFORM";
+    this->SetOnCommand( this->command["updateTransform"], [this]( json::value transform )
     {
         this->onUpdateTransform( transform );
     });
@@ -59,10 +59,10 @@ void TransformModule::updateTransform( TransformData new_data, bool sync )
         this->transform_data.scale[2],
     };
 
-    this->OnChange( "UPDATE_TRANSFORM", transform_update );
+    this->OnChange( this->command["updateTransform"], transform_update );
 
     if( sync )
-        this->Output( "UPDATE_TRANSFORM", transform_update );
+        this->Output( this->command["updateTransform"], transform_update );
 }
 
 

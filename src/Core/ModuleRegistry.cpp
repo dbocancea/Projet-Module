@@ -5,7 +5,7 @@ ModuleRegistry::ModuleRegistry() {}
 ModuleRegistry::ModuleRegistry(function<void(json::value)> outputFn) : ModuleCore(0)
 {
     shared_ptr<ModuleCore> selfPtr(this, [](ModuleCore*){ });
-    this->modules[0] = selfPtr;
+    this->modules.insert({0 , selfPtr });
 
     this->command["addModule"] = "ADD_MODULE";
     this->command["remouveModule"] = "REMOUVE_MODULE";

@@ -8,8 +8,8 @@ CameraModule::CameraModule() : TransformModule( 0 )
 CameraModule::CameraModule( uint128_t UUID ) : TransformModule( UUID )
 {
     this->type = "CameraModule";
-
-    this->SetOnCommand( "UPDATE_CAMERA", [this]( json::value camera )
+    this->command["updateCamera"] =  "UPDATE_CAMERA";
+    this->SetOnCommand( this->command["updateCamera"], [this]( json::value camera )
     {
         this->onUpdateCamera( camera );
     });
@@ -35,10 +35,10 @@ void CameraModule::updateCamera( CameraData new_data, bool sync )
     this->camera_data = new_data;
     json::value camera_update = {this->camera_data.fov, this->camera_data.aspect, this->camera_data.myNear, this->camera_data.myFar};
 
-    this->OnChange( "UPDATE_CAMERA", camera_update );
+    this->OnChange( this->command["updateCamera"], camera_update );
 
     if( sync )
-        this->Output( "UPDATE_CAMERA", camera_update );
+        this->Output( this->command["updateCamera"], camera_update );
 }
 
 CameraModule::CameraData CameraModule::getCamera( )

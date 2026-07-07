@@ -7,8 +7,9 @@
 class ModuleRegistry : public ModuleCore
 {
     private:
-        map< uint128_t , shared_ptr<ModuleCore> > modules;
+        
     public:
+    map< uint128_t , shared_ptr<ModuleCore> > modules;
         ModuleRegistry();
         ModuleRegistry( function<void(json::value)> outputFn)  ;
         void AddModule( string type ,uint128_t UUID , bool sync = false);
