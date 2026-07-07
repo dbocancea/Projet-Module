@@ -2,58 +2,25 @@
 #include "Core/ModuleTypes.hpp"
 int main()
 {
+    ModuleRegistry modules([](json::value val){string json_str = boost::json::serialize(val); cout << json_str<< endl;});
+    modules.AddModule("FileModule" , 123 , 1);
+  
+    modules.AddModule("FileModule" , 1 , 1);
+    auto fileModule1 = static_pointer_cast<FileModule>(modules.modules[123]);
+    fileModule1->UpdateFile("text" , "string" , "1, 1 ,1" , 1);
+    
+    auto fileModule2 = static_pointer_cast<FileModule>(modules.modules[1]);
+    fileModule1->SetOutputFn([&fileModule2](json::value payload) {
+    fileModule2->input(payload);
+    });
+    fileModule1->UpdateFile("text", "string", "1, 1, 1", true);  
 
-//    TextModule module(123);
-//    if (module.getText() == "") {
-//        cout << "get text: nice" << endl; 
-//    }
-//    else cout << "get text: not nice";
-//
-//
-//    bool onchange = false;
-//    module.SetOnChange("UPDATE_TEXT", [&](json::value data){
-//        onchange = true;
-//        cout << "onchange callback: " << data << endl;
-//    });
-//
-//    bool output = false;
-//    module.SetOutputFn([&](json::value text){
-//        output = true;
-//        cout << "output callback: " << text << endl;
-//    });
-//
-//    module.updateText("test");
-//    if(module.getText() == "test" && onchange && !output){
-//        cout << "updateText: passed, onchange, no output" << endl;
-//    }
-//    else cout << "updateText: test failed" << endl;
-//    onchange = false;
-//    module.updateText("trying sync", true);
-//    if(module.getText() == "trying sync" && onchange && output){
-//        cout << "updateText: passed, onchange & output" << endl;
-//    }
-//    else cout << "updateText: test failed" << endl;
-//
-//    json::object stateTest;
-//    stateTest["text"] = "State 1";
-//    module.setState(stateTest);
-//    json::value state = module.getState();
-//    if(state.as_object().at("text").as_string() == "State 1") cout << "state get, set passed" << endl;
-//    else cout << "state test failed";
-//
-//    json::object command;
-//    command["text"] = "command 1";
-//
-//    module.OnCommand("UPDATE_TEXT", command);
-//    if(module.getText() == "command 1") cout << "test on command passed" << endl;
-//    else cout << "oncommand test failed";
-//
-//
-//    cout << "--- TextLogModule test: ---" << endl;
-//
-//    TextLogModule tmodule(44);
-//    
-
-    ModuleRegistry modules([this](json::value val){string str = seria})
+    if (fileModule1->GetState() == fileModule2->GetState())
+        cout << "Sync automatique OK" << endl;
+    
+    json::value valF1 = modules.modules[123]->GetState();
+    json::value valF2 = modules.modules[1]->GetState();
+    modules.outputFn(valF1);
+    modules.outputFn(valF2);
     return 0;
 }

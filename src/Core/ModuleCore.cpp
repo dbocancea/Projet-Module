@@ -27,8 +27,6 @@ void ModuleCore::OnCommand(const string& command, json::value data)
     if (it != this->commandCallBack.end())
         for (auto callback_temp : it->second)
             callback_temp(data);
-    else
-        cout << this->UUID << " has no member " << endl;
 }
 
 void ModuleCore::SetOnChange(const string& command, function<void(json::value)> callback)
@@ -46,8 +44,6 @@ void ModuleCore::OnChange(const string& command, json::value data)
     if (it != this->changeCallBack.end())
         for (auto callback_temp : it->second)
             callback_temp(data);
-    else
-        cout << this->UUID << " has no member " << endl;
 }
 
 json::value ModuleCore::GetState ( )
