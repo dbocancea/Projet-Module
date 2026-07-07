@@ -48,10 +48,12 @@ void TransformModule::updateTransform( TransformData new_data, bool sync )
         this->transform_data.translation[0], 
         this->transform_data.translation[1],
         this->transform_data.translation[2],
+
         this->transform_data.rotation[0],
         this->transform_data.rotation[1],
         this->transform_data.rotation[2],
         this->transform_data.rotation[3],
+
         this->transform_data.scale[0],
         this->transform_data.scale[1],
         this->transform_data.scale[2],
@@ -84,15 +86,17 @@ json::value TransformModule::getState()
 {
     json::array liste = 
     {
-        this->transform_data.translation[0], 
-        this->transform_data.translation[1], 
-        this->transform_data.translation[2], 
-        this->transform_data.rotation[0], 
-        this->transform_data.rotation[1], 
-        this->transform_data.rotation[2], 
-        this->transform_data.rotation[3], 
-        this->transform_data.scale[0], 
-        this->transform_data.scale[1], 
+        this->transform_data.translation[0],
+        this->transform_data.translation[1],
+        this->transform_data.translation[2],
+
+        this->transform_data.rotation[0],
+        this->transform_data.rotation[1],
+        this->transform_data.rotation[2],
+        this->transform_data.rotation[3],
+
+        this->transform_data.scale[0],
+        this->transform_data.scale[1],
         this->transform_data.scale[2]
     };
 
