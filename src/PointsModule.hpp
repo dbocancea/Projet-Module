@@ -10,15 +10,19 @@ class PointsModule : public ModuleCore
     public:
         PointsModule();
         PointsModule( uint128_t UUID );
-        vector<uint128_t> getPointsUUID();
-        json::value getPoint(uint128_t UUID);
-        json::value getPoints(uint128_t UUID);
-        void addPoints(const json::value points, bool sync = false);
-        void removePoints(const json::value points, bool sync = false);
-        void updatePoints(const json::value points, bool sync = false);
-        void clear(bool sync = false);
-        json::value getState();
-        void setState(json::value state);
+        vector<uint128_t> getPointsUUID( );
+        json::value getPoint( uint128_t UUID );
+        json::value getPoints( uint128_t UUID );
+        void onAddPoints( const json::value add_points, bool sync = false );
+        void addPoints( const json::value add_points, bool sync = false );
+        void onRemovePoints( const json::value points_remove, bool sync = false );
+        void removePoints( const json::value points_remove, bool sync = false );
+        void onUpdatePoints( const json::value points_update, bool sync = false );
+        void updatePoints( const json::value points_update, bool sync = false );
+        void onClear( bool sync = false );
+        void clear( bool sync = false );
+        json::value getState( );
+        void setState( json::value state );
 };
   
 #endif
