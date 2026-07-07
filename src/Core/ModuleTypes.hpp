@@ -34,7 +34,7 @@ const map<string ,FnModuleTypes > ModuleTypes = {
     {"TransformModule" ,[](void* arg) -> void* { return new TransformModule(*static_cast<uint128_t*>(arg)); }  },
     {"TriggerModule" ,  [](void* arg) -> void* { return new TriggerModule(*static_cast<uint128_t*>(arg)); }  },
     {"Vector3Module" ,  [](void* arg) -> void* { return new Vector3Module(*static_cast<uint128_t*>(arg)); }  },
- //   {"ImageModule" ,    [](void* arg) -> void* { return new ImageModule(*static_cast<uint128_t*>(arg)); }  },
+    {"ImageModule" ,    [](void* arg) -> void* { return new ImageModule(*static_cast<uint128_t*>(arg)); }  },
     {"MeshModule" ,     [](void* arg) -> void* { return new MeshModule(*static_cast<uint128_t*>(arg)); }  },
     {"SceneGraph" ,     [](void* arg) -> void* { (void)arg; return new SceneGraph(); }  }
 };
