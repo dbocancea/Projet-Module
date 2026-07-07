@@ -11,28 +11,43 @@ LineModule::LineModule(uint128_t UUID) : ModuleCore(UUID)
 
     this->command["updateLine"] = "UPDATE_LINE";
 
-    this->SetOnCommand(this->command["updateLine"], [&](json::value data) {this->updateLine(data);});
+    this->SetOnCommand(this->command["updateLine"], [&](json::value data) {this->OnUpdateLine(data);});
  
 }
 
-void LineModule::updateLine(json::value line, bool sync) 
+void LineModule::OnUpdateLine(json::value line) 
 {
-    cout << "LineModule - updateLine" << endl;
     json::object obj = line.get_object();
-
+    vector<float> origintemp;
+    vector<float> endtemp;
     if(obj.contains("origin") && obj.at("origin").is_array()){
         json::array arr = obj.at("origin").get_array();
-        for(int i = 0; i < arr.size() && i < this->origin.size(); ++i){    
-            this->origin[i] = json::value_to<float>(arr[i]);
+        for(int i = 0; i < static_cast<int>(arr.size()); ++i){    
+            origintemp[i] = json::value_to<float>(arr[i]);
         }
     }
 
     if(obj.contains("end") && obj.at("end").is_array()){
         json::array arr = obj.at("end").get_array();
-        for(int i = 0; i < arr.size() && i < this->end.size(); ++i){    
-            this->end[i] = json::value_to<float>(arr[i]);
+        for(int i = 0; i < static_cast<int>(arr.size()); ++i){    
+            endtemp[i] = json::value_to<float>(arr[i]);
         }
     }
+    this->UpdateLine(origintemp , endtemp , false);
+    
+}
+
+void LineModule::UpdateLine(vector<float> origin , vector<float> end, bool sync) 
+{
+    cout << "LineModule - updateLine" << endl;
+
+    if(!origin.empty())
+        for(int i = 0; i < static_cast<int>(origin.size()); ++i) 
+            this->origin[i] = origin[i];
+        
+    if(!end.empty())
+        for(int i = 0; i < static_cast<int>(end.size()); ++i) 
+            this->end[i] = end[i];
 
     json::value updatedLine = this->getLine();
     this->OnChange(this->command["updateLine"], updatedLine);
@@ -56,5 +71,5 @@ json::value LineModule::getState(){
 }
 
 void LineModule::setState(json::value state){
-    this->updateLine(state.get_object().at("line"));
+    this->OnUpdateLine(state.get_object());
 }
