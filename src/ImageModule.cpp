@@ -8,6 +8,7 @@ ImageModule::ImageModule( ) : TransformModule( 0 )
 ImageModule::ImageModule( uint128_t UUID ) : TransformModule( UUID )
 {
     this->type = "ImageModule";
+    this->command["setImage"] =  "SET_IMAGE";
     this->SetOnCommand( "SET_IMAGE", [this]( json::value image )
     {
         this->onSetImage( image );
@@ -26,11 +27,11 @@ void ImageModule::onSetImage( json::value new_im, bool sync )
 
 void ImageModule::setImage( json::value im, bool sync )
 {
-    this->OnChange( "SET_IMAGE", im );
+    this->OnChange( this->command["setImage"], im );
 
     if( sync )
     {
-        this->Output( "SET_IMAGE", im );
+        this->Output( this->command["setImage"], im );
     }
 }
 
