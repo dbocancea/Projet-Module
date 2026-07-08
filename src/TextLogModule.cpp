@@ -2,15 +2,16 @@
 
 namespace json = boost::json;
 
-TextLogModule::TextLogModule() : ModuleCore(0)
+TextLogModule::TextLogModule() : ModuleCore()
 {
     this->type = "TextLogModule";
 }
 
-TextLogModule::TextLogModule(uint128_t UUID) : ModuleCore(UUID)
+TextLogModule::TextLogModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     cout << "TextLogModule - constructor" << endl;
-    this->id = 123;
+    boost::uuids::random_generator gen;
+    this->id = gen();
     this->type = "TextLogModule";
     this->command["addText"] = "ADD_TEXT";
     this->command["removeText"] = "REMOVE_TEXT";
@@ -27,7 +28,7 @@ TextLogModule::TextLogModule(uint128_t UUID) : ModuleCore(UUID)
                        { this->clear(); });
 }
 
-TextLog TextLogModule::getTextLog(uint128_t textUUID)
+TextLog TextLogModule::getTextLog(uuids::uuid textUUID)
 {
     return this->textLogs[textUUID];
 }
@@ -35,11 +36,11 @@ TextLog TextLogModule::getTextLog(uint128_t textUUID)
 void TextLogModule::OnaddTextInternal(json::object log, bool sync)
 {
     string uuidStr = json::value_to<string>(log.at("UUID"));
-    uint128_t uuid = uint128_t(uuidStr);
+    uuids::uuid uuid = uuids::string_generator{}(uuidStr);
 
     TextLog t;
     string idStr = json::value_to<string>(log.at("id"));
-    uint128_t id = uint128_t(idStr);
+    uuids::uuid id = uuids::string_generator{}(idStr);
     t.id = id;
     t.UUID = uuid;
     t.text = log["text"].as_string().c_str();
@@ -47,14 +48,14 @@ void TextLogModule::OnaddTextInternal(json::object log, bool sync)
     this->addTextInternal(uuid, t, sync);
 }
 
-void TextLogModule::addTextInternal(uint128_t uuid, TextLog t, bool sync)
+void TextLogModule::addTextInternal(uuids::uuid uuid, TextLog t, bool sync)
 {
     this->textList.push_back(uuid);
     this->textLogs[uuid] = t;
 
     json::object updatedLog;
-    updatedLog["id"] = t.id.str();
-    updatedLog["UUID"] = t.UUID.str();
+    updatedLog["id"] = uuids::to_string(t.id);
+    updatedLog["UUID"] = uuids::to_string(t.UUID);
     updatedLog["text"] = t.text;
     this->OnChange(this->command["addText"], updatedLog);
 
@@ -71,7 +72,7 @@ void TextLogModule::addText(string text, bool sync)
     json::object log;
     log["UUID"] = 9999;
     log["text"] = text;
-    log["id"] = this->id.str();
+    log["id"] = uuids::to_string(this->id);
     this->OnaddTextInternal(log, sync);
 }
 
@@ -81,8 +82,8 @@ json::array TextLogModule::getTextLogs()
     for (auto uuid : this->textList)
     {
         json::object obj;
-        obj["id"] = this->textLogs[uuid].id.str();
-        obj["UUID"] = this->textLogs[uuid].UUID.str();
+        obj["id"] = uuids::to_string(this->textLogs[uuid].id);
+        obj["UUID"] = uuids::to_string(this->textLogs[uuid].UUID);
         obj["text"] = this->textLogs[uuid].text;
         list.push_back(obj);
     }
@@ -92,7 +93,7 @@ json::array TextLogModule::getTextLogs()
 void TextLogModule::OnremoveText(json::value log)
 {
     string uuidStr = json::value_to<string>(log.get_object().at("UUID"));
-    uint128_t uuid = uint128_t(uuidStr);
+    uuids::uuid uuid = uuids::string_generator{}(uuidStr);
 
     if (this->textLogs.find(uuid) == this->textLogs.end())
     {
@@ -102,7 +103,7 @@ void TextLogModule::OnremoveText(json::value log)
     this->removeText(uuid, false);
 }
 
-void TextLogModule::removeText(uint128_t uuid, bool sync)
+void TextLogModule::removeText(uuids::uuid uuid, bool sync)
 {
     if (this->textLogs.find(uuid) == this->textLogs.end())
     {
@@ -112,7 +113,7 @@ void TextLogModule::removeText(uint128_t uuid, bool sync)
     this->textLogs.erase(uuid);
 
     json::object rmData;
-    rmData["UUID"] = uuid.str();
+    rmData["UUID"] = uuids::to_string(uuid);
     this->OnChange(this->command["removeText"], rmData);
 
     if (sync)
@@ -126,21 +127,21 @@ void TextLogModule::removeText(uint128_t uuid, bool sync)
 void TextLogModule::OnupdateText(json::value log)
 {
     string uuidStr = json::value_to<string>(log.get_object().at("UUID"));
-    uint128_t uuid = uint128_t(uuidStr);
+    uuids::uuid uuid = uuids::string_generator{}(uuidStr);
     if (this->textLogs.find(uuid) == this->textLogs.end())
     {
         return;
     }
     TextLog t;
     string idStr = json::value_to<string>(log.get_object().at("id"));
-    uint128_t id = uint128_t(idStr);
+    uuids::uuid id = uuids::string_generator{}(idStr);
     t.id = id;
     t.UUID = uuid;
     t.text = log.as_object()["text"].as_string().c_str();
     this->updateText(uuid, t, false);
 }
 
-void TextLogModule::updateText(uint128_t uuid, TextLog t, bool sync)
+void TextLogModule::updateText(uuids::uuid uuid, TextLog t, bool sync)
 {
     if (this->textLogs.find(uuid) == this->textLogs.end())
     {
@@ -148,8 +149,8 @@ void TextLogModule::updateText(uint128_t uuid, TextLog t, bool sync)
     }
     this->textLogs[uuid] = t;
     json::object updatedLog;
-    updatedLog["id"] = t.id.str();
-    updatedLog["UUID"] = t.UUID.str();
+    updatedLog["id"] = uuids::to_string(t.id);
+    updatedLog["UUID"] = uuids::to_string(t.UUID);
     updatedLog["text"] = t.text;
 
     this->OnChange(this->command["updateText"], updatedLog);

@@ -6,7 +6,7 @@ TriggerModule::TriggerModule()
     this->type = "TriggerModule";
 }
 
-TriggerModule::TriggerModule(uint128_t UUID) : ModuleCore(UUID)
+TriggerModule::TriggerModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     this->type = "TriggerModule";
     this->command["trigger"] = "TRIGGER";

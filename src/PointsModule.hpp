@@ -9,10 +9,10 @@ class PointsModule : public ModuleCore
         json::value points;
     public:
         PointsModule( );
-        PointsModule( uint128_t UUID );
-        vector<uint128_t> getPointsUUID( );
-        json::value getPoint( uint128_t UUID );
-        json::value getPoints( uint128_t UUID );
+        PointsModule( uuids::uuid UUID );
+        vector<uuids::uuid> getPointsUUID( );
+        json::value getPoint( uuids::uuid UUID );
+        json::value getPoints( uuids::uuid UUID );
         void onAddPoints( const json::value add_points, bool sync = false );
         void addPoints( const json::value add_points, bool sync = false );
         void onRemovePoints( const json::value points_remove, bool sync = false );

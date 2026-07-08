@@ -7,7 +7,7 @@ class TriggerModule : public ModuleCore
 {
     public:
         TriggerModule();
-        TriggerModule(uint128_t UUID);
+        TriggerModule(uuids::uuid UUID);
 
         void trigger(bool sync = false);
 };

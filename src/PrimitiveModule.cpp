@@ -1,13 +1,13 @@
 #include "PrimitiveModule.hpp"
 
-PrimitiveModule::PrimitiveModule( ) : TransformModule( 0 )
+PrimitiveModule::PrimitiveModule( ) : TransformModule( )
 {
     this->type = "PrimitiveModule";
     this->primitive = "sphere";
     this->primitiveTypes = {this->primitive, "box"};
 }
 
-PrimitiveModule::PrimitiveModule( uint128_t UUID ) : TransformModule( UUID )
+PrimitiveModule::PrimitiveModule( uuids::uuid UUID ) : TransformModule( UUID )
 {
     this->type = "PrimitiveModule";
 

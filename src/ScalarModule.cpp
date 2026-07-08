@@ -5,7 +5,7 @@ ScalarModule::ScalarModule()
     this->type = "ScalarModule";
 }
 
-ScalarModule::ScalarModule(uint128_t UUID) : ModuleCore(UUID)
+ScalarModule::ScalarModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     cout << "ScalarModule - constructor" << endl;
     this->type = "ScalarModule";

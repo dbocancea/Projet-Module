@@ -8,7 +8,7 @@ class TextModule : public ModuleCore
         string text;
     public:
         TextModule();
-        TextModule(uint128_t UUID);
+        TextModule(uuids::uuid UUID);
 
         void updateText(string text, bool sync = false);
         string getText();

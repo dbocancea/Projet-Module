@@ -5,7 +5,7 @@ ModuleCore::ModuleCore()
     this->type = "ModuleCore";
 }
 
-ModuleCore::ModuleCore(uint128_t UUID)
+ModuleCore::ModuleCore(uuids::uuid UUID)
 {   
     this->command["setState"] = "SET_STATE";
     this->type = "ModuleCore";
@@ -55,7 +55,7 @@ void ModuleCore::SetState (json::value state )
 	return;
 }
 
-uint128_t ModuleCore::GetUUID()
+uuids::uuid ModuleCore::GetUUID()
 {
     return this->UUID;
 }
@@ -68,7 +68,7 @@ void ModuleCore::SetOutputFn( function<void(json::value)> outputFn )
 json::value ModuleCore::Encode(const string& command, json::value data)
 {
     json::object payload;
-    payload["moduleUUID"] = this->UUID.str();
+    payload["moduleUUID"] = uuids::to_string(this->UUID);
     payload["command"] = command;
     payload["data"] = data;
     return payload;

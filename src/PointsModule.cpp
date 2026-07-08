@@ -8,7 +8,7 @@ PointsModule::PointsModule()
     this->position = json::object();
 }
 
-PointsModule::PointsModule( uint128_t UUID ) : ModuleCore( UUID )
+PointsModule::PointsModule( uuids::uuid UUID ) : ModuleCore( UUID )
 {
     this->type = "PointsModule";
 
@@ -39,19 +39,20 @@ PointsModule::PointsModule( uint128_t UUID ) : ModuleCore( UUID )
     } );
 }
 
-vector<uint128_t> PointsModule::getPointsUUID( )
+vector<uuids::uuid> PointsModule::getPointsUUID( )
 {
-    vector<uint128_t> keys;
+    vector<uuids::uuid> keys;
     keys.reserve( this->points.as_object( ).size( ) );
+    uuids::string_generator gen;
     for( auto& kv : this->points.as_object( ) )
-        keys.push_back( uint128_t ( kv.key_c_str( ) ) );
+        keys.push_back(gen(std::string(kv.key())));
     return keys;
 }
 
-json::value PointsModule::getPoint( uint128_t UUID )
+json::value PointsModule::getPoint(uuids::uuid UUID )
 {
     auto& UUID_points = this->points.as_object( );
-    auto it = UUID_points.find( UUID.str( ) );
+    auto it = UUID_points.find( uuids::to_string(UUID) );
 
     if( it != UUID_points.end( ) )
         return it->value( );
@@ -59,7 +60,7 @@ json::value PointsModule::getPoint( uint128_t UUID )
     return json::array( );
 }
 
-json::value PointsModule::getPoints( uint128_t UUID )
+json::value PointsModule::getPoints( uuids::uuid UUID )
 {
     return this->points;
 }

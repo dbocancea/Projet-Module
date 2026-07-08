@@ -6,7 +6,7 @@ TransformModule::TransformModule( )
     this->type = "TransformModule";
 }
 
-TransformModule::TransformModule( uint128_t UUID ) : ModuleCore( UUID )
+TransformModule::TransformModule( uuids::uuid  UUID ) : ModuleCore( UUID )
 {
     this->type = "TransformModule";
     this->command["updateTransform"] = "UPDATE_TRANSFORM";

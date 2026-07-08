@@ -7,7 +7,7 @@ class MeshModule : public FileModule
 {
     public:
         MeshModule();
-        MeshModule(uint128_t UUID);
+        MeshModule(uuids::uuid UUID);
         json::value getState();
         void SetState( json::value state );
 };

@@ -2,7 +2,7 @@
 
 MeshModule::MeshModule(){}
 
-MeshModule::MeshModule(uint128_t UUID) : FileModule(UUID)
+MeshModule::MeshModule(uuids::uuid UUID) : FileModule(UUID)
 {
     this->type="MeshModule";
     cout << "MeshModule - constructor" << endl;

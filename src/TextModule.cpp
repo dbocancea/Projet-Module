@@ -7,7 +7,7 @@ TextModule::TextModule()
    this->text = "";
 }
 
-TextModule::TextModule(uint128_t UUID) : ModuleCore(UUID){
+TextModule::TextModule(uuids::uuid UUID) : ModuleCore(UUID){
    cout << "TextModule - constructor" << endl;
    this->type = "TextModule";
    this->text = "";

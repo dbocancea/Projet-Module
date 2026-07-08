@@ -1,11 +1,11 @@
 #include "ImageModule.hpp"
 
-ImageModule::ImageModule( ) : TransformModule( 0 )
+ImageModule::ImageModule( ) : TransformModule( )
 {
     this->type = "ImageModule";
 }
 
-ImageModule::ImageModule( uint128_t UUID ) : TransformModule( UUID )
+ImageModule::ImageModule( uuids::uuid UUID ) : TransformModule( UUID )
 {
     this->type = "ImageModule";
     this->command["setImage"] =  "SET_IMAGE";
