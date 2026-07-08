@@ -70,7 +70,8 @@ void TextLogModule::addTextInternal(uuids::uuid uuid, TextLog t, bool sync)
 void TextLogModule::addText(string text, bool sync)
 {
     json::object log;
-    log["UUID"] = 9999;
+    uuids::random_generator gen;
+    log["UUID"] = uuids::to_string(gen());
     log["text"] = text;
     log["id"] = uuids::to_string(this->id);
     this->OnaddTextInternal(log, sync);
