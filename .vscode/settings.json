@@ -1,7 +1,4 @@
 {
-<<<<<<< HEAD
     "C_Cpp.default.compilerPath": "/usr/bin/g++-13"
-=======
-    "C_Cpp.default.compilerPath": "/usr/bin/g++"
->>>>>>> origin/json
+    
 }
