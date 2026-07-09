@@ -8,8 +8,8 @@ class MeshModule : public FileModule
     public:
         MeshModule();
         MeshModule(uuids::uuid UUID);
-        json::value getState();
-        void SetState( json::value state );
+        json::value GetState() override;
+        void SetState( json::value state ) override;
 };
 
 

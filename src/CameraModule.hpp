@@ -21,8 +21,8 @@ class CameraModule : public TransformModule
         void onUpdateCamera( json::value camera, bool sync = false );
         void updateCamera( CameraData camera, bool sync = false );
         CameraData getCamera( );
-        void setState( json::value state );
-        json::value getState( );
+        void SetState( json::value state );
+        json::value GetState( );
 };
 
 #endif

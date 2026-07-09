@@ -49,17 +49,15 @@ int main() {
     std::cout << instJoin << endl;
     std::string instJoinStr = boost::json::serialize(instJoin);
 
-    std::string uuidStr = boost::json::serialize(testUUID);
+    std:: string uuidStr = boost::json::serialize(testUUID);
 
     webSocket.setOnMessageCallback([&](const ix::WebSocketMessagePtr& msg) {
         if (msg->type == ix::WebSocketMessageType::Open) {
             std::cout << "[CONNECTED] Successfully shook hands with Server!" << endl;
             std::cout << "Sent Identification..." << endl;
             webSocket.send(uuidStr);
-
-            std::cout << "Sending INSTANCE_JOIN, waiting for server confirmation..." << endl;
-            webSocket.send(instJoinStr);
-           
+            webSocket.send(instJoinStr); 
+            modules.AddModule("CameraModule", UUID, 1);
         }
 
         else if (msg->type == ix::WebSocketMessageType::Message) {
@@ -74,57 +72,44 @@ int main() {
             string scope = obj.at("scope").as_string().c_str();
             auto &payload = obj.at("payload").as_object();
 
-           
-            if (scope == "SYSTEM" && !instanceJoined) {
+                if (scope == "MODULE" && payload.contains("command")) {
+                    string command = payload.at("command").as_string().c_str();
+                    string moduleUUIDStr = payload.at("moduleUUID").as_string().c_str();
+                    uuids::uuid moduleUUID = uuids::string_generator{}(moduleUUIDStr);
 
-                instanceJoined = true;
-                std::cout << "[SYSTEM] Instance join confirmee par le serveur, "
-                             "envoi du module..." << endl;
+                    bool isRegistryTarget = (moduleUUID == uuids::nil_generator()());
 
-                modules.AddModule("CameraModule", UUID, 1);
-                cout << "Camera UUID : " << uuids::to_string(UUID) << endl;
-                modules.AddModule("FileModule", UUID1, 1);
-                cout << "File UUID : " << uuids::to_string(UUID1) << endl;
-                return;
-            }
+                    if (command == "SET_STATE" && isRegistryTarget) {
+                        boost::json::value stateData = payload.at("data");
+                        modules.SetState(stateData);
 
-            if (scope == "MODULE" && payload.contains("command")) {
-                string command = payload.at("command").as_string().c_str();
-                string moduleUUIDStr = payload.at("moduleUUID").as_string().c_str();
-                uuids::uuid moduleUUID = uuids::string_generator{}(moduleUUIDStr);
-
-                bool isRegistryTarget = (moduleUUID == uuids::nil_generator()());
-
-                if (command == "SET_STATE" && isRegistryTarget) {
-                    boost::json::value stateData = payload.at("data");
-                    modules.SetState(stateData);
-
-                    auto &modulesArr = stateData.as_object().at("modulesData").as_array();
-                    bool found = false;
-                    for (auto &entry : modulesArr) {
-                        string uStr = entry.as_object().at("UUID").as_string().c_str();
-                        if (uuids::string_generator{}(uStr) == UUID) { found = true; break; }
+                        auto &modulesArr = stateData.as_object().at("modulesData").as_array();
+                        bool found = false;
+                        for (auto &entry : modulesArr) {
+                            string uStr = entry.as_object().at("UUID").as_string().c_str();
+                            if (uuids::string_generator{}(uStr) == UUID) { found = true; break; }
+                        }
+                        std::cout << (found
+                            ? "[SYSTEM] Confirmed: server has the module\n"
+                            : "[SYSTEM] Server does NOT have the module yet\n");
                     }
-                    std::cout << (found
-                        ? "[SYSTEM] Confirmed: server has the module\n"
-                        : "[SYSTEM] Server does NOT have the module yet\n");
-                }
-                else if (command == "ADD_MODULE" && isRegistryTarget) {
-                    auto &data = payload.at("data").as_object();
-                    string addedUUIDStr = data.at("UUID").as_string().c_str();
-                    uuids::uuid addedUUID = uuids::string_generator{}(addedUUIDStr);
+                    else if (command == "ADD_MODULE" && isRegistryTarget) {
+                        auto &data = payload.at("data").as_object();
+                        string addedUUIDStr = data.at("UUID").as_string().c_str();
+                        uuids::uuid addedUUID = uuids::string_generator{}(addedUUIDStr);
 
-                    if (addedUUID == UUID) {
-                        std::cout << "[SYSTEM] Confirmed: server saved our module ("
-                                   << data.at("type").as_string() << ")\n";
-                    } else {
-                        std::cout << "[SYSTEM] Another client's module was added: "
-                                   << addedUUIDStr << "\n";
+                        if (addedUUID == UUID) {
+                            std::cout << "[SYSTEM] Confirmed: server saved our module ("
+                                    << data.at("type").as_string() << ")\n";
+                        } else {
+                            std::cout << "[SYSTEM] Another client's module was added: "
+                                    << addedUUIDStr << "\n";
+                        }
                     }
-                }
-                else {
-                    auto module = modules.GetModule(moduleUUID);
-                    if (module) module->input(payload);
+                    else {
+                        auto module = modules.GetModule(moduleUUID);
+                        if (module) module->input(payload);
+                    }
                 }
             }
         }

@@ -12,8 +12,8 @@ class TextModule : public ModuleCore
 
         void updateText(string text, bool sync = false);
         string getText();
-        boost::json::value getState();
-        void setState(boost::json::value state);
+        boost::json::value GetState() override;
+        void SetState(boost::json::value state) override;
 
 };
   

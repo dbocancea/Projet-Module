@@ -37,9 +37,9 @@ void ImageModule::setImage( json::value im, bool sync )
     }
 }
 
-json::value ImageModule::getState( )
+json::value ImageModule::GetState( )
 {
-    json::value transformState = this->TransformModule::getState( );
+    json::value transformState = this->TransformModule::GetState( );
 
     json::object obj = transformState.as_object( );
 
@@ -48,7 +48,7 @@ json::value ImageModule::getState( )
     return obj;
 }
 
-void ImageModule::setState( json::value state )
+void ImageModule::SetState( json::value state )
 {
     if( !state.is_object( ) ) return;
     
@@ -58,5 +58,5 @@ void ImageModule::setState( json::value state )
     if( it != obj.end( ) )
         this->setImage( it->value( ) );
 
-    this->TransformModule::setState( state );
+    this->TransformModule::SetState( state );
 }

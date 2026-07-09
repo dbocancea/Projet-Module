@@ -18,26 +18,39 @@ TransformModule::TransformModule( uuids::uuid  UUID ) : ModuleCore( UUID )
 
 void TransformModule::onUpdateTransform( json::value transform, bool sync )
 {   
-    if( !transform.is_array( ) ) return;
-    auto& liste = transform.as_array( );
-    if( liste.size( ) >= 10 )
-    {
-        TransformData new_data;
-        new_data.translation[0] = liste[0].to_number<float>( );
-        new_data.translation[1] = liste[1].to_number<float>();
-        new_data.translation[2] = liste[2].to_number<float>();
+    if( !transform.is_object() ) return;
+    auto& outer = transform.as_object();
 
-        new_data.rotation[0] = liste[3].to_number<float>( );
-        new_data.rotation[1] = liste[4].to_number<float>( );
-        new_data.rotation[2] = liste[5].to_number<float>( );
-        new_data.rotation[3] = liste[6].to_number<float>( );
-
-        new_data.scale[0] = liste[7].to_number<float>( );
-        new_data.scale[1] = liste[8].to_number<float>( );
-        new_data.scale[2] = liste[9].to_number<float>( );
-
-        this->updateTransform( new_data, sync );
+    // Accept either {"translation":...,...} directly, or {"transform": {...}} wrapped
+    const boost::json::object* objPtr = &outer;
+    boost::json::object unwrapped;
+    if (outer.contains("transform")) {
+        unwrapped = outer.at("transform").as_object();
+        objPtr = &unwrapped;
     }
+    auto& obj = *objPtr;
+
+    if (!obj.contains("translation") || !obj.contains("rotation") || !obj.contains("scale"))
+        return;
+
+    auto& t = obj.at("translation").as_array();
+    auto& r = obj.at("rotation").as_array();
+    auto& s = obj.at("scale").as_array();
+    if (t.size() < 3 || r.size() < 4 || s.size() < 3) return;
+
+    TransformData new_data;
+    new_data.translation[0] = t[0].to_number<float>();
+    new_data.translation[1] = t[1].to_number<float>();
+    new_data.translation[2] = t[2].to_number<float>();
+    new_data.rotation[0] = r[0].to_number<float>();
+    new_data.rotation[1] = r[1].to_number<float>();
+    new_data.rotation[2] = r[2].to_number<float>();
+    new_data.rotation[3] = r[3].to_number<float>();
+    new_data.scale[0] = s[0].to_number<float>();
+    new_data.scale[1] = s[1].to_number<float>();
+    new_data.scale[2] = s[2].to_number<float>();
+
+    this->updateTransform( new_data, sync );
 }
 
 void TransformModule::updateTransform( TransformData new_data, bool sync )
@@ -71,7 +84,7 @@ TransformModule::TransformData TransformModule::getTransform( )
     return this->transform_data;
 }
 
-void TransformModule::setState( json::value state )
+void TransformModule::SetState( json::value state )
 {
     if( !state.is_object( ) ) return;
 
@@ -82,26 +95,14 @@ void TransformModule::setState( json::value state )
         this->onUpdateTransform( it->value( ) );
 }
 
-json::value TransformModule::getState( )
+json::value TransformModule::GetState()
 {
-    json::array liste = 
-    {
-        this->transform_data.translation[0],
-        this->transform_data.translation[1],
-        this->transform_data.translation[2],
-
-        this->transform_data.rotation[0],
-        this->transform_data.rotation[1],
-        this->transform_data.rotation[2],
-        this->transform_data.rotation[3],
-
-        this->transform_data.scale[0],
-        this->transform_data.scale[1],
-        this->transform_data.scale[2]
-    };
+    json::object transform;
+    transform["translation"] = json::array{transform_data.translation[0], transform_data.translation[1], transform_data.translation[2]};
+    transform["rotation"] = json::array{transform_data.rotation[0], transform_data.rotation[1], transform_data.rotation[2], transform_data.rotation[3]};
+    transform["scale"] = json::array{transform_data.scale[0], transform_data.scale[1], transform_data.scale[2]};
 
     json::object obj;
-    obj["transform"] = liste;
-
+    obj["transform"] = transform;
     return obj;
 }

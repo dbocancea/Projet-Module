@@ -39,12 +39,12 @@ string TextModule::getText(){
    return this->text;
 }
 
-json::value TextModule::getState(){
+json::value TextModule::GetState(){
    json::object state;
    state["text"] = this->text;
    return state;
 }
 
-void TextModule::setState(json::value state){
+void TextModule::SetState(json::value state){
    this->updateText(state.as_object().at("text").as_string().c_str(), false);
 }

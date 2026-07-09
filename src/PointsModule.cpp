@@ -145,12 +145,12 @@ void PointsModule::clear( bool sync )
         this->Output( "CLEAR", json::object( ) );
 }
 
-json::value PointsModule::getState( )
+json::value PointsModule::GetState( )
 {
     return this->points;
 }
 
-void PointsModule::setState( json::value state )
+void PointsModule::SetState( json::value state )
 {
 
     this->onAddPoints( state );
