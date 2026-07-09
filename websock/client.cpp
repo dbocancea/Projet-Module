@@ -10,7 +10,7 @@ int main() {
     ix::initNetSystem();
     uuids::random_generator gen;
     ix::WebSocket webSocket;
-    string url = "ws://0.0.0.0:8080/"; // server address 
+    string url = "ws://0.0.0.0:8080/"; // server address
     webSocket.setUrl(url);
 
     uuids::uuid TestUUID = gen();
@@ -19,25 +19,22 @@ int main() {
         {"UUID", strTestUUID}
     };
 
-
     uuids::uuid UUID = gen();
+    uuids::uuid UUID1 = gen();
+    bool instanceJoined = false;
 
     ModuleRegistry modules([&](json::value outData){
-        //std::cout << "test" << endl;
-        if(webSocket.getReadyState() == ix::ReadyState::Open){
+        if (webSocket.getReadyState() == ix::ReadyState::Open) {
             boost::json::value wrapped = {
-            {"scope", "MODULE"},
-            {"senderUUID", strTestUUID},
-            {"payload", outData}
-        };
+                {"scope", "MODULE"},
+                {"senderUUID", strTestUUID},
+                {"payload", outData}
+            };
             std::string data = boost::json::serialize(wrapped);
             webSocket.send(data);
         }
     });
 
-
-
-    //cout << boost::json::serialize(modules.GetState());
     boost::json::value instJoin = {
         {"scope", "SYSTEM"},
         {"senderUUID", strTestUUID},
@@ -51,10 +48,8 @@ int main() {
     };
     std::cout << instJoin << endl;
     std::string instJoinStr = boost::json::serialize(instJoin);
-    // std::cout << instJoinStr << endl;
 
-    std:: string uuidStr = boost::json::serialize(testUUID);
-   // std::string stateStr = boost::json::serialize(modules.GetState());
+    std::string uuidStr = boost::json::serialize(testUUID);
 
     webSocket.setOnMessageCallback([&](const ix::WebSocketMessagePtr& msg) {
         if (msg->type == ix::WebSocketMessageType::Open) {
@@ -62,11 +57,9 @@ int main() {
             std::cout << "Sent Identification..." << endl;
             webSocket.send(uuidStr);
 
-            // cout << "trying to init..." << endl; 
-            webSocket.send(instJoinStr); 
-            modules.AddModule("CameraModule", UUID, 1);
-            // cout << "trying to create camera module..." << endl; 
-            //webSocket.send(stateStr);
+            std::cout << "Sending INSTANCE_JOIN, waiting for server confirmation..." << endl;
+            webSocket.send(instJoinStr);
+           
         }
 
         else if (msg->type == ix::WebSocketMessageType::Message) {
@@ -75,49 +68,72 @@ int main() {
             boost::json::value incomingData = boost::json::parse(msg->str);
             auto &obj = incomingData.as_object();
 
-            if (obj.contains("payload") && obj.contains("scope")) {
-                string scope = obj.at("scope").as_string().c_str();
-                auto &payload = obj.at("payload").as_object();
+            if (!obj.contains("payload") || !obj.contains("scope"))
+                return;
 
-                if (scope == "MODULE" && payload.contains("command")) {
-    string command = payload.at("command").as_string().c_str();
-    string moduleUUIDStr = payload.at("moduleUUID").as_string().c_str();
-    uuids::uuid moduleUUID = uuids::string_generator{}(moduleUUIDStr);
+            string scope = obj.at("scope").as_string().c_str();
+            auto &payload = obj.at("payload").as_object();
 
-    bool isRegistryTarget = (moduleUUID == uuids::nil_generator()());
+           
+            if (scope == "SYSTEM" && !instanceJoined) {
 
-    if (command == "SET_STATE" && isRegistryTarget) {
-        boost::json::value stateData = payload.at("data");
-        modules.SetState(stateData);
+                instanceJoined = true;
+                std::cout << "[SYSTEM] Instance join confirmee par le serveur, "
+                             "envoi du module..." << endl;
 
-        auto &modulesArr = stateData.as_object().at("modulesData").as_array();
-        bool found = false;
-        for (auto &entry : modulesArr) {
-            string uStr = entry.as_object().at("UUID").as_string().c_str();
-            if (uuids::string_generator{}(uStr) == UUID) { found = true; break; }
+                modules.AddModule("CameraModule", UUID, 1);
+                cout << "Camera UUID : " << uuids::to_string(UUID) << endl;
+                modules.AddModule("FileModule", UUID1, 1);
+                cout << "File UUID : " << uuids::to_string(UUID1) << endl;
+                return;
+            }
+
+            if (scope == "MODULE" && payload.contains("command")) {
+                string command = payload.at("command").as_string().c_str();
+                string moduleUUIDStr = payload.at("moduleUUID").as_string().c_str();
+                uuids::uuid moduleUUID = uuids::string_generator{}(moduleUUIDStr);
+
+                bool isRegistryTarget = (moduleUUID == uuids::nil_generator()());
+
+                if (command == "SET_STATE" && isRegistryTarget) {
+                    boost::json::value stateData = payload.at("data");
+                    modules.SetState(stateData);
+
+                    auto &modulesArr = stateData.as_object().at("modulesData").as_array();
+                    bool found = false;
+                    for (auto &entry : modulesArr) {
+                        string uStr = entry.as_object().at("UUID").as_string().c_str();
+                        if (uuids::string_generator{}(uStr) == UUID) { found = true; break; }
+                    }
+                    std::cout << (found
+                        ? "[SYSTEM] Confirmed: server has the module\n"
+                        : "[SYSTEM] Server does NOT have the module yet\n");
+                }
+                else if (command == "ADD_MODULE" && isRegistryTarget) {
+                    auto &data = payload.at("data").as_object();
+                    string addedUUIDStr = data.at("UUID").as_string().c_str();
+                    uuids::uuid addedUUID = uuids::string_generator{}(addedUUIDStr);
+
+                    if (addedUUID == UUID) {
+                        std::cout << "[SYSTEM] Confirmed: server saved our module ("
+                                   << data.at("type").as_string() << ")\n";
+                    } else {
+                        std::cout << "[SYSTEM] Another client's module was added: "
+                                   << addedUUIDStr << "\n";
+                    }
+                }
+                else {
+                    auto module = modules.GetModule(moduleUUID);
+                    if (module) module->input(payload);
+                }
+            }
         }
-        std::cout << (found
-            ? "[SYSTEM] Confirmed: server has the module\n"
-            : "[SYSTEM] Server does NOT have the module yet\n");
-    }
-    else if (command == "ADD_MODULE" && isRegistryTarget) {
-        auto &data = payload.at("data").as_object();
-        string addedUUIDStr = data.at("UUID").as_string().c_str();
-        uuids::uuid addedUUID = uuids::string_generator{}(addedUUIDStr);
-
-        if (addedUUID == UUID) {
-            std::cout << "[SYSTEM] Confirmed: server saved our module ("
-                       << data.at("type").as_string() << ")\n";
-        } else {
-            std::cout << "[SYSTEM] Another client's module was added: "
-                       << addedUUIDStr << "\n";
+        else if (msg->type == ix::WebSocketMessageType::Close) {
+            std::cout << "[DISCONNECTED] Connection closed. Reason: " << msg->closeInfo.reason << endl;
         }
-    }
-    else {
-        auto module = modules.GetModule(moduleUUID);
-        if (module) module->input(payload);
-    }
-}}}
+        else if (msg->type == ix::WebSocketMessageType::Error) {
+            std::cout << "[ERROR] Connection failure: " << msg->errorInfo.reason << endl;
+        }
     });
 
     std::cout << "Connecting to " << url << "..." << endl;
@@ -128,8 +144,8 @@ int main() {
     while (webSocket.getReadyState() != ix::ReadyState::Open) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         timeoutCheck++;
-        
-        if (timeoutCheck > 50) { 
+
+        if (timeoutCheck > 50) {
             std::cerr << "\n[SYSTEM] Connection timed out! Is the server running?" << std::endl;
             webSocket.stop();
             ix::uninitNetSystem();
@@ -144,13 +160,6 @@ int main() {
         if (userInput == "exit") {
             break;
         }
-
-        //user input part
-        // if (webSocket.getReadyState() == ix::ReadyState::Open) {
-        //     webSocket.send(userInput);
-        // } else {
-        //     std::cout << "[SYSTEM] Message not sent. ReadyState isn't open yet..." << endl;
-        // }
     }
 
     std::cout << "Stopping WebSocket background loops..." << endl;
