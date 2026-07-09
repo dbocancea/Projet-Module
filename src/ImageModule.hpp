@@ -12,8 +12,8 @@ class ImageModule : public TransformModule
         json::value getImage( );
         void onSetImage( json::value image, bool sync = false );
         void setImage( json::value image, bool sync = false );
-        json::value getState( );
-        void setState( json::value state );
+        json::value GetState( )override;
+        void SetState( json::value state ) override;
 };
 
 #endif

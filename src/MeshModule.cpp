@@ -12,7 +12,7 @@ MeshModule::MeshModule(uuids::uuid UUID) : FileModule(UUID)
     this->command["updateBoundingBox"] = "UPDATE_BOUNDINGBOX";
 }
 
-json::value MeshModule::getState()
+json::value MeshModule::GetState()
 {
     return FileModule::GetState();
 }

@@ -46,7 +46,7 @@ CameraModule::CameraData CameraModule::getCamera( )
     return this->camera_data;
 }
 
-void CameraModule::setState( json::value state )
+void CameraModule::SetState( json::value state )
 {
     if( !state.is_object( ) ) return;
 
@@ -56,12 +56,12 @@ void CameraModule::setState( json::value state )
     if( it != obj.end( ) )
         this->onUpdateCamera( it->value( ) );
 
-    this->TransformModule::setState( state );
+    this->TransformModule::SetState( state );
 }
 
-json::value CameraModule::getState( )
+json::value CameraModule::GetState( )
 {
-    json::value transform_state = this->TransformModule::getState( );
+    json::value transform_state = this->TransformModule::GetState( );
 
     json::object obj = transform_state.as_object( );
 
