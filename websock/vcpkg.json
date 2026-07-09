@@ -1,0 +1,10 @@
+{
+  "name": "websocket-client-server",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "ixwebsocket",
+    "boost-json",
+    "boost-multiprecision"
+  ]
+}
+
