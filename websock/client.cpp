@@ -10,7 +10,7 @@ int main() {
     ix::initNetSystem();
     uuids::random_generator gen;
     ix::WebSocket webSocket;
-    string url = "ws://0.0.0.0:3000/"; // server address 
+    string url = "ws://0.0.0.0:8080/"; // server address 
     webSocket.setUrl(url);
 
     uuids::uuid TestUUID = gen();
@@ -35,7 +35,7 @@ int main() {
         }
     });
 
-  //  modules.AddModule("CameraModule", UUID, 1);
+
 
     //cout << boost::json::serialize(modules.GetState());
     boost::json::value instJoin = {
