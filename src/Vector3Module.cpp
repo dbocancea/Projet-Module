@@ -5,7 +5,7 @@ Vector3Module::Vector3Module()
     this->type = "Vector3Module";
 }
 
-Vector3Module::Vector3Module(uint128_t UUID) : ModuleCore(UUID)
+Vector3Module::Vector3Module(uuids::uuid UUID) : ModuleCore(UUID)
 {
     cout << "Vector3Module - constructor" << endl;
     this->type = "Vector3Module";

@@ -10,7 +10,7 @@ class LineModule : public ModuleCore
 
     public:
         LineModule();
-        LineModule(uint128_t UUID);
+        LineModule(uuids::uuid UUID);
         void UpdateLine( vector<float> origin , vector<float> end , bool sync = false );
         void OnUpdateLine(boost::json::value line);
         boost::json::value getLine();

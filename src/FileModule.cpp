@@ -5,7 +5,7 @@ FileModule::FileModule() : ModuleCore()
     this->type = "FileModule";
 }
 
-FileModule::FileModule(uint128_t UUID) : ModuleCore(UUID)
+FileModule::FileModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     this->type = "FileModule";
     this->command["updateFile"] = "UPDATE_FILE";

@@ -8,7 +8,7 @@ class ScalarModule : public ModuleCore
         int value=0;
     public:
         ScalarModule();
-        ScalarModule(uint128_t UUID) ;
+        ScalarModule(uuids::uuid UUID) ;
         void UpdateValue(int  val , bool sync = false);
         void OnUpdateValue(json::value value);
         void SetState(json::value value) override;

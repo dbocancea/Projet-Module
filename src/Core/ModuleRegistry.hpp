@@ -9,14 +9,14 @@ class ModuleRegistry : public ModuleCore
     private:
         
     public:
-    map< uint128_t , shared_ptr<ModuleCore> > modules;
+    map< uuids::uuid , shared_ptr<ModuleCore> > modules;
         ModuleRegistry();
         ModuleRegistry( function<void(json::value)> outputFn)  ;
-        void AddModule( string type ,uint128_t UUID , bool sync = false);
+        void AddModule( string type ,uuids::uuid UUID , bool sync = false);
         void OnAddModule( json::value data );
-        void RemoveModule(uint128_t UUID , bool sync = false);
+        void RemoveModule(uuids::uuid UUID , bool sync = false);
         void OnRemoveModule( json::value data );
-        shared_ptr<ModuleCore> GetModule(uint128_t UUID);
+        shared_ptr<ModuleCore> GetModule(uuids::uuid UUID);
         void SetState(json::value state) override;
         json::value GetState() override;
 };

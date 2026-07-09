@@ -17,7 +17,7 @@ class CameraModule : public TransformModule
         CameraData camera_data{};
     public:
         CameraModule( );
-        CameraModule( uint128_t UUID );
+        CameraModule( uuids::uuid UUID );
         void onUpdateCamera( json::value camera, bool sync = false );
         void updateCamera( CameraData camera, bool sync = false );
         CameraData getCamera( );

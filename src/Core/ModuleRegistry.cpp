@@ -2,10 +2,10 @@
 
 ModuleRegistry::ModuleRegistry() {}
 
-ModuleRegistry::ModuleRegistry(function<void(json::value)> outputFn) : ModuleCore(0)
+ModuleRegistry::ModuleRegistry(function<void(json::value)> outputFn) : ModuleCore(uuids::nil_generator()())
 {
     shared_ptr<ModuleCore> selfPtr(this, [](ModuleCore*){ });
-    this->modules.insert({0 , selfPtr });
+    this->modules.insert({uuids::nil_generator()() , selfPtr });
 
     this->command["addModule"] = "ADD_MODULE";
     this->command["remouveModule"] = "REMOUVE_MODULE";
@@ -22,14 +22,14 @@ void ModuleRegistry::OnAddModule(json::value data)
     auto &obj = data.as_object();
 
     string uuid_str = obj.at("UUID").as_string().c_str();
-    uint128_t uuid(uuid_str);
+    uuids::uuid uuid = uuids::string_generator{}(uuid_str);
 
     string type = obj.at("type").as_string().c_str();
 
     this->AddModule(type, uuid);
 }
 
-void ModuleRegistry::AddModule(string type, uint128_t UUID, bool sync)
+void ModuleRegistry::AddModule(string type, uuids::uuid UUID, bool sync)
 {
     auto it = this->modules.find(UUID);
     if (it != this->modules.end())
@@ -47,7 +47,7 @@ void ModuleRegistry::AddModule(string type, uint128_t UUID, bool sync)
     this->modules[UUID] = module;
     json::object data;
     data["type"] = type;
-    data["UUID"] = UUID.str();
+    data["UUID"] = uuids::to_string(UUID);
     
     this->OnChange(this->command["addModule"], data);
 
@@ -63,12 +63,12 @@ void ModuleRegistry::OnRemoveModule(json::value data)
     auto &obj = data.as_object();
 
     string uuid_str = obj.at("UUID").as_string().c_str();
-    uint128_t uuid(uuid_str);
+    uuids::uuid uuid = uuids::string_generator{}(uuid_str);
 
     this->RemoveModule(uuid);
 }
 
-void ModuleRegistry::RemoveModule(uint128_t UUID, bool sync)
+void ModuleRegistry::RemoveModule(uuids::uuid UUID, bool sync)
 {
     auto it = this->modules.find(UUID);
     if (it == this->modules.end())
@@ -81,7 +81,7 @@ void ModuleRegistry::RemoveModule(uint128_t UUID, bool sync)
     this->modules.erase(it);
 
     json::object data;
-    data["UUID"] = UUID.str();
+    data["UUID"] = uuids::to_string(UUID);
 
     this->OnChange(this->command["remouveModule"], data);
 
@@ -90,7 +90,7 @@ void ModuleRegistry::RemoveModule(uint128_t UUID, bool sync)
     
 }
 
-shared_ptr<ModuleCore> ModuleRegistry::GetModule(uint128_t UUID)
+shared_ptr<ModuleCore> ModuleRegistry::GetModule(uuids::uuid UUID)
 {
     auto it = modules.find(UUID);
     if (it != modules.end())
@@ -107,7 +107,7 @@ void ModuleRegistry::SetState(json::value state)
     {
         auto &entry = moduleData.as_object();
         string uuid_str = entry.at("UUID").as_string().c_str();
-        uint128_t uuid(uuid_str);
+        uuids::uuid uuid = uuids::string_generator{}(uuid_str);
         string type = entry.at("type").as_string().c_str();
         this->AddModule(type, uuid);
     }
@@ -121,7 +121,7 @@ json::value ModuleRegistry::GetState()
         if (module->type == this->type)
             continue;
         json::object entry;
-        entry["UUID"] = UUID.str();
+        entry["UUID"] = uuids::to_string(UUID);
         entry["type"] = module->type;
         modulesData.push_back(entry);
     }

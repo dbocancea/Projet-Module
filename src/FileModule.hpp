@@ -17,7 +17,7 @@ class FileModule : public ModuleCore
         File file;
     public:
         FileModule();
-        FileModule(uint128_t UUID);
+        FileModule(uuids::uuid UUID);
         void UpdateFile(string name , string type , string data , bool sync = false );
         void OnUpdateFile(json::value file );
         File GetFile();

@@ -9,7 +9,7 @@ class PrimitiveModule : public TransformModule
         json::value primitive;
     public:
         PrimitiveModule( );
-        PrimitiveModule( uint128_t UUID );
+        PrimitiveModule( uuids::uuid UUID );
         json::value getPrimitive( );
         json::value getPrimitiveTypes( );
         void onUpdatePrimitive( json::value primitive, bool sync = false );

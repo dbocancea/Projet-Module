@@ -1,11 +1,11 @@
 #include "CameraModule.hpp"
 
-CameraModule::CameraModule() : TransformModule( 0 )
+CameraModule::CameraModule() : TransformModule()
 {
     this->type = "CameraModule";
 }
 
-CameraModule::CameraModule( uint128_t UUID ) : TransformModule( UUID )
+CameraModule::CameraModule( uuids::uuid UUID ) : TransformModule( UUID )
 {
     this->type = "CameraModule";
     this->command["updateCamera"] =  "UPDATE_CAMERA";

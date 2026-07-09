@@ -2,7 +2,7 @@
 
 namespace json = boost::json;
 LineModule::LineModule() {};
-LineModule::LineModule(uint128_t UUID) : ModuleCore(UUID)
+LineModule::LineModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     this->type = "LineModule";
 
