@@ -49,7 +49,6 @@ void CameraModule::onUpdateCamera( json::value data, bool sync )
 
     this->updateCamera( this->camera_data, sync );
 }
-
 CameraModule::CameraData CameraModule::getCamera( )
 {
     return this->camera_data;
