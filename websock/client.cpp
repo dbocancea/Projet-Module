@@ -10,7 +10,7 @@ int main() {
     ix::initNetSystem();
     uuids::random_generator gen;
     ix::WebSocket webSocket;
-    string url = "ws://0.0.0.0:8080/"; // server address
+    string url = "ws://0.0.0.0:3000/"; // server address 
     webSocket.setUrl(url);
 
     uuids::uuid TestUUID = gen();
@@ -19,17 +19,17 @@ int main() {
         {"UUID", strTestUUID}
     };
 
+
     uuids::uuid UUID = gen();
     uuids::uuid UUID1 = gen();
-    bool instanceJoined = false;
-
     ModuleRegistry modules([&](json::value outData){
-        if (webSocket.getReadyState() == ix::ReadyState::Open) {
+        //std::cout << "test" << endl;
+        if(webSocket.getReadyState() == ix::ReadyState::Open){
             boost::json::value wrapped = {
-                {"scope", "MODULE"},
-                {"senderUUID", strTestUUID},
-                {"payload", outData}
-            };
+            {"scope", "MODULE"},
+            {"senderUUID", strTestUUID},
+            {"payload", outData}
+        };
             std::string data = boost::json::serialize(wrapped);
             webSocket.send(data);
         }
@@ -58,6 +58,30 @@ int main() {
             webSocket.send(uuidStr);
             webSocket.send(instJoinStr); 
             modules.AddModule("CameraModule", UUID, 1);
+            modules.AddModule("CameraModule", UUID1, 1);
+            auto Cam1 = static_pointer_cast<CameraModule>(modules.modules[UUID]);
+            auto Cam2 = static_pointer_cast<CameraModule>(modules.modules[UUID1]);
+
+            json::object obj1;
+            obj1["fov"] = 90.0f;
+            obj1["aspect"] = 100.0f;
+            obj1["near"] = 144.0f;
+            obj1["far"] = 120.0f;
+
+            json::object obj2;
+            obj2["fov"] = 60.0f;
+            obj2["aspect"] = 1.777f;
+            obj2["near"] = 1.0f;
+            obj2["far"] = 200.0f;
+
+            Cam1->onUpdateCamera(obj1, 1);
+            Cam2->onUpdateCamera(obj2, 1);
+
+            TransformModule::TransformData t1{ {3.0f, 0.0f, 0.0f}, {0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f} };
+            TransformModule::TransformData t2{ {0.0f, 3.0f, 1.0f}, {0.0f,0.0f,0.7071f,0.7071f}, {1.0f,1.0f,1.0f} };
+
+            Cam1->updateTransform(t1 , 1);
+            Cam2->updateTransform(t2 , 1);
         }
 
         else if (msg->type == ix::WebSocketMessageType::Message) {
@@ -66,11 +90,9 @@ int main() {
             boost::json::value incomingData = boost::json::parse(msg->str);
             auto &obj = incomingData.as_object();
 
-            if (!obj.contains("payload") || !obj.contains("scope"))
-                return;
-
-            string scope = obj.at("scope").as_string().c_str();
-            auto &payload = obj.at("payload").as_object();
+            if (obj.contains("payload") && obj.contains("scope")) {
+                string scope = obj.at("scope").as_string().c_str();
+                auto &payload = obj.at("payload").as_object();
 
                 if (scope == "MODULE" && payload.contains("command")) {
                     string command = payload.at("command").as_string().c_str();
@@ -129,8 +151,8 @@ int main() {
     while (webSocket.getReadyState() != ix::ReadyState::Open) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         timeoutCheck++;
-
-        if (timeoutCheck > 50) {
+        
+        if (timeoutCheck > 50) { 
             std::cerr << "\n[SYSTEM] Connection timed out! Is the server running?" << std::endl;
             webSocket.stop();
             ix::uninitNetSystem();
@@ -145,6 +167,13 @@ int main() {
         if (userInput == "exit") {
             break;
         }
+
+        //user input part
+        // if (webSocket.getReadyState() == ix::ReadyState::Open) {
+        //     webSocket.send(userInput);
+        // } else {
+        //     std::cout << "[SYSTEM] Message not sent. ReadyState isn't open yet..." << endl;
+        // }
     }
 
     std::cout << "Stopping WebSocket background loops..." << endl;
