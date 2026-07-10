@@ -10,7 +10,7 @@ find_package(Boost REQUIRED COMPONENTS json)
 
 # 2. Add ixwebsocket directly from your thirdparty directory
 # (Make sure you cloned it into this exact path relative to this CMakeLists file)
-add_subdirectory(thirdparty/ixwebsocket)
+add_subdirectory(thirdparty/ixwebsoc)
 
 # 3. Define the executable and its source files
 add_executable(client 
