@@ -10,7 +10,7 @@ int main() {
     ix::initNetSystem();
     uuids::random_generator gen;
     ix::WebSocket webSocket;
-    string url = "ws://0.0.0.0:3000/"; // server address 
+    string url = "ws://0.0.0.0:3000//"; // server address 
     webSocket.setUrl(url);
 
     uuids::uuid TestUUID = gen();
@@ -82,14 +82,7 @@ int main() {
                         modules.SetState(stateData);
 
                         auto &modulesArr = stateData.as_object().at("modulesData").as_array();
-                        bool found = false;
-                        for (auto &entry : modulesArr) {
-                            string uStr = entry.as_object().at("UUID").as_string().c_str();
-                            if (uuids::string_generator{}(uStr) == UUID) { found = true; break; }
-                        }
-                        std::cout << (found
-                            ? "[SYSTEM] Confirmed: server has the module\n"
-                            : "[SYSTEM] Server does NOT have the module yet\n");
+                        
                     }
                     else if (command == "ADD_MODULE" && isRegistryTarget) {
                         auto &data = payload.at("data").as_object();

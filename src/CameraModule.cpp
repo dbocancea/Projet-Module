@@ -15,28 +15,51 @@ CameraModule::CameraModule( uuids::uuid UUID ) : TransformModule( UUID )
     });
 }
 
-void CameraModule::onUpdateCamera( json::value camera_json, bool sync )
+void CameraModule::onUpdateCamera(json::value camera_json, bool sync)
 {
-    if( !camera_json.is_array( ) ) return;
-    auto& liste = camera_json.as_array( );
-    if( liste.size( ) == 4 )
+    if (camera_json.is_object())
     {
-        this->camera_data.fov = liste[0].to_number<float>();
-        this->camera_data.aspect = liste[1].to_number<float>();
-        this->camera_data.myNear = liste[2].to_number<float>();
-        this->camera_data.myFar = liste[3].to_number<float>();
+        auto& obj = camera_json.as_object();
+
+        if (obj.contains("fov"))
+            this->camera_data.fov = obj.at("fov").to_number<float>();
+        if (obj.contains("aspect"))
+            this->camera_data.aspect = obj.at("aspect").to_number<float>();
+        if (obj.contains("near"))
+            this->camera_data.myNear = obj.at("near").to_number<float>();
+        if (obj.contains("far"))
+            this->camera_data.myFar = obj.at("far").to_number<float>();
+    }
+    else if (camera_json.is_array())
+    {
+        auto& liste = camera_json.as_array();
+        if (liste.size() == 4)
+        {
+            this->camera_data.fov    = liste[0].to_number<float>();
+            this->camera_data.aspect = liste[1].to_number<float>();
+            this->camera_data.myNear = liste[2].to_number<float>();
+            this->camera_data.myFar  = liste[3].to_number<float>();
+        }
+    }
+    else
+    {
+        return; // unrecognized shape, nothing to update
     }
 
-    this->updateCamera( this->camera_data, sync );
+    this->updateCamera(this->camera_data, sync);
 }
 
 void CameraModule::updateCamera( CameraData new_data, bool sync )
 {
     this->camera_data = new_data;
-    json::value camera_update = {this->camera_data.fov, this->camera_data.aspect, this->camera_data.myNear, this->camera_data.myFar};
+
+    json::object camera_update;
+    camera_update["fov"]    = this->camera_data.fov;
+    camera_update["aspect"] = this->camera_data.aspect;
+    camera_update["near"]   = this->camera_data.myNear;
+    camera_update["far"]    = this->camera_data.myFar;
 
     this->OnChange( this->command["updateCamera"], camera_update );
-
     if( sync )
         this->Output( this->command["updateCamera"], camera_update );
 }

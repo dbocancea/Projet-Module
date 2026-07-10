@@ -4,10 +4,15 @@ project(WebsocketApp CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 1. Find dependencies that are still external (like Boost and system Threads)
 find_package(Threads REQUIRED)
-find_package(ixwebsocket CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS json) 
 
+# 2. Add ixwebsocket directly from your thirdparty directory
+# (Make sure you cloned it into this exact path relative to this CMakeLists file)
+add_subdirectory(thirdparty/ixwebsocket)
+
+# 3. Define the executable and its source files
 add_executable(client 
     client.cpp 
     
@@ -33,17 +38,16 @@ add_executable(client
     ../src/SceneGraph.cpp
 )
 
-# Inclusion des dossiers d'en-tête (Header Include Paths)
-# Permet à CMake de trouver tes fichiers .hpp importés via des chemins relatifs compliqués
+# 4. Inclusion des dossiers d'en-tête (Header Include Paths)
 target_include_directories(client PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../projetgit/Projet-Module/src/Core
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src         # Lets client.cpp find "../src/Core/ModuleTypes.hpp" cleanly
     ${Boost_INCLUDE_DIRS}
 )
 
-# Liens avec les bibliothèques
+# 5. Liens avec les bibliothèques
 target_link_libraries(client PRIVATE 
-    ixwebsocket::ixwebsocket 
+    ixwebsocket                                # Changed from ixwebsocket::ixwebsocket
     Threads::Threads
     Boost::json
 )
