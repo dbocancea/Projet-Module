@@ -20,16 +20,20 @@ void TransformModule::onUpdateTransform( json::value transform, bool sync )
 {   
     if( !transform.is_object( ) ) return;
     auto& obj = transform.as_object( );
-    auto it = obj.find( "transfoem" );
+    auto it = obj.find( "transform" );
     if( it == obj.end( ) || !it->value( ).is_object( ) ) return;
 
     if (!obj.contains("translation") || !obj.contains("rotation") || !obj.contains("scale"))
         return;
 
     auto& trans = it->value( ).as_object( );
-    if( trans.contains( "translation" ) )
+    if( trans.contains( "translation" ) && trans.at( "translation" ).is_array( ) )
+    {
+        auto& arr = trans.at("translation").as_array( );
         for( int i = 0; i < TRANSLATION_SIZE; ++i )
-            this->transform_data.translation[i] = trans.at( "translation" ).to_number<float>( );
+            this->transform_data.translation[i] = arr.to_number<float>( );
+    }
+
     
     if( trans.contains( "rotation" ) )
         for( int i = 0; i < ROTATION_SIZE; ++i)
@@ -70,7 +74,7 @@ TransformModule::TransformData TransformModule::getTransform( )
     return this->transform_data;
 }
 
-void TransformModule::SetState( json::value state )
+void TransformModule::setState( json::value state )
 {
     if( !state.is_object( ) ) return;
 
@@ -81,7 +85,7 @@ void TransformModule::SetState( json::value state )
         this->onUpdateTransform( it->value( ) );
 }
 
-json::value TransformModule::GetState()
+json::value TransformModule::getState()
 {
     json::object transform;
     transform["translation"] = json::array{transform_data.translation[0], transform_data.translation[1], transform_data.translation[2]};

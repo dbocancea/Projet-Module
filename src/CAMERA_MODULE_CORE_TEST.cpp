@@ -2,7 +2,12 @@
 
 int main( )
 {
-    CameraModule cam1 { 12334 };
+
+    uuids::random_generator gen;
+
+    uuids::uuid UUID = gen( );
+
+    CameraModule cam1 { UUID };
 
     cout << "Type: " << cam1.type << "\n";
 
