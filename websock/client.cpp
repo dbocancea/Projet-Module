@@ -5,6 +5,28 @@
 #include <ixwebsocket/IXWebSocket.h>
 #include "../src/Core/ModuleTypes.hpp"
 #include "../src/Core/ModuleRegistry.hpp"
+#include <fstream>
+#include <sstream>
+
+// Simple base64 encoder (add near top of main.cpp, outside main())
+std::string base64_encode(const std::string& input) {
+    static const char* chars =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string out;
+    int val = 0, valb = -6;
+    for (unsigned char c : input) {
+        val = (val << 8) + c;
+        valb += 8;
+        while (valb >= 0) {
+            out.push_back(chars[(val >> valb) & 0x3F]);
+            valb -= 6;
+        }
+    }
+    if (valb > -6) out.push_back(chars[((val << 8) >> (valb + 8)) & 0x3F]);
+    while (out.size() % 4) out.push_back('=');
+    return out;
+}
+
 
 int main() {
     ix::initNetSystem();
@@ -66,15 +88,16 @@ int main() {
             auto mod = modules.GetModule(UUID1);
             auto prim = dynamic_pointer_cast<PrimitiveModule>(mod);
             prim->updatePrimitive("Sphere", 1);
-    //         TransformModule::TransformData data;
+                    TransformModule::TransformData data;
 
-    //         data.translation = {
-    //     1.0f - 2.0f * (float)rand() / RAND_MAX,
-    //     1.0f - 2.0f * (float)rand() / RAND_MAX,
-    //     1.0f - 2.0f * (float)rand() / RAND_MAX
-    // };
-    //       prim->updateTransform(data, true);
+            data.rotation = { 0.0f, 0.0f, 0.0f, 1.0f };
+            data.scale    = { 0.5f, 0.5f, 0.5f };
+            prim->updateTransform(data, true);
+
+           
+
             
+                    
         }
 
         else if (msg->type == ix::WebSocketMessageType::Message) {
