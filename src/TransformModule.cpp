@@ -59,12 +59,16 @@ void TransformModule::updateTransform( TransformData new_data, bool sync )
 
     json::object transform_update;
     transform_update["translation"] = json::array{transform_data.translation[0], transform_data.translation[1], transform_data.translation[2]};
-    transform_update["rotation"] = json::array{transform_data.rotation[0], transform_data.rotation[1], transform_data.rotation[2], transform_data.rotation[3]};
-    transform_update["scale"] = json::array{transform_data.scale[0], transform_data.scale[1], transform_data.scale[2]};
+    transform_update["rotation"]    = json::array{transform_data.rotation[0], transform_data.rotation[1], transform_data.rotation[2], transform_data.rotation[3]};
+    transform_update["scale"]       = json::array{transform_data.scale[0], transform_data.scale[1], transform_data.scale[2]};
 
     this->OnChange( this->command["updateTransform"], transform_update );
-    if( sync )
-        this->Output( this->command["updateTransform"], transform_update );
+
+    if( sync ) {
+        json::object wrapped;
+        wrapped["transform"] = transform_update;   // <-- wrap for the wire
+        this->Output( this->command["updateTransform"], wrapped );
+    }
 }
 
 

@@ -10,7 +10,7 @@ int main() {
     ix::initNetSystem();
     uuids::random_generator gen;
     ix::WebSocket webSocket;
-    string url = "ws://0.0.0.0:3000/"; // server address 
+    string url = "ws://0.0.0.0:3000//"; // server address 
     webSocket.setUrl(url);
 
     uuids::uuid TestUUID = gen();
@@ -63,23 +63,30 @@ int main() {
             auto Cam2 = static_pointer_cast<CameraModule>(modules.modules[UUID1]);
 
             json::object obj1;
-            obj1["fov"] = 90.0f;
-            obj1["aspect"] = 100.0f;
-            obj1["near"] = 144.0f;
-            obj1["far"] = 120.0f;
+            obj1["fov"]    = 60.0f;
+            obj1["aspect"] = 1.777f;   // 16:9
+            obj1["near"]   = 0.1f;
+            obj1["far"]    = 1.0f;
 
             json::object obj2;
-            obj2["fov"] = 60.0f;
-            obj2["aspect"] = 1.777f;
-            obj2["near"] = 1.0f;
-            obj2["far"] = 200.0f;
+            obj2["fov"]    = 60.0f;
+            obj2["aspect"] = 1.333f;   // 4:3
+            obj2["near"]   = 0.5f;
+            obj2["far"]    = 1.0f;
+            
+            Cam1->onUpdateCamera(obj1 , 1);
+            Cam2->onUpdateCamera(obj2 , 1);
+            TransformModule::TransformData t1{
+            { 3.0f, 0.0f, 2.0f },        
+            { 0.0f, 0.0f, 0.0f, 1.0f },  
+            { 1.0f, 1.0f, 1.0f }         
+            };
 
-            Cam1->onUpdateCamera(obj1, 1);
-            Cam2->onUpdateCamera(obj2, 1);
-
-            TransformModule::TransformData t1{ {3.0f, 0.0f, 0.0f}, {0.0f,0.0f,0.0f,1.0f}, {1.0f,1.0f,1.0f} };
-            TransformModule::TransformData t2{ {0.0f, 3.0f, 1.0f}, {0.0f,0.0f,0.7071f,0.7071f}, {1.0f,1.0f,1.0f} };
-
+            TransformModule::TransformData t2{
+                { -3.0f, 0.0f, 2.0f },
+                { 0.0f, 0.0f, 0.7071f, 0.7071f }, 
+                { 1.0f, 1.0f, 1.0f }
+            };
             Cam1->updateTransform(t1 , 1);
             Cam2->updateTransform(t2 , 1);
         }
@@ -106,14 +113,7 @@ int main() {
                         modules.SetState(stateData);
 
                         auto &modulesArr = stateData.as_object().at("modulesData").as_array();
-                        bool found = false;
-                        for (auto &entry : modulesArr) {
-                            string uStr = entry.as_object().at("UUID").as_string().c_str();
-                            if (uuids::string_generator{}(uStr) == UUID) { found = true; break; }
-                        }
-                        std::cout << (found
-                            ? "[SYSTEM] Confirmed: server has the module\n"
-                            : "[SYSTEM] Server does NOT have the module yet\n");
+                        
                     }
                     else if (command == "ADD_MODULE" && isRegistryTarget) {
                         auto &data = payload.at("data").as_object();
