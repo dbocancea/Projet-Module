@@ -21,7 +21,7 @@ class TransformModule : public ModuleCore
         TransformData transform_data {};
     public:
         TransformModule( );
-        TransformModule(uuids::uuid UUID );
+        TransformModule( uuids::uuid UUID );
         void updateTransform( TransformData transform, bool sync = false );
         void onUpdateTransform( json::value transform, bool sync = false );
         TransformData getTransform( );

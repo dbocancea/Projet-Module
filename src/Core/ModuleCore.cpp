@@ -60,9 +60,6 @@ uuids::uuid ModuleCore::GetUUID()
     return this->UUID;
 }
 
-<<<<<<< HEAD
-template class ModuleCore<vector<float>>;
-=======
 void ModuleCore::SetOutputFn( function<void(json::value)> outputFn )
 {
     this->outputFn = outputFn;
@@ -105,4 +102,3 @@ void ModuleCore::input(json::value payload)
     json::object obj = payload.as_object();
     this->OnCommand(obj["command"].as_string().c_str() , obj["data"] );
 }
->>>>>>> origin
