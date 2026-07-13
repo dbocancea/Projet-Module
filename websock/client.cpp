@@ -10,7 +10,7 @@ int main() {
     ix::initNetSystem();
     uuids::random_generator gen;
     ix::WebSocket webSocket;
-    string url = "ws://0.0.0.0:3000//"; // server address 
+    string url = "ws://192.168.42.104:3000//"; // server address 
     webSocket.setUrl(url);
 
     uuids::uuid TestUUID = gen();
