@@ -7,7 +7,6 @@
 
 #include "Core/ModuleCore.hpp"
 #include <array>
-#include <tuple>
 
 class TransformModule : public ModuleCore
 {
@@ -26,8 +25,8 @@ class TransformModule : public ModuleCore
         void updateTransform( TransformData transform, bool sync = false );
         void onUpdateTransform( json::value transform, bool sync = false );
         TransformData getTransform( );
-        json::value GetState( )override;
-        void SetState( json::value state )override;
+        json::value getState( );
+        void setState( json::value state );
 };
 
 #endif
