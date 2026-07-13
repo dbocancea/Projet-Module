@@ -31,18 +31,22 @@ void TransformModule::onUpdateTransform( json::value transform, bool sync )
     {
         auto& arr = trans.at("translation").as_array( );
         for( int i = 0; i < TRANSLATION_SIZE; ++i )
-            this->transform_data.translation[i] = arr.to_number<float>( );
+            this->transform_data.translation[i] = arr[i].to_number<float>( );
+    }
+    
+    if( trans.contains( "rotation" ) && trans.at( "rotation" ).is_array( ) )
+    {
+        auto& arr = trans.at("rotation").as_array( );
+        for( int i = 0; i < ROTATION_SIZE; ++i )
+            this->transform_data.rotation[i] = arr[i].to_number<float>( );
     }
 
-    
-    if( trans.contains( "rotation" ) )
-        for( int i = 0; i < ROTATION_SIZE; ++i)
-            this->transform_data.rotation[i] = trans.at( "rotation").to_number<float>( );
-
-    if( trans.contains( "scale" ) )
-        for( int i = 0; i < SCALE_SIZE; ++i)
-            this->transform_data.scale[i] = trans.at( "scale").to_number<float>( );
-
+    if( trans.contains( "scale" ) && trans.at( "scale" ).is_array( ) )
+    {
+        auto& arr = trans.at("scale").as_array( );
+        for( int i = 0; i < SCALE_SIZE; ++i )
+            this->transform_data.rotation[i] = arr[i].to_number<float>( );
+    }
 
     this->updateTransform( transform_data, sync );
 }
