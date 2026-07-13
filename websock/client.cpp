@@ -21,6 +21,7 @@ int main() {
 
 
     uuids::uuid UUID = gen();
+    uuids::uuid UUID1 = gen();
 
     ModuleRegistry modules([&](json::value outData){
         //std::cout << "test" << endl;
@@ -51,6 +52,7 @@ int main() {
 
     std:: string uuidStr = boost::json::serialize(testUUID);
 
+    
     webSocket.setOnMessageCallback([&](const ix::WebSocketMessagePtr& msg) {
         if (msg->type == ix::WebSocketMessageType::Open) {
             std::cout << "[CONNECTED] Successfully shook hands with Server!" << endl;
@@ -58,6 +60,21 @@ int main() {
             webSocket.send(uuidStr);
             webSocket.send(instJoinStr); 
             modules.AddModule("CameraModule", UUID, 1);
+
+            //primitive test
+            modules.AddModule("PrimitiveModule", UUID1, 1); 
+            auto mod = modules.GetModule(UUID1);
+            auto prim = dynamic_pointer_cast<PrimitiveModule>(mod);
+            prim->updatePrimitive("Sphere", 1);
+    //         TransformModule::TransformData data;
+
+    //         data.translation = {
+    //     1.0f - 2.0f * (float)rand() / RAND_MAX,
+    //     1.0f - 2.0f * (float)rand() / RAND_MAX,
+    //     1.0f - 2.0f * (float)rand() / RAND_MAX
+    // };
+    //       prim->updateTransform(data, true);
+            
         }
 
         else if (msg->type == ix::WebSocketMessageType::Message) {

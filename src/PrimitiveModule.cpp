@@ -3,20 +3,20 @@
 PrimitiveModule::PrimitiveModule( ) : TransformModule( )
 {
     this->type = "PrimitiveModule";
-    this->primitive = "sphere";
-    this->primitiveTypes = {this->primitive, "box"};
+    this->primitive = "Sphere";
+    this->primitiveTypes = {this->primitive, "Box"};
 }
 
 PrimitiveModule::PrimitiveModule( uuids::uuid UUID ) : TransformModule( UUID )
 {
     this->type = "PrimitiveModule";
 
-    this->primitive = "sphere";
-    this->primitiveTypes = {this->primitive, "box"};
+    this->primitive = "Sphere";
+    this->primitiveTypes = {this->primitive, "Box"};
 
     this->SetOnCommand( "UPDATE_PRIMITIVE", [this]( json::value primitive )
     {
-        this->onUpdatePrimitive( this->primitive );
+        this->onUpdatePrimitive( primitive );
     });
 }
 
@@ -32,18 +32,28 @@ json::value PrimitiveModule::getPrimitiveTypes( )
 
 void PrimitiveModule::onUpdatePrimitive( json::value primitive_update, bool sync )
 {
-    if( !primitive_update.is_object( ) ) return;
-    this->primitive = primitive_update;
+    json::value value = primitive_update;
+    if( primitive_update.is_object( ) ){
+        auto& obj = primitive_update.as_object();
+        if (!obj.contains("primitive")) return;
+        value = obj.at("primitive");
+    }
+    if (!value.is_string()) return;
 
-    this->updatePrimitive( primitive_update, sync );
+    this->primitive = value;
+
+    this->updatePrimitive( value, sync );
 }
 
 void PrimitiveModule::updatePrimitive( json::value primitive_update, bool sync )
 {
     this->OnChange( "UPDATE_PRIMITIVE", primitive_update );
 
-    if( sync )
-        this->Output( "UPDATE_PRIMITIVE", primitive_update );
+    if( sync ){
+        json::object wrapped;
+        wrapped["primitive"] = primitive_update;
+        this->Output( "UPDATE_PRIMITIVE", wrapped );
+    }
 }
 
 json::value PrimitiveModule::GetState( )
