@@ -82,10 +82,10 @@ void PointsModule::onAddPoints( const json::value add_points, bool sync )
 
 void PointsModule::addPoints( const json::value add_points, bool sync )
 {
-    this->OnChange( "ADD_POINTS ", add_points );
+    this->OnChange( "ADD_POINTS", add_points );
 
     if( sync )
-        this->Output( "ADD_POINTS ", add_points );
+        this->Output( "ADD_POINTS", add_points );
 }
 
 void PointsModule::onRemovePoints( const json::value points_remove, bool sync )
