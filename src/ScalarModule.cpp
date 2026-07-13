@@ -20,7 +20,7 @@ ScalarModule::ScalarModule(uuids::uuid UUID) : ModuleCore(UUID)
 void ScalarModule::OnUpdateValue(json::value value)
 {
     cout << "ScalarModule - UpdateValue" << endl;
-    int val = static_cast<int>(value.as_int64());
+    int val = static_cast<int>(value.as_object().at("value").as_int64());
 
     this->UpdateValue(val , false);
 }
