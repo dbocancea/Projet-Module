@@ -177,14 +177,14 @@ void TextLogModule::clear(bool sync)
     }
 }
 
-json::value TextLogModule::getState()
+json::value TextLogModule::GetState()
 {
     json::object state;
     state["textLogs"] = this->getTextLogs();
     return state;
 }
 
-void TextLogModule::setState(json::value state)
+void TextLogModule::SetState(json::value state)
 {
     json::array logs = state.get_object().at("textLogs").get_array();
     for (auto log : logs)

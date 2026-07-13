@@ -21,8 +21,8 @@ class PointsModule : public ModuleCore
         void updatePoints( const json::value points_update, bool sync = false );
         void onClear( bool sync = false );
         void clear( bool sync = false );
-        json::value getState( );
-        void setState( json::value state );
+        json::value GetState( ) override;
+        void SetState( json::value state ) override;
 };
   
 #endif

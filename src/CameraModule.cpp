@@ -15,38 +15,46 @@ CameraModule::CameraModule( uuids::uuid UUID ) : TransformModule( UUID )
     });
 }
 
-void CameraModule::onUpdateCamera( json::value camera_json, bool sync )
-{
-    if( !camera_json.is_array( ) ) return;
-    auto& liste = camera_json.as_array( );
-    if( liste.size( ) == 4 )
-    {
-        this->camera_data.fov = liste[0].to_number<float>();
-        this->camera_data.aspect = liste[1].to_number<float>();
-        this->camera_data.myNear = liste[2].to_number<float>();
-        this->camera_data.myFar = liste[3].to_number<float>();
-    }
-
-    this->updateCamera( this->camera_data, sync );
-}
-
 void CameraModule::updateCamera( CameraData new_data, bool sync )
 {
     this->camera_data = new_data;
-    json::value camera_update = {this->camera_data.fov, this->camera_data.aspect, this->camera_data.myNear, this->camera_data.myFar};
 
-    this->OnChange( this->command["updateCamera"], camera_update );
+    json::object camera_obj;
+    camera_obj["fov"]   = this->camera_data.fov;
+    camera_obj["aspect"] = this->camera_data.aspect;
+    camera_obj["near"]  = this->camera_data.myNear;   
+    camera_obj["far"]   = this->camera_data.myFar;
 
-    if( sync )
-        this->Output( this->command["updateCamera"], camera_update );
+    this->OnChange( this->command["updateCamera"], camera_obj );
+
+    if( sync ) {
+        json::object wrapped;
+        wrapped["camera"] = camera_obj;         
+        this->Output( this->command["updateCamera"], wrapped );
+    }
 }
 
+void CameraModule::onUpdateCamera( json::value data, bool sync )
+{
+    if( !data.is_object() ) return;
+    auto& obj = data.as_object();
+    auto it = obj.find("camera");
+    if( it == obj.end() || !it->value().is_object() ) return;
+
+    auto& cam = it->value().as_object();
+    if( cam.contains("fov") )    this->camera_data.fov    = cam.at("fov").to_number<float>();
+    if( cam.contains("aspect") ) this->camera_data.aspect = cam.at("aspect").to_number<float>();
+    if( cam.contains("near") )   this->camera_data.myNear = cam.at("near").to_number<float>();
+    if( cam.contains("far") )    this->camera_data.myFar  = cam.at("far").to_number<float>();
+
+    this->updateCamera( this->camera_data, sync );
+}
 CameraModule::CameraData CameraModule::getCamera( )
 {
     return this->camera_data;
 }
 
-void CameraModule::setState( json::value state )
+void CameraModule::SetState( json::value state )
 {
     if( !state.is_object( ) ) return;
 
@@ -56,12 +64,12 @@ void CameraModule::setState( json::value state )
     if( it != obj.end( ) )
         this->onUpdateCamera( it->value( ) );
 
-    this->TransformModule::setState( state );
+    this->TransformModule::SetState( state );
 }
 
-json::value CameraModule::getState( )
+json::value CameraModule::GetState( )
 {
-    json::value transform_state = this->TransformModule::getState( );
+    json::value transform_state = this->TransformModule::GetState( );
 
     json::object obj = transform_state.as_object( );
 

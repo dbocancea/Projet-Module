@@ -32,8 +32,8 @@ public:
     void removeText(uuids::uuid uuid, bool sync = false);
     boost::json::array getTextLogs();
     TextLog getTextLog(uuids::uuid textUUID);
-    boost::json::value getState();
-    void setState(boost::json::value state);
+    boost::json::value GetState() override;
+    void SetState(boost::json::value state) override;
 };
 
 #endif

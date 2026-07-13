@@ -14,8 +14,8 @@ class LineModule : public ModuleCore
         void UpdateLine( vector<float> origin , vector<float> end , bool sync = false );
         void OnUpdateLine(boost::json::value line);
         boost::json::value getLine();
-        boost::json::value getState();
-        void setState(boost::json::value state);
+        boost::json::value GetState() override;
+        void SetState(boost::json::value state) override;
         
 };
 

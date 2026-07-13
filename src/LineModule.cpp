@@ -66,10 +66,10 @@ json::value LineModule::getLine(){
 
 }
 
-json::value LineModule::getState(){
+json::value LineModule::GetState(){
     return json::object({{"line", this->getLine()}});
 }
 
-void LineModule::setState(json::value state){
+void LineModule::SetState(json::value state){
     this->OnUpdateLine(state.get_object());
 }

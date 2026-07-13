@@ -46,9 +46,9 @@ void PrimitiveModule::updatePrimitive( json::value primitive_update, bool sync )
         this->Output( "UPDATE_PRIMITIVE", primitive_update );
 }
 
-json::value PrimitiveModule::getState( )
+json::value PrimitiveModule::GetState( )
 {
-    json::value transformState = this->TransformModule::getState( );
+    json::value transformState = this->TransformModule::GetState( );
     json::object obj = transformState.as_object( );
 
     obj["primitive"] = this->primitive;
@@ -56,7 +56,7 @@ json::value PrimitiveModule::getState( )
     return obj;
 }
 
-void PrimitiveModule::setState( json::value state )
+void PrimitiveModule::SetState( json::value state )
 {
     if( !state.is_object( ) ) return;
 
@@ -65,5 +65,5 @@ void PrimitiveModule::setState( json::value state )
     if( it != obj.end() )
         this->onUpdatePrimitive( it->value() );
 
-    this->TransformModule::setState(state);
+    this->TransformModule::SetState(state);
 }

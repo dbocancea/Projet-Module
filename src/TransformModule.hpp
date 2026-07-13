@@ -26,8 +26,8 @@ class TransformModule : public ModuleCore
         void updateTransform( TransformData transform, bool sync = false );
         void onUpdateTransform( json::value transform, bool sync = false );
         TransformData getTransform( );
-        json::value getState( );
-        void setState( json::value state );
+        json::value GetState( )override;
+        void SetState( json::value state )override;
 };
 
 #endif

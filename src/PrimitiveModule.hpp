@@ -14,8 +14,8 @@ class PrimitiveModule : public TransformModule
         json::value getPrimitiveTypes( );
         void onUpdatePrimitive( json::value primitive, bool sync = false );
         void updatePrimitive( json::value primitive, bool sync = false );
-        json::value getState( );
-        void setState( json::value state );
+        json::value GetState( ) override;
+        void SetState( json::value state )override;
 };
   
 #endif
