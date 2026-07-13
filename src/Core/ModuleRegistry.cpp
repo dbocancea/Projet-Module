@@ -1,71 +1,131 @@
-#include"ModuleRegistry.hpp"
+#include "ModuleRegistry.hpp"
 
-ModuleRegistry::ModuleRegistry(){}
+ModuleRegistry::ModuleRegistry() {}
 
-ModuleRegistry::ModuleRegistry(  function<void (pair<string, vector<float> >) > outputFn ) : ModuleCore(0)
-{   
-    string cmd1 = "ADD_MODULE";
-
-    string cmd2 = "REMOVE_MODULE";
-
-    this->command.push_back(cmd1);
-    this->command.push_back(cmd2);
-    this->outputFn = outputFn;
-    this->SetOnCommand(cmd1, [&](vector<float> data) {this->OnAddModule(data);} );
-
-    this->SetOnCommand(cmd2, [&](vector<float> data) {this->outputFn({"REMOVE_MODULE" , data});} );
-}
-
-void ModuleRegistry::OnAddModule( vector<float> data )
+ModuleRegistry::ModuleRegistry(function<void(json::value)> outputFn) : ModuleCore(uuids::nil_generator()())
 {
-    float type = data[0];
-    string type_str = "";
-    if ( type == 0.0 )
-        type_str = "ModuleCore";
-    else if( type == 1.0 ) 
-        type_str = "CameraModule";
-    uint128_t UUID = uint128_t(data[1]);
-    cout << "Add module " << type << " " + type_str + " " << UUID << endl;  
+    shared_ptr<ModuleCore> selfPtr(this, [](ModuleCore*){ });
+    this->modules.insert({uuids::nil_generator()() , selfPtr });
+
+    this->command["addModule"] = "ADD_MODULE";
+    this->command["remouveModule"] = "REMOUVE_MODULE";
+    this->outputFn = outputFn;
+    this->SetOnCommand(this->command["addModule"], [this](json::value data)
+                       { this->OnAddModule(data); });
+
+    this->SetOnCommand(this->command["remouveModule"], [this](json::value data)
+                       { this->OnRemoveModule(data); });
 }
 
-void ModuleRegistry::AddModule( uint128_t UUID , bool sync )
+void ModuleRegistry::OnAddModule(json::value data)
+{
+    auto &obj = data.as_object();
+
+    string uuid_str = obj.at("UUID").as_string().c_str();
+    uuids::uuid uuid = uuids::string_generator{}(uuid_str);
+
+    string type = obj.at("type").as_string().c_str();
+
+    this->AddModule(type, uuid);
+}
+
+void ModuleRegistry::AddModule(string type, uuids::uuid UUID, bool sync)
 {
     auto it = this->modules.find(UUID);
-    if( it != this->modules.end() )
+    if (it != this->modules.end())
     {
         cout << "Exists already " << endl;
         return;
     }
-    ModuleCore* module = new ModuleCore(UUID);
-    module->SetOutputFn(this->outputFn);
 
-    modules.insert( {UUID , module} );
+    void *rawPtr = ModuleTypes.at(type)(&UUID);
+
+    auto *basePtr = static_cast<ModuleCore *>(rawPtr);
+
+    shared_ptr<ModuleCore> module(basePtr);
+    module->outputFn = this->outputFn;
+    this->modules[UUID] = module;
+    json::object data;
+    data["type"] = type;
+    data["UUID"] = uuids::to_string(UUID);
+    
+    this->OnChange(this->command["addModule"], data);
+
     if (sync)
-        this->outputFn( pair< string , vector<float> > {"ADD_MODULE", {0. , 1. , 2.}});
+        this->Output(this->command["addModule"], data);
+    
+
+    
 }
 
-void ModuleRegistry::RemoveModule(uint128_t UUID )
+void ModuleRegistry::OnRemoveModule(json::value data)
+{
+    auto &obj = data.as_object();
+
+    string uuid_str = obj.at("UUID").as_string().c_str();
+    uuids::uuid uuid = uuids::string_generator{}(uuid_str);
+
+    this->RemoveModule(uuid);
+}
+
+void ModuleRegistry::RemoveModule(uuids::uuid UUID, bool sync)
 {
     auto it = this->modules.find(UUID);
-    if( it == this->modules.end() )
+    if (it == this->modules.end())
     {
-        cout << UUID <<" module doesn't exist " << endl;
+        cout << UUID << " module doesn't exist " << endl;
         return;
     }
-    
-    ModuleCore* delete_mod = it->second;
 
-    delete delete_mod;
+    auto mod = it->second;
+    this->modules.erase(it);
 
-    modules.erase(it);
+    json::object data;
+    data["UUID"] = uuids::to_string(UUID);
+
+    this->OnChange(this->command["remouveModule"], data);
+
+    if (sync)
+        this->Output(this->command["remouveModule"], data);
     
 }
 
-ModuleCore<vector<float>>* ModuleRegistry::GetModule(uint128_t UUID)
+shared_ptr<ModuleCore> ModuleRegistry::GetModule(uuids::uuid UUID)
 {
     auto it = modules.find(UUID);
-    if ( it != modules.end() )
+    if (it != modules.end())
         return it->second;
     cerr << "UUID doesn't exists " << endl;
     return nullptr;
+}
+
+void ModuleRegistry::SetState(json::value state)
+{
+    auto &obj = state.as_object();
+    auto &modulesArray = obj.at("modulesData").as_array();
+    for (const auto &moduleData : modulesArray)
+    {
+        auto &entry = moduleData.as_object();
+        string uuid_str = entry.at("UUID").as_string().c_str();
+        uuids::uuid uuid = uuids::string_generator{}(uuid_str);
+        string type = entry.at("type").as_string().c_str();
+        this->AddModule(type, uuid);
+    }
+}
+
+json::value ModuleRegistry::GetState()
+{
+    json::array modulesData;
+    for (const auto &[UUID, module] : this->modules)
+    {
+        if (module->type == this->type)
+            continue;
+        json::object entry;
+        entry["UUID"] = uuids::to_string(UUID);
+        entry["type"] = module->type;
+        modulesData.push_back(entry);
+    }
+    json::object result;
+    result["modulesData"] = modulesData;
+    return result;
 }

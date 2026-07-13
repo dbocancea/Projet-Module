@@ -1,91 +1,62 @@
 #include "ImageModule.hpp"
 
-ImageModule::ImageModule() : TransformModule(0)
+ImageModule::ImageModule( ) : TransformModule( )
 {
     this->type = "ImageModule";
 }
 
-ImageModule::ImageModule(uint128_t UUID) : TransformModule(UUID)
+ImageModule::ImageModule( uuids::uuid UUID ) : TransformModule( UUID )
 {
     this->type = "ImageModule";
-    this->SetOnCommand("SET_IMAGE", [this](string image)
+    this->command["setImage"] =  "SET_IMAGE";
+    this->SetOnCommand( "SET_IMAGE", [this]( json::value image )
     {
-        this->setImage(image);
+        this->onSetImage( image );
     });
 }
 
-string ImageModule::getImage()
+json::value ImageModule::getImage( )
 {
     return this->image;
 }
 
-void ImageModule::setImage(string newIm, bool sync)
+void ImageModule::onSetImage( json::value new_im, bool sync )
 {
-    this->image = newIm;
-    this->OnChange("SET_IMAGE", newIm);
+    this->image = new_im;
 
-    if(sync)
+    this->setImage( new_im, sync );
+}
+
+void ImageModule::setImage( json::value im, bool sync )
+{
+    this->OnChange( this->command["setImage"], im );
+
+    if( sync )
     {
-        if(this->outPutStringFn)
-            this->outPutStringFn(pair<string, string>("SET_IMAGE", newIm));
+        this->Output( this->command["setImage"], im );
     }
 }
 
-map<string, map<string, vector<float>>> ImageModule::getState()
+json::value ImageModule::getState( )
 {
-    map<string, map<string, vector<float>>> res {};
-    res[this->image] = this->TransformModule::getState();
-    return res;
+    json::value transformState = this->TransformModule::getState( );
+
+    json::object obj = transformState.as_object( );
+
+    obj["image"] = this->image;
+
+    return obj;
 }
 
-void ImageModule::setState(map<string, map<string, vector<float>>> state)
+void ImageModule::setState( json::value state )
 {
-    auto it = state.begin();
+    if( !state.is_object( ) ) return;
+    
+    auto& obj = state.as_object( );
+    auto it = obj.find( "camera" );
 
-    this->setImage(it->first);
-    this->TransformModule::setState(it->second);
-}
+    if( it != obj.end( ) )
+        this->setImage( it->value( ) );
 
-
-void ImageModule::OnChange(string cmd, string data)
-{
-    auto it = this->stringChangeCallBack.find(cmd);
-    if(it != this->stringChangeCallBack.end())
-    {
-        for(auto& tmp : it->second)
-        {
-            tmp(data);
-        }
-    }
-    else
-    {
-        cout << this->UUID << " no member " << endl;
-    }
-}
-
-void ImageModule::SetOnCommand(string cmd, function<void(string)> callBack)
-{
-    this->stringCommandCallBack[cmd].push_back(callBack);
-}
-
-
-void ImageModule::OnCommand(string cmd, string data)
-{
-    auto it = this->stringCommandCallBack.find(cmd);
-    if(it != this->stringCommandCallBack.end())
-    {
-        for(auto& tmp : it->second)
-        {
-            tmp(data);
-        }
-    }
-    else
-    {
-        cout << this->UUID << " no member " << endl;
-    }
-}
-
-void ImageModule::SetOutPutStringFn(function<void(pair<string, string>)> fn)
-{
-    this->outPutStringFn = fn;
+    this->TransformModule::setState( state );
 }

@@ -2,16 +2,18 @@
 #define SCALARMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class ScalarModule : public ModuleCore<int>
+class ScalarModule : public ModuleCore
 {   
     protected:
         int value=0;
     public:
         ScalarModule();
-        ScalarModule(uint128_t UUID) ;
-        void UpdateValue(int value , bool sync);
-        void SetState(int value);
-        int GetState();
+        ScalarModule(uuids::uuid UUID) ;
+        void UpdateValue(int  val , bool sync = false);
+        void OnUpdateValue(json::value value);
+        void SetState(json::value value) override;
+        json::value GetState() override;
+        int GetValue();
 };
   
 #endif

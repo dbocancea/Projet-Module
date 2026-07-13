@@ -3,132 +3,156 @@
 PointsModule::PointsModule()
 {
     this->type = "PointsModule";
+
+    this->points = json::object();
+    this->position = json::object();
 }
 
-PointsModule::PointsModule(uint128_t UUID) : ModuleCore(UUID)
+PointsModule::PointsModule( uuids::uuid UUID ) : ModuleCore( UUID )
 {
     this->type = "PointsModule";
 
-    this->SetOnCommand("ADD_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
+    this->points = json::object( );
+    this->position = json::object( );
+
+    this->SetOnCommand( "ADD_POINTS", [this](const json::value points )
     {
-        this->PointsModule::addPoints(points);
+        this->PointsModule::onAddPoints( points );
     });
 
-    this->SetOnCommand("REMOVE_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
+    this->SetOnCommand( "REMOVE_POINTS", [this]( const json::value points )
     {
-        this->PointsModule::removePoints(points);
+        this->PointsModule::onRemovePoints( points );
+
     });
 
-    this->SetOnCommand("UPDATE_POINTS", [this](const vector<pair<uint128_t, vector<float>>>& points)
+
+    this->SetOnCommand( "UPDATE_POINTS", [this]( const json::value points )
     {
-        this->PointsModule::updatePoints(points);
+        this->PointsModule::onUpdatePoints( points );
     });
 
-    this->SetOnCommand("CLEAR", [this](const vector<pair<uint128_t, vector<float>>>& fake)
+    this->SetOnCommand( "CLEAR", [this]( const json::value fake )
     {
-        this->PointsModule::clear();
-    });
+
+        this->PointsModule::onClear( );
+    } );
 }
 
-vector<uint128_t> PointsModule::getPointsUUID()
+vector<uuids::uuid> PointsModule::getPointsUUID( )
 {
-    vector<uint128_t> keys;
-    keys.reserve(points.size());
-    for(auto& it : points)
-        keys.push_back(it.first);
+    vector<uuids::uuid> keys;
+    keys.reserve( this->points.as_object( ).size( ) );
+    uuids::string_generator gen;
+    for( auto& kv : this->points.as_object( ) )
+        keys.push_back(gen(std::string(kv.key())));
     return keys;
 }
 
-vector<float> PointsModule::getPoint(uint128_t UUID)
+json::value PointsModule::getPoint(uuids::uuid UUID )
 {
-    auto it = points.find(UUID);
+    auto& UUID_points = this->points.as_object( );
+    auto it = UUID_points.find( uuids::to_string(UUID) );
 
-    if(it != points.end())
-        return it->second;
+    if( it != UUID_points.end( ) )
+        return it->value( );
 
-    return {};
+    return json::array( );
 }
 
-vector<vector<float>> PointsModule::getPoints(uint128_t UUID)
-{
-    vector<vector<float>> tous_points;
-    tous_points.reserve(this->points.size());
-    for(auto &[uuid, pos] : points)
-        tous_points.push_back(pos);
-
-    return tous_points;
-}
-
-void PointsModule::addPoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync = false)
-{
-    for(auto& [uuid, position] : points)
-    {
-        vector<float> position_copy (3, 0.0f);
-        for(size_t i = 0; i < position_copy.size() && i < 3; ++i)
-        {
-            position_copy[i] = position[i];
-        }
-
-        this->points[uuid] = position_copy;
-    }
-    this->OnChange("ADD_POINTS ", points);
-
-    if(sync)
-        cout << "ADD_POINTS" << points.size() << endl;
-}
-
-void PointsModule::removePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync)
-{
-    for(auto &[uuid, position] : points)
-    {
-        this->points.erase(uuid);
-    }
-
-    this->OnChange("REMOVE_COMMANDS", points);
-
-    if(sync)
-        cout << "REMOVE_POINTS " << points.size() << endl;
-}
-
-void PointsModule::updatePoints(const vector<pair<uint128_t, vector<float>>>& points, bool sync)
-{
-    for(auto &[uuid, position] : points)
-    {
-        auto it = this->points.find(uuid);
-        if(it != this->points.end())
-        {
-            vector<float> positionCopy(3, 0.0f);
-
-            for(size_t i = 0; i < position.size() && i < 3; ++i)
-            {
-                positionCopy[i] = position[i];
-            }
-            it->second = positionCopy;
-        }
-    }
-
-    if(sync)
-    {
-        cout << "UPDATE_POINTS " << endl;
-    }
-}
-
-void PointsModule::clear(bool sync)
-{
-    this->points.clear();
-
-    this->OnCommand("CLEAR", vector<pair<uint128_t, vector<float>>>());
-
-    if(sync)
-        cout << "CLEAR " << endl;
-}
-
-map<uint128_t, vector<float>> PointsModule::getState()
+json::value PointsModule::getPoints( uuids::uuid UUID )
 {
     return this->points;
 }
 
-void PointsModule::setState(vector<pair<uint128_t, vector<float>>> state)
+void PointsModule::onAddPoints( const json::value add_points, bool sync )
 {
-    this->addPoints(state);
+    if( !add_points.is_object( ) ) return;
+
+    json::object& UUID_points = this->points.as_object( );
+
+    for( auto& kv : add_points.as_object( ) )
+    {
+        if( kv.value( ).is_array( ) )
+            UUID_points[kv.key( )] =  kv.value( );
+    }
+
+    this->addPoints( add_points, sync );
 }
+
+void PointsModule::addPoints( const json::value add_points, bool sync )
+{
+    this->OnChange( "ADD_POINTS ", add_points );
+
+    if( sync )
+        this->Output( "ADD_POINTS ", add_points );
+}
+
+void PointsModule::onRemovePoints( const json::value points_remove, bool sync )
+{
+    if( !points_remove.is_object( ) ) return;
+
+    json::object& UUID_points = this->points.as_object( );
+
+    for( auto& kv : points_remove.as_object( ) )
+        UUID_points.erase( kv.key( ) );
+
+    this->removePoints( points_remove, sync );
+}
+
+void PointsModule::removePoints( const json::value points_remove, bool sync )
+{
+    this->OnChange( "REMOVE_POINTS", points_remove );
+
+    if( sync )
+        this->Output( "REMOVE_POINTS", points_remove );
+}
+
+void PointsModule::onUpdatePoints( const json::value points_update, bool sync )
+{
+    if( !points_update.is_object( ) ) return;
+
+    json::object& UUID_points = this->points.as_object( );
+    for(auto& kv : points_update.as_object() )
+    {
+        if( UUID_points.contains( kv.key( ) ) )
+            UUID_points[kv.key( )] = kv.value( );
+    }
+
+    this->updatePoints( points_update, sync );
+}
+
+void PointsModule::updatePoints( const json::value points_update, bool sync )
+{
+    this->OnChange( "UPDATE_POINTS", points_update );
+
+    if( sync )
+        this->Output( "UPDATE_POINTS", points_update);
+}
+
+void PointsModule::onClear( bool sync )
+{
+    this->points.as_object( ).clear( );
+
+    this->clear( sync );
+}
+
+void PointsModule::clear( bool sync )
+{
+    this->OnChange( "CLEAR", json::object( ) );
+
+    if( sync )
+        this->Output( "CLEAR", json::object( ) );
+}
+
+json::value PointsModule::getState( )
+{
+    return this->points;
+}
+
+void PointsModule::setState( json::value state )
+{
+
+    this->onAddPoints( state );
+}
+

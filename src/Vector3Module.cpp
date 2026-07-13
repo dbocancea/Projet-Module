@@ -5,26 +5,43 @@ Vector3Module::Vector3Module()
     this->type = "Vector3Module";
 }
 
-Vector3Module::Vector3Module(uint128_t UUID) : ModuleCore(UUID)
+Vector3Module::Vector3Module(uuids::uuid UUID) : ModuleCore(UUID)
 {
     cout << "Vector3Module - constructor" << endl;
     this->type = "Vector3Module";
-    this->command.push_back("UPDATE_VECTOR");
+    this->command["updateVector"] = "UPDATE_VECTOR";
 
-    this->SetOnCommand("UPDATE_VECTOR", [&](array<int, 3> vector)
-                       { this->UpdateVector(vector, 0); });
+    this->SetOnCommand(this->command["updateVector"], [this](json::value data)
+        { 
+            auto& obj = data.as_object();
+            this->OnUpdateVector(obj.at("vector")); 
+});
+}
+
+void Vector3Module::OnUpdateVector(json::value vector)
+{
+    json::array array_json = vector.as_array();
+    array<int, 3> vect;
+    for (int i = 0; i < static_cast<int>(vect.size()); i++)
+        vect[i] = static_cast<int>(array_json[i].as_int64());
+    
+    this->UpdateVector(vect , 0);
+    
 }
 
 void Vector3Module::UpdateVector(array<int, 3> vector, bool sync)
 {
-    cout << "Vector3Module - updateVector" << endl;
 
-    for (int i = 0; i < vector.size(); i++)
+    for (int i = 0; i < static_cast<int>(vector.size()); i++)
         this->vector[i] = vector[i];
-    this->OnChange("UPDATE_VECTOR", this->vector);
+    json::value jv = json::value_from(vector);
+    json::object data;
+    data["vector"] = jv;
+    this->OnChange(this->command["updateVector"], data);
 
-    if (sync)
-        this->outputFn({"UPDATE_VECTOR", vector});
+    if( sync )   
+        this->Output(this->command["updateVector"] , data );
+    
 }
 
 array<int, 3> Vector3Module::GetVector()
@@ -32,11 +49,23 @@ array<int, 3> Vector3Module::GetVector()
     return this->vector;
 }
 
-array<int, 3> Vector3Module::GetState()
+json::value Vector3Module::GetState()
 {
-    return this->vector;
+    json::object vector;
+    json::array json_arr;
+
+    for (int num : this->vector) 
+        json_arr.push_back(num);
+    
+    vector["vector"] = json_arr;
+    return vector;
 }
-void Vector3Module::SetState( array<int, 3> vector)
+void Vector3Module::SetState( json::value vector)
 {
-    this->UpdateVector(vector , 0);
+    if( vector.is_object() )
+    {
+        auto obj = vector.as_object();
+        this->OnUpdateVector(obj);
+    }
+    
 }

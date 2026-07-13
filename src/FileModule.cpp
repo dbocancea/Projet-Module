@@ -1,34 +1,67 @@
 #include "FileModule.hpp"
-template <typename T>
-FileModule<T>::FileModule() : ModuleCore<T>()
-{
-    this->type = "FileModule";
-}
-template <typename T>
-FileModule<T>::FileModule( uint128_t UUID ) : ModuleCore<T>(UUID)
-{
-    this->type = "FileModule";
-    string cmd = "UPDATE_FILE";
-    this->command.push_back(cmd);
-    this->SetOnCommand(cmd , [&](File file) {this->UpdateFile(file, false);}  );
-}
-template <typename T>
-void FileModule<T>::UpdateFile(File file , bool sync )
-{
-    this->file = file;
-    this->OnChange("UPDATE_FILE" , this->file );
 
-    if( sync )
-        this->outputFn(pair<string, File >{"UPDATE_FILE" , file});
+FileModule::FileModule() : ModuleCore()
+{
+    this->type = "FileModule";
 }
-template <typename T>
-File FileModule<T>::getFile()
+
+FileModule::FileModule(uuids::uuid UUID) : ModuleCore(UUID)
+{
+    this->type = "FileModule";
+    this->command["updateFile"] = "UPDATE_FILE";
+    this->SetOnCommand(this->command["updateFile"], [this](json::value data)
+                       {
+        json::object obj = data.as_object();
+        this->OnUpdateFile(obj); });
+}
+
+void FileModule::OnUpdateFile(json::value file)
+{
+    json::object obj = file.as_object();
+    string name = obj["name"].as_string().c_str();
+    string type = obj["type"].as_string().c_str();
+    string data = obj["data"].as_string().c_str();
+
+    this->UpdateFile(name, type, data, false);
+}
+
+void FileModule::UpdateFile(string name, string type, string data, bool sync)
+{
+    this->file.data = data;
+    this->file.name = name;
+    this->file.type = type;
+
+    json::object obj;
+    obj["data"] = this->file.data;
+    obj["type"] = this->file.type;
+    obj["name"] = this->file.name;
+
+    this->OnChange(this->command["updateFile"], obj);
+
+    if (sync)
+        this->Output(this->command["updateFile"], obj);
+    
+}
+
+File FileModule::GetFile()
 {
     return this->file;
 }
-template <typename T>
-void FileModule<T>::setState( T newState) {
-        this->UpdateFile(newState , 0);
-    }
 
-template class FileModule<File>;
+json::value FileModule::GetState()
+{
+    json::object file;
+    file["data"] = this->file.data;
+    file["type"] = this->file.type;
+    file["name"] = this->file.name;
+    return file;
+}
+
+void FileModule::SetState(json::value newState)
+{
+    if (newState.is_object())
+    {
+        auto obj = newState.as_object();
+        this->OnUpdateFile(obj);
+    }
+}

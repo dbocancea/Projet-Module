@@ -1,7 +1,7 @@
 TARGET = build/ModuleCore
-
+LIBS = -lboost_json -lboost_system
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Isrc/Core
+CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc -Isrc/Core -g
 
 SRCS = $(wildcard src/*.cpp) $(wildcard src/Core/*.cpp)
 
@@ -12,7 +12,7 @@ vpath %.cpp src src/Core
 all: build_dir $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
 
 build/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

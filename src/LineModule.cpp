@@ -1,49 +1,75 @@
 #include "LineModule.hpp"
 
-
+namespace json = boost::json;
 LineModule::LineModule() {};
-LineModule::LineModule(uint128_t UUID)
+LineModule::LineModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     this->type = "LineModule";
 
     this->origin = {0.,0.,0.};
     this->end = {0.,0.,0.};
 
-    string updLine = "UPDATE_LINE";
-    this->command.push_back(updLine);
+    this->command["updateLine"] = "UPDATE_LINE";
 
-    this->SetOnCommand(updLine, [&](pair<vector<float>, vector<float>> data) {this->updateLine(data);});
+    this->SetOnCommand(this->command["updateLine"], [&](json::value data) {this->OnUpdateLine(data);});
  
 }
 
-void LineModule::updateLine(pair<vector<float>, vector<float>> line) 
+void LineModule::OnUpdateLine(json::value line) 
+{
+    json::object obj = line.get_object();
+    vector<float> origintemp;
+    vector<float> endtemp;
+    if(obj.contains("origin") && obj.at("origin").is_array()){
+        json::array arr = obj.at("origin").get_array();
+        for(int i = 0; i < static_cast<int>(arr.size()); ++i){    
+            origintemp[i] = json::value_to<float>(arr[i]);
+        }
+    }
+
+    if(obj.contains("end") && obj.at("end").is_array()){
+        json::array arr = obj.at("end").get_array();
+        for(int i = 0; i < static_cast<int>(arr.size()); ++i){    
+            endtemp[i] = json::value_to<float>(arr[i]);
+        }
+    }
+    this->UpdateLine(origintemp , endtemp , false);
+    
+}
+
+void LineModule::UpdateLine(vector<float> origin , vector<float> end, bool sync) 
 {
     cout << "LineModule - updateLine" << endl;
 
-    if(!line.first.empty()){
-        this->origin = line.first;
-    }
+    if(!origin.empty())
+        for(int i = 0; i < static_cast<int>(origin.size()); ++i) 
+            this->origin[i] = origin[i];
+        
+    if(!end.empty())
+        for(int i = 0; i < static_cast<int>(end.size()); ++i) 
+            this->end[i] = end[i];
 
-    if(!line.second.empty()){
-        this->end = line.second;
-    }
+    json::value updatedLine = this->getLine();
+    this->OnChange(this->command["updateLine"], updatedLine);
 
-    pair<vector<float>, vector<float>> updatedLine = {this->origin, this->end};
-    this->OnChange("UPDATE_LINE", updatedLine);
-
-    if(this->outputFn){
-        this->outputFn(pair<string, pair<vector<float>, vector<float>>>{"UPDATE_LINE", updatedLine});
+    if(sync){
+        json::object msgOutput;
+        msgOutput["line"] = updatedLine;
+        this->Output(this->command["updateLine"], msgOutput);
     }
 }
 
-pair<vector<float>, vector<float>> LineModule::getLine(){
-    return {this->origin, this->end};
+json::value LineModule::getLine(){
+    json::array originArr = {this->origin[0], this->origin[1], this->origin[2]};
+    json::array endArr = {this->end[0], this->end[1], this->end[2]};
+    return json::object({{"origin", originArr}, {"end", endArr}}) ;
+
 }
 
-pair<vector<float>, vector<float>> LineModule::getState(){
-    return this->getLine();
+json::value LineModule::getState(){
+    return json::object({{"line", this->getLine()}});
 }
 
-void LineModule::setState(pair<vector<float>, vector<float>> state){
-    this->updateLine(state);
+void LineModule::setState(json::value state){
+    this->OnUpdateLine(state.get_object());
 }

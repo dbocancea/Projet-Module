@@ -2,7 +2,7 @@
 #define LINEMODULE_HPP
 #include "Core/ModuleCore.hpp"
 
-class LineModule : public ModuleCore<pair<vector<float>, vector<float>>>
+class LineModule : public ModuleCore
 {
     private:    
         vector<float> origin;
@@ -10,12 +10,13 @@ class LineModule : public ModuleCore<pair<vector<float>, vector<float>>>
 
     public:
         LineModule();
-        LineModule(uint128_t UUID);
-        void updateLine(pair<vector<float>, vector<float>> line); 
-        pair<vector<float>, vector<float>> getLine();
-        pair<vector<float>, vector<float>> getState();
-        void setState(pair<vector<float>, vector<float>> state);
-
+        LineModule(uuids::uuid UUID);
+        void UpdateLine( vector<float> origin , vector<float> end , bool sync = false );
+        void OnUpdateLine(boost::json::value line);
+        boost::json::value getLine();
+        boost::json::value getState();
+        void setState(boost::json::value state);
+        
 };
 
 #endif

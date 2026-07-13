@@ -5,31 +5,57 @@ ScalarModule::ScalarModule()
     this->type = "ScalarModule";
 }
 
-ScalarModule::ScalarModule(uint128_t UUID) : ModuleCore(UUID)
+ScalarModule::ScalarModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     cout << "ScalarModule - constructor" << endl;
     this->type = "ScalarModule";
-    this->command.push_back("UPDATE_VALUE");
+    this->command["updateValue"] = "UPDATE_VALUE";
     
-    this->SetOnCommand(this->command[this->command.size()-1] , [&](int value ) {this->UpdateValue(value , 0);} );
+    this->SetOnCommand(this->command["updateValue"] , [this](json::value data ) 
+    {
+        this->OnUpdateValue(data);
+    });
 }
 
-void ScalarModule::UpdateValue(int value , bool sync)
+void ScalarModule::OnUpdateValue(json::value value)
 {
     cout << "ScalarModule - UpdateValue" << endl;
-    this->value = value;
-    this->OnChange(this->command[this->command.size()-1] , value);
+    int val = static_cast<int>(value.as_int64());
+
+    this->UpdateValue(val , false);
+}
+
+void ScalarModule::UpdateValue(int val , bool sync)
+{
+    this->value = val;
+
+    json::object data;
+    data["value"] = value;
+
+    this->OnChange(this->command["updateValue"] , data);
 
     if(sync)
-        this->outputFn({"UPDATE_VALUE", value});
+         this->Output(this->command["updateValue"] , data );
 }
 
-void ScalarModule::SetState(int value)
+void ScalarModule::SetState(json::value newState)
 {
-    this->UpdateValue(value , 0);
+    if( newState.is_object() )
+    {
+        auto obj = newState.as_object();
+        this->OnUpdateValue(obj);
+    }
 }
 
-int ScalarModule::GetState()
+json::value ScalarModule::GetState()
+{
+    json::object status;
+
+    status["value"] = this->value;
+
+    return status;
+}
+int ScalarModule::GetValue()
 {
     return this->value;
 }

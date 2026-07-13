@@ -2,21 +2,22 @@
 
 MeshModule::MeshModule(){}
 
-MeshModule::MeshModule(uint128_t UUID) : FileModule(UUID)
+MeshModule::MeshModule(uuids::uuid UUID) : FileModule(UUID)
 {
     this->type="MeshModule";
     cout << "MeshModule - constructor" << endl;
-    this->command.push_back("CLEAR");
-    this->command.push_back("UPDATE_TRANSFORM");
-    this->command.push_back("UPDATE_BOUNDINGBOX");
+
+    this->command["clear"] = "CLEAR";
+    this->command["updateTransform"] = "UPDATE_TRANSFORM";
+    this->command["updateBoundingBox"] = "UPDATE_BOUNDINGBOX";
 }
 
-File MeshModule::getState()
+json::value MeshModule::getState()
 {
-    return FileModule::getState();
+    return FileModule::GetState();
 }
 
-void MeshModule::SetState(File f)
+void MeshModule::SetState(json::value state)
 {
-    FileModule::setState(f);
+    FileModule::SetState(state);
 }

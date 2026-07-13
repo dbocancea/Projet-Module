@@ -1,46 +1,69 @@
 #include "PrimitiveModule.hpp"
 
-PrimitiveModule::PrimitiveModule()
+PrimitiveModule::PrimitiveModule( ) : TransformModule( )
 {
     this->type = "PrimitiveModule";
+    this->primitive = "sphere";
+    this->primitiveTypes = {this->primitive, "box"};
 }
 
-PrimitiveModule::PrimitiveModule(uint128_t UUID) : TransformModule(UUID)
+PrimitiveModule::PrimitiveModule( uuids::uuid UUID ) : TransformModule( UUID )
 {
     this->type = "PrimitiveModule";
-    this->SetOnCommand("UPDATE_PRIMITIVE", [this](this->primitive)
+
+    this->primitive = "sphere";
+    this->primitiveTypes = {this->primitive, "box"};
+
+    this->SetOnCommand( "UPDATE_PRIMITIVE", [this]( json::value primitive )
     {
-        this->updatePrimitive(this->primitive);
+        this->onUpdatePrimitive( this->primitive );
     });
+}
 
-    string PrimitiveModule::getPrimitive()
-    {
-        return this->primitive;
-    }
+json::value PrimitiveModule::getPrimitive( )
+{
+    return this->primitive;
+}
 
-    vector<string> PrimitiveModule::getPrimitiveTypes()
-    {
-        return this->primitiveTypes;
-    }
+json::value PrimitiveModule::getPrimitiveTypes( )
+{
+    return this->primitiveTypes;
+}
 
-    void PrimitiveModule::updatePrimitive(string primitive, bool sync = false)
-    {
-        this->primitive = primitive;
+void PrimitiveModule::onUpdatePrimitive( json::value primitive_update, bool sync )
+{
+    if( !primitive_update.is_object( ) ) return;
+    this->primitive = primitive_update;
 
-        this->OnChange("UPDATE_PRIMITIVE", primitive);
+    this->updatePrimitive( primitive_update, sync );
+}
 
-        if(sync)
-            cout << "UPDATE_PRIMITIVE " << this->primitive << endl;
-    }
+void PrimitiveModule::updatePrimitive( json::value primitive_update, bool sync )
+{
+    this->OnChange( "UPDATE_PRIMITIVE", primitive_update );
 
-    map<map<string, vector<float>>, string> PrimitiveModule::getState()
-    {
-        return {this->getState(), this->primitive};
-    }
+    if( sync )
+        this->Output( "UPDATE_PRIMITIVE", primitive_update );
+}
 
-    void PrimitiveModule::setState(map<map<string, vector<float>>, string> state)
-    {
-        this->setState(state);
-        this->updatePrimitive(state->second);
-    }
+json::value PrimitiveModule::getState( )
+{
+    json::value transformState = this->TransformModule::getState( );
+    json::object obj = transformState.as_object( );
+
+    obj["primitive"] = this->primitive;
+
+    return obj;
+}
+
+void PrimitiveModule::setState( json::value state )
+{
+    if( !state.is_object( ) ) return;
+
+    auto& obj = state.as_object();
+    auto it = obj.find( "primitive" );
+    if( it != obj.end() )
+        this->onUpdatePrimitive( it->value() );
+
+    this->TransformModule::setState(state);
 }

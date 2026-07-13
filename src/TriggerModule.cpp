@@ -1,22 +1,26 @@
 #include "TriggerModule.hpp"
 
+
 TriggerModule::TriggerModule()
 {
     this->type = "TriggerModule";
 }
 
-TriggerModule::TriggerModule(uint128_t UUID){
+TriggerModule::TriggerModule(uuids::uuid UUID) : ModuleCore(UUID)
+{
     this->type = "TriggerModule";
-    this->command.push_back("TRIGGER");
+    this->command["trigger"] = "TRIGGER";
     cout << "TriggerModule - constructor";
-    this->SetOnCommand("TRIGGER", [this](bool bl){this->trigger(false);});
+    this->SetOnCommand(this->command["trigger"], [this](json::value v){
+        (void)v;
+        this->trigger();});
 
 }
 
 void TriggerModule::trigger(bool sync){
-    this->OnChange("TRIGGER", true);
+    this->OnChange(this->command["trigger"], json::object());
 
     if(sync){
-        this->outputFn(pair<string, bool>{"TRIGGER", true});
+        this->Output(this->command["trigger"], json::object());
     }
 }

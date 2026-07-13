@@ -8,21 +8,26 @@
 #include "Core/ModuleCore.hpp"
 #include <array>
 #include <tuple>
-template<typename T>
-class TransformModule : public ModuleCore<vector<float>>
+
+class TransformModule : public ModuleCore
 {
-    protected:
-        map<string, vector <float>> commands;
-        array<float, TRANSLATION_SIZE> translation {};
-        array<float, ROTATION_SIZE> rotation {};
-        array<float, SCALE_SIZE> scale {};
     public:
-        TransformModule();
-        TransformModule(uint128_t UUID);
-        void updateTransform(vector<float> transform, bool sync = false);
-        tuple<array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> getTransform();
-        map<string, vector<float>> getState();
-        void setState(map<string, vector<float>> state);
+        struct TransformData
+        {
+            array<float, TRANSLATION_SIZE> translation {};
+            array<float, ROTATION_SIZE> rotation {};
+            array<float, SCALE_SIZE> scale {};
+        };
+    protected:
+        TransformData transform_data {};
+    public:
+        TransformModule( );
+        TransformModule(uuids::uuid UUID );
+        void updateTransform( TransformData transform, bool sync = false );
+        void onUpdateTransform( json::value transform, bool sync = false );
+        TransformData getTransform( );
+        json::value getState( );
+        void setState( json::value state );
 };
-  
+
 #endif

@@ -1,63 +1,107 @@
 #include "TransformModule.hpp"
 
-template<typename T> 
-TransformModule<T>::TransformModule() 
+
+TransformModule::TransformModule( ) 
 {
     this->type = "TransformModule";
 }
 
-template<typename T> 
-TransformModule<T>::TransformModule(uint128_t UUID) : ModuleCore(UUID)
+TransformModule::TransformModule( uuids::uuid  UUID ) : ModuleCore( UUID )
 {
     this->type = "TransformModule";
-
-    this->SetOnCommand("UPDATE_TRANSFORM", [this](vector<float> transform)
+    this->command["updateTransform"] = "UPDATE_TRANSFORM";
+    this->SetOnCommand( this->command["updateTransform"], [this]( json::value transform )
     {
-        this->updateTransform(transform);
+        this->onUpdateTransform( transform );
     });
 }
-template<typename T> 
-void TransformModule<T>::updateTransform(vector<float> transform, bool sync = false)
-{
-        if(transform.size() >= 10)
-        {
-            this->translation[0] = transform[0];
-            this->translation[1] = transform[1];
-            this->translation[2] = transform[2];
 
-            this->rotation[0] = transform[3];
-            this->rotation[1] = transform[4];
-            this->rotation[2] = transform[5];
-            this->rotation[3] = transform[6];
+void TransformModule::onUpdateTransform( json::value transform, bool sync )
+{   
+    if( !transform.is_array( ) ) return;
+    auto& liste = transform.as_array( );
+    if( liste.size( ) >= 10 )
+    {
+        TransformData new_data;
+        new_data.translation[0] = liste[0].to_number<float>( );
+        new_data.translation[1] = liste[1].to_number<float>();
+        new_data.translation[2] = liste[2].to_number<float>();
 
-            this->scale[0] = transform[7];
-            this->scale[1] = transform[8];
-            this->scale[2] = transform[9];
-        }
+        new_data.rotation[0] = liste[3].to_number<float>( );
+        new_data.rotation[1] = liste[4].to_number<float>( );
+        new_data.rotation[2] = liste[5].to_number<float>( );
+        new_data.rotation[3] = liste[6].to_number<float>( );
 
-        if(sync)
-            if(this->outputFn)
-                this->outputFn(pair<string, vector<float>>("UPDATE_TRANSFORM", transform));
+        new_data.scale[0] = liste[7].to_number<float>( );
+        new_data.scale[1] = liste[8].to_number<float>( );
+        new_data.scale[2] = liste[9].to_number<float>( );
+
+        this->updateTransform( new_data, sync );
+    }
 }
 
-template<typename T> 
-tuple<array<float, TRANSLATION_SIZE>, array<float, ROTATION_SIZE>, array<float, SCALE_SIZE>> TransformModule<T>::getTransform()
-{
-    return {translation, rotation, scale};
-}
+void TransformModule::updateTransform( TransformData new_data, bool sync )
+{   
+    this->transform_data = new_data;
+    json::value transform_update = 
+    {
+        this->transform_data.translation[0], 
+        this->transform_data.translation[1],
+        this->transform_data.translation[2],
 
-template<typename T> 
-void TransformModule<T>::setState(map<string, vector<float>> state)
-{
-    auto it = state.find("transform");
-    if(it != state.end())
-        this->updateTransform(it->second);
-}
+        this->transform_data.rotation[0],
+        this->transform_data.rotation[1],
+        this->transform_data.rotation[2],
+        this->transform_data.rotation[3],
 
-template<typename T> 
-map<string, vector<float>> TransformModule<T>::getState()
-{
-    return{
-        {"transform", {translation[0], translation[1], translation[2], rotation[0], rotation[1], rotation[2], rotation[3], scale[0], scale[1], scale[2]}}
+        this->transform_data.scale[0],
+        this->transform_data.scale[1],
+        this->transform_data.scale[2],
     };
+
+    this->OnChange( this->command["updateTransform"], transform_update );
+
+    if( sync )
+        this->Output( this->command["updateTransform"], transform_update );
+}
+
+
+TransformModule::TransformData TransformModule::getTransform( )
+{
+    return this->transform_data;
+}
+
+void TransformModule::setState( json::value state )
+{
+    if( !state.is_object( ) ) return;
+
+    auto& obj = state.as_object( );
+
+    auto it = obj.find( "transform" );
+    if( it != obj.end( ) )
+        this->onUpdateTransform( it->value( ) );
+}
+
+json::value TransformModule::getState( )
+{
+    json::array liste = 
+    {
+        this->transform_data.translation[0],
+        this->transform_data.translation[1],
+        this->transform_data.translation[2],
+
+        this->transform_data.rotation[0],
+        this->transform_data.rotation[1],
+        this->transform_data.rotation[2],
+        this->transform_data.rotation[3],
+
+        this->transform_data.scale[0],
+        this->transform_data.scale[1],
+        this->transform_data.scale[2]
+    };
+
+    json::object obj;
+    obj["transform"] = liste;
+
+    return obj;
 }

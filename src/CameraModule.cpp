@@ -1,51 +1,73 @@
-#include <iostream>
 #include "CameraModule.hpp"
 
-CameraModule::CameraModule() : TransformModule(0)
+CameraModule::CameraModule() : TransformModule()
 {
     this->type = "CameraModule";
 }
 
-CameraModule::CameraModule(uint128_t UUID) : TransformModule(UUID)
+CameraModule::CameraModule( uuids::uuid UUID ) : TransformModule( UUID )
 {
     this->type = "CameraModule";
-
-    this->SetOnCommand("UPDATE_CAMERA", [this](vector<float> camera)
+    this->command["updateCamera"] =  "UPDATE_CAMERA";
+    this->SetOnCommand( this->command["updateCamera"], [this]( json::value camera )
     {
-        this->updateCamera(camera);
+        this->onUpdateCamera( camera );
     });
 }
 
-void CameraModule::updateCamera(vector<float> camera, bool sync = false)
+void CameraModule::onUpdateCamera( json::value camera_json, bool sync )
 {
-    if(camera.size() == 4)
+    if( !camera_json.is_array( ) ) return;
+    auto& liste = camera_json.as_array( );
+    if( liste.size( ) == 4 )
     {
-        this->fov = camera[0];
-        this->aspect = camera[1];
-        this->myNear = camera[2];
-        this->myFar = camera[3];
+        this->camera_data.fov = liste[0].to_number<float>();
+        this->camera_data.aspect = liste[1].to_number<float>();
+        this->camera_data.myNear = liste[2].to_number<float>();
+        this->camera_data.myFar = liste[3].to_number<float>();
     }
 
-    if(sync)
-        if(this->outputFn)
-            cout << "UPDATE_CAMERA " << camera[0] << " " << camera[1] << " " << camera[2] << " " << camera[3] << endl;
+    this->updateCamera( this->camera_data, sync );
 }
 
-tuple<float, float, float, float> CameraModule::getCamera()
+void CameraModule::updateCamera( CameraData new_data, bool sync )
 {
-    return{this->fov, this->aspect, this->myNear, this->myFar};
+    this->camera_data = new_data;
+    json::value camera_update = {this->camera_data.fov, this->camera_data.aspect, this->camera_data.myNear, this->camera_data.myFar};
+
+    this->OnChange( this->command["updateCamera"], camera_update );
+
+    if( sync )
+        this->Output( this->command["updateCamera"], camera_update );
 }
 
-void CameraModule::setState(map<string, vector<float>> state)
+CameraModule::CameraData CameraModule::getCamera( )
 {
-    auto it = state.find("camera");
-    if(it != state.end())
-        this->updateCamera(it->second);
+    return this->camera_data;
 }
 
-map<string, vector<float>> CameraModule::getState()
+void CameraModule::setState( json::value state )
 {
-    return {
-        {"camera", {this->fov, this->aspect, this->myNear, this->myFar}}
-    };
+    if( !state.is_object( ) ) return;
+
+    auto& obj = state.as_object( );
+
+    auto it = obj.find( "camera" );
+    if( it != obj.end( ) )
+        this->onUpdateCamera( it->value( ) );
+
+    this->TransformModule::setState( state );
+}
+
+json::value CameraModule::getState( )
+{
+    json::value transform_state = this->TransformModule::getState( );
+
+    json::object obj = transform_state.as_object( );
+
+    json::array liste = {this->camera_data.fov, this->camera_data.aspect, this->camera_data.myNear, this->camera_data.myFar};
+
+    obj["camera"] = liste;
+
+    return obj;
 }

@@ -1,21 +1,24 @@
 #ifndef MODULEREGESTRY_HPP
 #define MODULEREGESTRY_HPP
 #include"ModuleCore.hpp"
+#include"ModuleTypes.hpp"
 #include <cstdlib>
 
-class ModuleRegistry : public ModuleCore<vector<float>>
+class ModuleRegistry : public ModuleCore
 {
     private:
-        map< uint128_t , ModuleCore<vector<float>>* > modules;
+        
     public:
-        const string type = "ModuleRegistry";
+    map< uuids::uuid , shared_ptr<ModuleCore> > modules;
         ModuleRegistry();
-        ModuleRegistry(  function<void (pair<string, vector<float> >) > outputFn)  ;
-        void AddModule(uint128_t UUID , bool sync);
-        void OnAddModule( vector<float> data );
-        void RemoveModule(uint128_t UUID );
-        void OnRemoveModule( function<void(vector<float>)> data );
-        ModuleCore<vector<float>>* GetModule(uint128_t UUID);
+        ModuleRegistry( function<void(json::value)> outputFn)  ;
+        void AddModule( string type ,uuids::uuid UUID , bool sync = false);
+        void OnAddModule( json::value data );
+        void RemoveModule(uuids::uuid UUID , bool sync = false);
+        void OnRemoveModule( json::value data );
+        shared_ptr<ModuleCore> GetModule(uuids::uuid UUID);
+        void SetState(json::value state) override;
+        json::value GetState() override;
 };
 
 #endif
