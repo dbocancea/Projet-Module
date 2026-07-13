@@ -49,7 +49,6 @@ void TransformModule::updateTransform( TransformData new_data, bool sync )
 
     json::object transform_update;
     transform_update["translation"] = json::array{transform_data.translation[0], transform_data.translation[1], transform_data.translation[2]};
-<<<<<<< HEAD
     transform_update["rotation"] = json::array{transform_data.rotation[0], transform_data.rotation[1], transform_data.rotation[2], transform_data.rotation[3]};
     transform_update["scale"] = json::array{transform_data.scale[0], transform_data.scale[1], transform_data.scale[2]};
 
