@@ -1,6 +1,6 @@
 #include "CameraModule.hpp"
 
-CameraModule::CameraModule() : TransformModule()
+CameraModule::CameraModule() : TransformModule( )
 {
     this->type = "CameraModule";
 }
