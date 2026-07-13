@@ -22,6 +22,7 @@ void LineModule::OnUpdateLine(json::value line)
     vector<float> endtemp;
     if(obj.contains("origin") && obj.at("origin").is_array()){
         json::array arr = obj.at("origin").get_array();
+        origintemp.resize(arr.size()); 
         for(int i = 0; i < static_cast<int>(arr.size()); ++i){    
             origintemp[i] = json::value_to<float>(arr[i]);
         }
@@ -29,6 +30,7 @@ void LineModule::OnUpdateLine(json::value line)
 
     if(obj.contains("end") && obj.at("end").is_array()){
         json::array arr = obj.at("end").get_array();
+        endtemp.resize(arr.size());  
         for(int i = 0; i < static_cast<int>(arr.size()); ++i){    
             endtemp[i] = json::value_to<float>(arr[i]);
         }
@@ -71,5 +73,5 @@ json::value LineModule::GetState(){
 }
 
 void LineModule::SetState(json::value state){
-    this->OnUpdateLine(state.get_object());
+    this->OnUpdateLine(state.get_object().at("line"));
 }
