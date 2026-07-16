@@ -21,7 +21,7 @@ int main( )
 
     CameraModule cam3( UUID3 );
 
-    cout << cam3.command["updateCamera"] << "\n";
+    cout << cam3.GetCommand( )["updateCamera"] << "\n";
 
     // cout << UUID2 << "\n";
 
