@@ -22,19 +22,18 @@ json::value ImageModule::getImage( )
 
 void ImageModule::onSetImage( json::value new_im, bool sync )
 {
-    this->image = new_im;
-
     this->setImage( new_im, sync );
 }
 
 void ImageModule::setImage( json::value im, bool sync )
 {
-    this->OnChange( this->command["setImage"], im );
-
+    this->image = im;
+    
     if( sync )
     {
         this->Output( this->command["setImage"], im );
     }
+    this->OnChange( this->command["setImage"], im );
 }
 
 json::value ImageModule::GetState( )

@@ -57,6 +57,10 @@ int main() {
             std::cout << "Sent Identification..." << endl;
             webSocket.send(uuidStr);
             webSocket.send(instJoinStr); 
+            modules.AddModule("ImageModule", UUID, 1);
+            auto Img = static_pointer_cast<ImageModule>(modules.modules[UUID]);
+            Img->onSetImage("https://img.magnific.com/photos-gratuite/gros-plan-beau-papillon-textures-interessantes-fleur-petale-orange_181624-7640.jpg?semt=ais_hybrid&w=740&q=80", 1);
+            
             // modules.AddModule("CameraModule", UUID, 1);
             // modules.AddModule("CameraModule", UUID1, 1);
             // auto Cam1 = static_pointer_cast<CameraModule>(modules.modules[UUID]);
