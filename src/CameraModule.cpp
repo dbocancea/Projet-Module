@@ -1,6 +1,6 @@
 #include "CameraModule.hpp"
 
-CameraModule::CameraModule() : TransformModule()
+CameraModule::CameraModule() : TransformModule( )
 {
     this->type = "CameraModule";
 }
@@ -15,57 +15,39 @@ CameraModule::CameraModule( uuids::uuid UUID ) : TransformModule( UUID )
     });
 }
 
-void CameraModule::onUpdateCamera(json::value camera_json, bool sync)
-{
-    if (!camera_json.is_object()) {
-        if (camera_json.is_array()) {
-            // legacy array-shape fallback (unlikely needed, kept for safety)
-            auto& liste = camera_json.as_array();
-            if (liste.size() == 4) {
-                this->camera_data.fov    = liste[0].to_number<float>();
-                this->camera_data.aspect = liste[1].to_number<float>();
-                this->camera_data.myNear = liste[2].to_number<float>();
-                this->camera_data.myFar  = liste[3].to_number<float>();
-                this->updateCamera(this->camera_data, sync);
-            }
-        }
-        return;
-    }
-
-    auto& outer = camera_json.as_object();
-    const boost::json::object* objPtr = &outer;
-    boost::json::object unwrapped;
-    if (outer.contains("camera")) {              // <-- unwrap {"camera": {...}} envelope
-        unwrapped = outer.at("camera").as_object();
-        objPtr = &unwrapped;
-    }
-    auto& obj = *objPtr;
-
-    if (obj.contains("fov"))    this->camera_data.fov    = obj.at("fov").to_number<float>();
-    if (obj.contains("aspect")) this->camera_data.aspect = obj.at("aspect").to_number<float>();
-    if (obj.contains("near"))   this->camera_data.myNear = obj.at("near").to_number<float>();
-    if (obj.contains("far"))    this->camera_data.myFar  = obj.at("far").to_number<float>();
-
-    this->updateCamera(this->camera_data, sync);
-}
-
-void CameraModule::updateCamera(CameraData new_data, bool sync)
+void CameraModule::updateCamera( CameraData new_data, bool sync )
 {
     this->camera_data = new_data;
 
     json::object camera_obj;
-    camera_obj["fov"]    = this->camera_data.fov;
+    camera_obj["fov"]   = this->camera_data.fov;
     camera_obj["aspect"] = this->camera_data.aspect;
-    camera_obj["near"]   = this->camera_data.myNear;
-    camera_obj["far"]    = this->camera_data.myFar;
+    camera_obj["near"]  = this->camera_data.myNear;   
+    camera_obj["far"]   = this->camera_data.myFar;
 
-    this->OnChange(this->command["updateCamera"], camera_obj);
+    this->OnChange( this->command["updateCamera"], camera_obj );
 
-    if (sync) {
+    if( sync ) {
         json::object wrapped;
-        wrapped["camera"] = camera_obj;              // <-- wrap for the wire, matches JS
-        this->Output(this->command["updateCamera"], wrapped);
+        wrapped["camera"] = camera_obj;         
+        this->Output( this->command["updateCamera"], wrapped );
     }
+}
+
+void CameraModule::onUpdateCamera( json::value data, bool sync )
+{
+    if( !data.is_object() ) return;
+    auto& obj = data.as_object();
+    auto it = obj.find("camera");
+    if( it == obj.end() || !it->value().is_object() ) return;
+
+    auto& cam = it->value().as_object();
+    if( cam.contains("fov") )    this->camera_data.fov    = cam.at("fov").to_number<float>();
+    if( cam.contains("aspect") ) this->camera_data.aspect = cam.at("aspect").to_number<float>();
+    if( cam.contains("near") )   this->camera_data.myNear = cam.at("near").to_number<float>();
+    if( cam.contains("far") )    this->camera_data.myFar  = cam.at("far").to_number<float>();
+
+    this->updateCamera( this->camera_data, sync );
 }
 CameraModule::CameraData CameraModule::getCamera( )
 {

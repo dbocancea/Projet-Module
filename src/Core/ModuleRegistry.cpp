@@ -8,7 +8,7 @@ ModuleRegistry::ModuleRegistry(function<void(json::value)> outputFn) : ModuleCor
     this->modules.insert({uuids::nil_generator()() , selfPtr });
 
     this->command["addModule"] = "ADD_MODULE";
-    this->command["remouveModule"] = "REMOUVE_MODULE";
+    this->command["remouveModule"] = "REMOVE_MODULE";
     this->outputFn = outputFn;
     this->SetOnCommand(this->command["addModule"], [this](json::value data)
                        { this->OnAddModule(data); });

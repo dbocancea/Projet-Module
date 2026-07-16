@@ -56,7 +56,7 @@ void ImageModule::SetState( json::value state )
     auto it = obj.find( "image" );
 
     if( it != obj.end( ) )
-        this->setImage( it->value( ) );
+        this->onSetImage( it->value( ) );
 
     this->TransformModule::SetState( state );
 }
