@@ -17,8 +17,7 @@ int main()
     // cout << UUID1 << "\n";
 
     cout << "Camera type: " << cam1.type << "\n";
-
-    cout << "Camera state " cam2.GetState() << "\n";
+    cout << "Camera state " << cam2.GetState() << "\n";
 
     ModuleRegistry modules([](json::value val){string json_str = boost::json::serialize(val); cout << json_str<< endl;});
     modules.AddModule("FileModule" , fileModuuid1, 1);
