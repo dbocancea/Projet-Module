@@ -45,7 +45,7 @@ void TransformModule::onUpdateTransform( json::value transform, bool sync )
     {
         auto& arr = trans.at("scale").as_array( );
         for( int i = 0; i < SCALE_SIZE; ++i )
-            this->transform_data.rotation[i] = arr[i].to_number<float>( );
+            this->transform_data.scale[i] = arr[i].to_number<float>( );
     }
 
     this->updateTransform( transform_data, sync );
@@ -78,7 +78,7 @@ TransformModule::TransformData TransformModule::getTransform( )
     return this->transform_data;
 }
 
-void TransformModule::setState( json::value state )
+void TransformModule::SetState( json::value state )
 {
     if( !state.is_object( ) ) return;
 
@@ -89,7 +89,7 @@ void TransformModule::setState( json::value state )
         this->onUpdateTransform( it->value( ) );
 }
 
-json::value TransformModule::getState()
+json::value TransformModule::GetState()
 {
     json::object transform;
     transform["translation"] = json::array{transform_data.translation[0], transform_data.translation[1], transform_data.translation[2]};

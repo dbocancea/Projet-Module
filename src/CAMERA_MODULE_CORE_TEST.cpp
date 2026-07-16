@@ -1,29 +1,29 @@
-#include "CameraModule.hpp"
+// #include "CameraModule.hpp"
 
-int main( )
-{
+// int main( )
+// {
 
-    uuids::random_generator gen;
+//     uuids::random_generator gen;
 
-    uuids::uuid UUID1 = gen( );
+//     uuids::uuid UUID1 = gen( );
 
-    CameraModule cam1 { UUID1 };
+//     CameraModule cam1 { UUID1 };
 
-    // cout << UUID1 << "\n";
+//     cout << UUID1 << "\n";
 
-    cout << "Type: " << cam1.type << "\n";
+//     cout << "Type: " << cam1.type << "\n";
 
-    uuids::uuid UUID2 = gen( );
+//     uuids::uuid UUID2 = gen( );
 
-    CameraModule cam2 { UUID2 };
+//     CameraModule cam2 { UUID2 };
 
-    uuids::uuid UUID3 = gen( );
+//     uuids::uuid UUID3 = gen( );
 
-    CameraModule cam3( UUID3 );
+//     CameraModule cam3( UUID3 );
 
-    cout << cam3.GetCommand( )["updateCamera"] << "\n";
+//     cout << cam3.GetCommand( )["updateCamera"] << "\n";
 
-    // cout << UUID2 << "\n";
+//     cout << UUID2 << "\n";
 
-    return 0;
-}
+//     return 0;
+// }
