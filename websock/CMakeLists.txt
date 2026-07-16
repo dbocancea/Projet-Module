@@ -24,7 +24,6 @@ add_executable(client
     ../src/LineModule.cpp
     ../src/CameraModule.cpp
     ../src/FileModule.cpp
-    ../src/GLTFModule.cpp
     ../src/PointsModule.cpp
     ../src/PrimitiveModule.cpp
     ../src/ScalarModule.cpp
@@ -35,7 +34,6 @@ add_executable(client
     ../src/Vector3Module.cpp
     ../src/ImageModule.cpp
     ../src/MeshModule.cpp
-    ../src/SceneGraph.cpp
 )
 
 # 4. Inclusion des dossiers d'en-tête (Header Include Paths)

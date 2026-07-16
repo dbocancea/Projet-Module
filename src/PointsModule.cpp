@@ -62,19 +62,31 @@ json::value PointsModule::getPoint(uuids::uuid UUID )
 
 json::value PointsModule::getPoints( uuids::uuid UUID )
 {
-    return this->points;
+    return this->GetState( );
 }
 
 void PointsModule::onAddPoints( const json::value add_points, bool sync )
 {
     if( !add_points.is_object( ) ) return;
 
-    json::object& UUID_points = this->points.as_object( );
+    auto& obj = add_points.as_object( );
 
-    for( auto& kv : add_points.as_object( ) )
+    if( !obj.contains( "points" ) || !obj.at( "points" ).is_array( ) ) return;
+
+    json::array points_array = obj.at( "points" ).as_array( );
+    json::object &inter_points =   this->points.as_object( );
+
+    for( auto& item : points_array )
     {
-        if( kv.value( ).is_array( ) )
-            UUID_points[kv.key( )] =  kv.value( );
+        if( item.is_object( ) )
+        {
+            auto& pt =  item.as_object( );
+            if( pt.contains( "UUID" ) && pt.contains( "position" ) )
+            {
+                string pt_uuid = pt.at( "UUID" ).as_string( ).c_str( );
+                inter_points[ pt_uuid ] = pt.at( "position" );
+            }
+        }
     }
 
     this->addPoints( add_points, sync );
@@ -82,20 +94,35 @@ void PointsModule::onAddPoints( const json::value add_points, bool sync )
 
 void PointsModule::addPoints( const json::value add_points, bool sync )
 {
-    this->OnChange( "ADD_POINTS ", add_points );
+    this->OnChange( "ADD_POINTS", add_points );
 
     if( sync )
-        this->Output( "ADD_POINTS ", add_points );
+        this->Output( "ADD_POINTS", add_points );
 }
 
 void PointsModule::onRemovePoints( const json::value points_remove, bool sync )
 {
     if( !points_remove.is_object( ) ) return;
 
-    json::object& UUID_points = this->points.as_object( );
+    auto& obj = points_remove.as_object( );
 
-    for( auto& kv : points_remove.as_object( ) )
-        UUID_points.erase( kv.key( ) );
+    if( !obj.contains( "points" ) || !obj.at( "points" ).is_array( ) ) return;
+
+    json::array points_array = obj.at( "points" ).as_array( );
+    json::object &inter_points = this->points.as_object( );
+
+    for( auto& item : points_array )
+    {
+        if( item.is_object( ) )
+        {
+            auto& pt = item.as_object( );
+            if( pt.contains( "UUID" ) )
+            {
+                string pt_uuid = pt.at( "UUID" ).as_string( ).c_str( );
+                inter_points.erase( pt_uuid ); 
+            }
+        }
+    }
 
     this->removePoints( points_remove, sync );
 }
@@ -112,11 +139,27 @@ void PointsModule::onUpdatePoints( const json::value points_update, bool sync )
 {
     if( !points_update.is_object( ) ) return;
 
-    json::object& UUID_points = this->points.as_object( );
-    for(auto& kv : points_update.as_object() )
+    auto& obj = points_update.as_object( );
+
+    if( !obj.contains( "points" ) || !obj.at( "points" ).is_array( ) ) return;
+
+    json::array points_array = obj.at( "points" ).as_array( );
+    json::object& inter_points = this->points.as_object( );
+
+    for( auto item : points_array )
     {
-        if( UUID_points.contains( kv.key( ) ) )
-            UUID_points[kv.key( )] = kv.value( );
+        if( item.is_object( ) )
+        {
+            auto& pt = item.as_object( );
+            if( pt.contains( "UUID" ) && pt.contains( "position" ) )
+            {
+                string pt_uuid = pt.at( "UUID" ).as_string( ).c_str( );
+                if( inter_points.contains( pt_uuid ) )
+                {
+                    inter_points[ pt_uuid ] = pt.at( "position" );
+                }
+            }
+        }
     }
 
     this->updatePoints( points_update, sync );
@@ -147,12 +190,24 @@ void PointsModule::clear( bool sync )
 
 json::value PointsModule::GetState( )
 {
-    return this->points;
+    json::array server_array;
+
+    for( auto& key_val : this->points.as_object( ) )
+    {
+        json::object single_point;
+        single_point[ "UUID" ] = key_val.key( );
+        single_point[ "position" ] = key_val.value( );
+        server_array.push_back( single_point );
+    }
+
+    json::object state;
+    state[ "points" ] = server_array;
+
+    return state;
 }
 
 void PointsModule::SetState( json::value state )
 {
-
     this->onAddPoints( state );
 }
 

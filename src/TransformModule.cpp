@@ -18,39 +18,37 @@ TransformModule::TransformModule( uuids::uuid  UUID ) : ModuleCore( UUID )
 
 void TransformModule::onUpdateTransform( json::value transform, bool sync )
 {   
-    if( !transform.is_object() ) return;
-    auto& outer = transform.as_object();
-
-    // Accept either {"translation":...,...} directly, or {"transform": {...}} wrapped
-    const boost::json::object* objPtr = &outer;
-    boost::json::object unwrapped;
-    if (outer.contains("transform")) {
-        unwrapped = outer.at("transform").as_object();
-        objPtr = &unwrapped;
-    }
-    auto& obj = *objPtr;
+    if( !transform.is_object( ) ) return;
+    auto& obj = transform.as_object( );
+    auto it = obj.find( "transform" );
+    if( it == obj.end( ) || !it->value( ).is_object( ) ) return;
 
     if (!obj.contains("translation") || !obj.contains("rotation") || !obj.contains("scale"))
         return;
 
-    auto& t = obj.at("translation").as_array();
-    auto& r = obj.at("rotation").as_array();
-    auto& s = obj.at("scale").as_array();
-    if (t.size() < 3 || r.size() < 4 || s.size() < 3) return;
+    auto& trans = it->value( ).as_object( );
+    if( trans.contains( "translation" ) && trans.at( "translation" ).is_array( ) )
+    {
+        auto& arr = trans.at("translation").as_array( );
+        for( int i = 0; i < TRANSLATION_SIZE; ++i )
+            this->transform_data.translation[i] = arr[i].to_number<float>( );
+    }
+    
+    if( trans.contains( "rotation" ) && trans.at( "rotation" ).is_array( ) )
+    {
+        auto& arr = trans.at("rotation").as_array( );
+        for( int i = 0; i < ROTATION_SIZE; ++i )
+            this->transform_data.rotation[i] = arr[i].to_number<float>( );
+    }
 
-    TransformData new_data;
-    new_data.translation[0] = t[0].to_number<float>();
-    new_data.translation[1] = t[1].to_number<float>();
-    new_data.translation[2] = t[2].to_number<float>();
-    new_data.rotation[0] = r[0].to_number<float>();
-    new_data.rotation[1] = r[1].to_number<float>();
-    new_data.rotation[2] = r[2].to_number<float>();
-    new_data.rotation[3] = r[3].to_number<float>();
-    new_data.scale[0] = s[0].to_number<float>();
-    new_data.scale[1] = s[1].to_number<float>();
-    new_data.scale[2] = s[2].to_number<float>();
+    if( trans.contains( "scale" ) && trans.at( "scale" ).is_array( ) )
+    {
+        auto& arr = trans.at("scale").as_array( );
+        for( int i = 0; i < SCALE_SIZE; ++i )
+            this->transform_data.rotation[i] = arr[i].to_number<float>( );
+    }
 
-    this->updateTransform( new_data, sync );
+    this->updateTransform( transform_data, sync );
 }
 
 void TransformModule::updateTransform( TransformData new_data, bool sync )
@@ -59,16 +57,19 @@ void TransformModule::updateTransform( TransformData new_data, bool sync )
 
     json::object transform_update;
     transform_update["translation"] = json::array{transform_data.translation[0], transform_data.translation[1], transform_data.translation[2]};
-    transform_update["rotation"]    = json::array{transform_data.rotation[0], transform_data.rotation[1], transform_data.rotation[2], transform_data.rotation[3]};
-    transform_update["scale"]       = json::array{transform_data.scale[0], transform_data.scale[1], transform_data.scale[2]};
+    transform_update["rotation"] = json::array{transform_data.rotation[0], transform_data.rotation[1], transform_data.rotation[2], transform_data.rotation[3]};
+    transform_update["scale"] = json::array{transform_data.scale[0], transform_data.scale[1], transform_data.scale[2]};
 
     this->OnChange( this->command["updateTransform"], transform_update );
-
-    if( sync ) {
+    if( sync )
+    {
         json::object wrapped;
-        wrapped["transform"] = transform_update;   // <-- wrap for the wire
+
+        wrapped["transform"] = transform_update;
+
         this->Output( this->command["updateTransform"], wrapped );
     }
+
 }
 
 

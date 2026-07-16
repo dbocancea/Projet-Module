@@ -16,7 +16,7 @@ PrimitiveModule::PrimitiveModule( uuids::uuid UUID ) : TransformModule( UUID )
 
     this->SetOnCommand( "UPDATE_PRIMITIVE", [this]( json::value primitive )
     {
-        this->onUpdatePrimitive( this->primitive );
+        this->onUpdatePrimitive( primitive );
     });
 }
 
@@ -32,7 +32,7 @@ json::value PrimitiveModule::getPrimitiveTypes( )
 
 void PrimitiveModule::onUpdatePrimitive( json::value primitive_update, bool sync )
 {
-    if( !primitive_update.is_object( ) ) return;
+    if( !primitive_update.is_string( ) ) return;
     this->primitive = primitive_update;
 
     this->updatePrimitive( primitive_update, sync );

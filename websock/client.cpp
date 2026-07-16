@@ -57,38 +57,38 @@ int main() {
             std::cout << "Sent Identification..." << endl;
             webSocket.send(uuidStr);
             webSocket.send(instJoinStr); 
-            modules.AddModule("CameraModule", UUID, 1);
-            modules.AddModule("CameraModule", UUID1, 1);
-            auto Cam1 = static_pointer_cast<CameraModule>(modules.modules[UUID]);
-            auto Cam2 = static_pointer_cast<CameraModule>(modules.modules[UUID1]);
+            // modules.AddModule("CameraModule", UUID, 1);
+            // modules.AddModule("CameraModule", UUID1, 1);
+            // auto Cam1 = static_pointer_cast<CameraModule>(modules.modules[UUID]);
+            // auto Cam2 = static_pointer_cast<CameraModule>(modules.modules[UUID1]);
 
-            json::object obj1;
-            obj1["fov"]    = 60.0f;
-            obj1["aspect"] = 1.777f;   // 16:9
-            obj1["near"]   = 0.1f;
-            obj1["far"]    = 1.0f;
+            // json::object obj1;
+            // obj1["fov"]    = 60.0f;
+            // obj1["aspect"] = 1.777f;   // 16:9
+            // obj1["near"]   = 0.1f;
+            // obj1["far"]    = 1.0f;
 
-            json::object obj2;
-            obj2["fov"]    = 60.0f;
-            obj2["aspect"] = 1.333f;   // 4:3
-            obj2["near"]   = 0.5f;
-            obj2["far"]    = 1.0f;
+            // json::object obj2;
+            // obj2["fov"]    = 60.0f;
+            // obj2["aspect"] = 1.333f;   // 4:3
+            // obj2["near"]   = 0.5f;
+            // obj2["far"]    = 1.0f;
             
-            Cam1->onUpdateCamera(obj1 , 1);
-            Cam2->onUpdateCamera(obj2 , 1);
-            TransformModule::TransformData t1{
-            { 3.0f, 0.0f, 2.0f },        
-            { 0.0f, 0.0f, 0.0f, 1.0f },  
-            { 1.0f, 1.0f, 1.0f }         
-            };
+            // Cam1->onUpdateCamera(obj1 , 1);
+            // Cam2->onUpdateCamera(obj2 , 1);
+            // TransformModule::TransformData t1{
+            // { 3.0f, 0.0f, 2.0f },        
+            // { 0.0f, 0.0f, 0.0f, 1.0f },  
+            // { 1.0f, 1.0f, 1.0f }         
+            // };
 
-            TransformModule::TransformData t2{
-                { -3.0f, 0.0f, 2.0f },
-                { 0.0f, 0.0f, 0.7071f, 0.7071f }, 
-                { 1.0f, 1.0f, 1.0f }
-            };
-            Cam1->updateTransform(t1 , 1);
-            Cam2->updateTransform(t2 , 1);
+            // TransformModule::TransformData t2{
+            //     { -3.0f, 0.0f, 2.0f },
+            //     { 0.0f, 0.0f, 0.7071f, 0.7071f }, 
+            //     { 1.0f, 1.0f, 1.0f }
+            // };
+            // Cam1->updateTransform(t1 , 1);
+            // Cam2->updateTransform(t2 , 1);
         }
 
         else if (msg->type == ix::WebSocketMessageType::Message) {

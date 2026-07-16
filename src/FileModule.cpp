@@ -9,18 +9,21 @@ FileModule::FileModule(uuids::uuid UUID) : ModuleCore(UUID)
 {
     this->type = "FileModule";
     this->command["updateFile"] = "UPDATE_FILE";
-    this->SetOnCommand(this->command["updateFile"], [this](json::value data)
-                       {
-        json::object obj = data.as_object();
-        this->OnUpdateFile(obj); });
+    this->SetOnCommand(this->command["updateFile"], [this](json::value data){
+        this->OnUpdateFile(data); });
 }
 
 void FileModule::OnUpdateFile(json::value file)
 {
+    if( !file.is_object() ) return;
     json::object obj = file.as_object();
-    string name = obj["name"].as_string().c_str();
-    string type = obj["type"].as_string().c_str();
-    string data = obj["data"].as_string().c_str();
+
+    if( obj.contains("file") && obj.at("file").is_object() )
+        obj = obj.at("file").as_object();
+
+    string name = obj.at("name").as_string().c_str();
+    string type = obj.at("type").as_string().c_str();
+    string data = obj.at("data").as_string().c_str();
 
     this->UpdateFile(name, type, data, false);
 }
@@ -39,7 +42,12 @@ void FileModule::UpdateFile(string name, string type, string data, bool sync)
     this->OnChange(this->command["updateFile"], obj);
 
     if (sync)
-        this->Output(this->command["updateFile"], obj);
+    {
+        json::object wrap;
+        wrap["file"] = obj;
+        this->Output(this->command["updateFile"], wrap);
+    }
+        
     
 }
 
@@ -54,14 +62,16 @@ json::value FileModule::GetState()
     file["data"] = this->file.data;
     file["type"] = this->file.type;
     file["name"] = this->file.name;
-    return file;
+
+    json::object obj;
+    obj["file"] = file;                    
+    return obj;
 }
 
 void FileModule::SetState(json::value newState)
 {
     if (newState.is_object())
     {
-        auto obj = newState.as_object();
-        this->OnUpdateFile(obj);
+        this->OnUpdateFile(newState);
     }
 }

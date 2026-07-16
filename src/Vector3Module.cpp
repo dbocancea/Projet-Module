@@ -65,7 +65,7 @@ void Vector3Module::SetState( json::value vector)
     if( vector.is_object() )
     {
         auto obj = vector.as_object();
-        this->OnUpdateVector(obj);
+        this->OnUpdateVector(obj.at("vector"));
     }
     
 }

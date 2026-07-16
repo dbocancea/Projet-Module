@@ -53,10 +53,10 @@ void ImageModule::SetState( json::value state )
     if( !state.is_object( ) ) return;
     
     auto& obj = state.as_object( );
-    auto it = obj.find( "camera" );
+    auto it = obj.find( "image" );
 
     if( it != obj.end( ) )
-        this->setImage( it->value( ) );
+        this->onSetImage( it->value( ) );
 
     this->TransformModule::SetState( state );
 }
